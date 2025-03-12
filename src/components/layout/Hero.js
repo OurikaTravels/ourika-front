@@ -3,12 +3,20 @@
 import { useState, useEffect } from "react"
 import { ArrowRight, MapPin, Star } from "lucide-react"
 import { useTheme } from "../../context/ThemeContext"
-import HeroImage from "../../assets/images/hero.jpg"
+import HeroImage1 from "../../assets/images/hero.jpg"
+import HeroImage2 from "../../assets/images/about.jpg"
+
+
+const backgroundImages = [
+  HeroImage1,
+  HeroImage2,
+]
 
 export default function Hero() {
   const { theme } = useTheme()
   const [isVisible, setIsVisible] = useState(false)
   const [scrollPosition, setScrollPosition] = useState(0)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   useEffect(() => {
     setIsVisible(true)
@@ -17,35 +25,69 @@ export default function Hero() {
       setScrollPosition(window.scrollY)
     }
 
+    
+    const imageInterval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === backgroundImages.length - 1 ? 0 : prevIndex + 1
+      )
+    }, 5000) 
+
     window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      clearInterval(imageInterval)
+    }
   }, [])
 
- 
   const parallaxOffset = scrollPosition * 0.15
 
   return (
-    <section className={`relative w-full h-[85vh] max-h-[800px] overflow-hidden ${
+    <section className={`relative w-full h-screen max-h-[800px] overflow-hidden ${
       theme === "dark" ? "bg-gray-900" : "bg-white"
     }`}>
-      <div
-        className="absolute inset-0 w-full h-full transition-transform duration-300 ease-out"
-        style={{ transform: `translateY(${parallaxOffset}px)` }}
-      >
-        <img
-          src={HeroImage}
-          alt="Vatican Museums"
-          className="w-full h-full object-cover object-center"
-        />
-        <div className={`absolute inset-0 bg-gradient-to-r ${
-          theme === "dark" 
-            ? "from-black/90 via-black/70 to-black/50" 
-            : "from-black/80 via-black/60 to-black/40"
-        }`} />
+      
+      {backgroundImages.map((image, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 w-full h-full transition-all duration-1000 ease-out`}
+          style={{
+            transform: `translateY(${parallaxOffset}px)`,
+            opacity: currentImageIndex === index ? 1 : 0,
+            zIndex: currentImageIndex === index ? 1 : 0,
+          }}
+        >
+          <img
+            src={image}
+            alt={`Hero background ${index + 1}`}
+            className="w-full h-full object-cover object-center"
+          />
+          <div className={`absolute inset-0 bg-gradient-to-r ${
+            theme === "dark" 
+              ? "from-black/90 via-black/70 to-black/50" 
+              : "from-black/80 via-black/60 to-black/40"
+          }`} />
+        </div>
+      ))}
+
+     
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
+        {backgroundImages.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentImageIndex(index)}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              currentImageIndex === index 
+                ? "bg-white w-4" 
+                : "bg-white/50 hover:bg-white/75"
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
       </div>
 
       
-      <div className="relative h-full container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
+      <div className="relative h-full container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center z-10">
         
         <div
           className={`flex items-center gap-2 backdrop-blur-sm w-fit px-4 py-2 rounded-full mb-4 md:mb-6 transition-all duration-700 ease-out transform ${
@@ -60,6 +102,7 @@ export default function Hero() {
           </span>
         </div>
 
+        
         <div
           className={`max-w-xl md:max-w-2xl lg:max-w-3xl text-white transition-all duration-1000 ease-out transform ${
             isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
@@ -81,7 +124,7 @@ export default function Hero() {
             <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4 text-[#ff5d5d]" />
               <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-200"}`}>
-                Ourika, Marrakech
+                Vatican City, Rome
               </span>
             </div>
             <div className="flex items-center gap-1">
@@ -95,6 +138,7 @@ export default function Hero() {
               </span>
             </div>
           </div>
+
           
           <div className="flex flex-col sm:flex-row gap-4">
             <button
@@ -123,9 +167,7 @@ export default function Hero() {
               Learn More
             </button>
           </div>
-
         </div>
-
       </div>
     </section>
   )
