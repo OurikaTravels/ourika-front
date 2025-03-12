@@ -112,7 +112,12 @@ const Navbar = () => {
               Become a Supplier
             </Link>
 
-            <button className="relative group" aria-label="Wishlist">
+            {/* Updated Wishlist Link */}
+            <Link
+              to="/wishlist"
+              className="relative group"
+              aria-label="Wishlist"
+            >
               <Heart
                 className={cn(
                   "h-6 w-6 transition-colors",
@@ -122,7 +127,7 @@ const Navbar = () => {
               <span className="absolute -top-2 -right-2 bg-[#ff5d5d] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 0
               </span>
-            </button>
+            </Link>
 
             <ProfileDropdown />
           </div>
@@ -216,18 +221,21 @@ const Navbar = () => {
                 Become a Supplier
               </Link>
 
-              <button
+              {/* Updated Wishlist Link for Mobile */}
+              <Link
+                to="/wishlist"
                 className={cn(
                   "flex items-center space-x-3 w-full px-4 py-3 text-sm font-medium rounded-md transition-colors",
                   theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100",
                 )}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Heart className="h-5 w-5" />
                 <span>Wishlist</span>
                 <span className="ml-auto bg-[#ff5d5d] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   0
                 </span>
-              </button>
+              </Link>
 
               <div className={cn("px-4 py-3", theme === "dark" ? "text-gray-300" : "text-gray-700")}>
                 <div className="flex items-center justify-between">
@@ -244,4 +252,3 @@ const Navbar = () => {
 }
 
 export default Navbar
-
