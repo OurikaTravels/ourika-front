@@ -7,6 +7,7 @@ import Hero from './components/layout/Hero';
 import Categories from './components/layout/Categories';
 import TrekCard from './components/common/TrekCard';
 import AboutSection from './components/layout/About';
+import Footer from './components/layout/Footer';
 
 function App() {
   // Sample trek data
@@ -69,7 +70,7 @@ function App() {
           <Hero />
           <Categories />
           
-          {/* Trek Cards Section */}
+          
           <section className="container mx-auto px-4 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {treks.map((trek, index) => (
@@ -90,8 +91,9 @@ function App() {
             </div>
           </section>
 
-          {/* About Section */}
+          
           <AboutSection />
+          <Footer />
         </div>
       </Router>
     </ThemeProvider>
