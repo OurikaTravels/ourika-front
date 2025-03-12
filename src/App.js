@@ -4,8 +4,9 @@ import { ThemeProvider } from "./context/ThemeContext";
 import './App.css';
 import Navbar from './components/layout/Navbar';
 import Hero from './components/layout/Hero';
-import Categories from './components/layout/categories';
+import Categories from './components/layout/Categories';
 import TrekCard from './components/common/TrekCard';
+import AboutSection from './components/layout/About';
 
 function App() {
   // Sample trek data
@@ -88,6 +89,9 @@ function App() {
               ))}
             </div>
           </section>
+
+          {/* About Section */}
+          <AboutSection />
         </div>
       </Router>
     </ThemeProvider>
