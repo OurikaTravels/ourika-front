@@ -4,6 +4,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import './App.css';
 import Navbar from './components/layout/Navbar';
 import Hero from './components/layout/Hero';
+import Categories from './components/layout/categories';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <div className="min-h-screen bg-white dark:bg-gray-900">
           <Navbar />
           <Hero />
+          <Categories />
         </div>
       </Router>
     </ThemeProvider>

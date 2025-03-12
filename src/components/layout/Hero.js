@@ -30,7 +30,7 @@ export default function Hero() {
       setCurrentImageIndex((prevIndex) => 
         prevIndex === backgroundImages.length - 1 ? 0 : prevIndex + 1
       )
-    }, 5000) 
+    }, 10000) 
 
     window.addEventListener("scroll", handleScroll)
     
