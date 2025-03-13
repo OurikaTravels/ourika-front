@@ -19,6 +19,7 @@ import { useAuth } from "./context/AuthContext"
 import ProfilePage from "./pages/Profile"
 import EmailVerification from "./pages/Auth/EmailVerification"
 import CommunityPage from "./pages/Community"
+import GuideProfilePage from "./pages/GuideProfile"
 
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth()
@@ -45,9 +46,10 @@ function AppContent() {
   const isDashboardRoute = location.pathname.includes("/Dashboard")
   const isAuthRoute = location.pathname.includes("/Auth")
   const isCommunityRoute = location.pathname.includes("/community")
+  const isGuideProfileRoute = location.pathname.includes("/guide/")
 
   // Hide navbar and footer on dashboard routes, auth pages, and community page
-  const hideNavbarAndFooter = isDashboardRoute || isAuthRoute || isCommunityRoute
+  const hideNavbarAndFooter = isDashboardRoute || isAuthRoute || isCommunityRoute || isGuideProfileRoute
 
   const treks = [
     {
@@ -153,6 +155,9 @@ function AppContent() {
 
         {/* Community Route */}
         <Route path="/community" element={<CommunityPage />} />
+
+        {/* Guide Profile Route */}
+        <Route path="/guide/:username" element={<GuideProfilePage />} />
 
         {/* Dashboard Routes */}
         <Route
