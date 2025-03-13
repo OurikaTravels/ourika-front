@@ -1,41 +1,117 @@
 "use client"
 
+import { useState } from "react"
 import { useAuth } from "../../../context/AuthContext"
+import { FileText, Calendar, Star, Clock } from "lucide-react"
+import DashboardHeader from "../../../components/dashboard/DashboardHeader"
+import GuideSidebar from "../../../components/dashboard/guide/GuideSidebar"
+import StatCard from "../../../components/dashboard/StatCard"
+import GuideReservations from "../../../components/dashboard/guide/GuideReservations"
 
 export default function GuideDashboard() {
   const { user, logout } = useAuth()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [activeSection, setActiveSection] = useState("dashboard")
+  const [notifications] = useState(5) 
+
+  const stats = {
+    totalPosts: 24,
+    totalReservations: 156,
+    averageRating: 4.8,
+    completedTours: 142,
+    upcomingTours: 8,
+    monthlyViews: 1234,
+    totalReviews: 89,
+    responseRate: 98,
+  }
+
+  const upcomingReservations = [
+    {
+      id: 1,
+      tourName: "Atlas Mountains Trek",
+      date: "2024-03-20",
+      time: "09:00 AM",
+      guests: 4,
+      status: "confirmed",
+    },
+    {
+      id: 2,
+      tourName: "Sahara Desert Adventure",
+      date: "2024-03-22",
+      time: "07:30 AM",
+      guests: 6,
+      status: "pending",
+    },
+  ]
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Guide Dashboard</h1>
-          <div className="flex items-center">
-            <span className="mr-4">Welcome, {user?.name}</span>
-            <button
-              onClick={logout}
-              className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
-            >
-              Logout
-            </button>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+     
+      <GuideSidebar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      />
+
+      
+      <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
+        
+        <DashboardHeader user={user} notifications={notifications} logout={logout} />
+
+        
+        <main className="p-6">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Guide Dashboard</h1>
+            <p className="mt-1 text-gray-600 dark:text-gray-400">
+              Welcome back, {user?.lastName || "Guide"}! Here's your activity overview.
+            </p>
           </div>
-        </div>
-      </header>
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 p-4">
-              <h2 className="text-xl font-semibold mb-4">Guide Features</h2>
-              <ul className="list-disc pl-5 space-y-2">
-                <li>Tour Management</li>
-                <li>Schedule Overview</li>
-                <li>Customer Reviews</li>
-                <li>Booking Calendar</li>
-              </ul>
+
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <StatCard title="Total Posts" value={stats.totalPosts} icon={<FileText className="w-6 h-6" />} trend={8} />
+            <StatCard
+              title="Average Rating"
+              value={stats.averageRating}
+              icon={<Star className="w-6 h-6" />}
+              trend={2}
+            />
+            <StatCard title="Upcoming Tours" value={stats.upcomingTours} icon={<Calendar className="w-6 h-6" />} />
+            <StatCard
+              title="Response Rate"
+              value={`${stats.responseRate}%`}
+              icon={<Clock className="w-6 h-6" />}
+              trend={5}
+            />
+          </div>
+
+          <div className="mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+              <div className="p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Upcoming Reservations</h2>
+                <GuideReservations reservations={upcomingReservations} />
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Performance</h2>
+              <div className="h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                Performance chart placeholder
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Reviews</h2>
+              <div className="h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                Reviews list placeholder
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   )
 }
