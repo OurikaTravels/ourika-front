@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
-import { Search, Heart, X, Menu, User, Calendar } from "lucide-react"
+import { Search, Heart, X, Menu, User, Calendar, Users } from "lucide-react"
 import { useTheme } from "../../context/ThemeContext"
 import { useAuth } from "../../context/AuthContext"
 import ProfileDropdown from "../common/ProfileDropdown"
@@ -22,9 +22,10 @@ const Navbar = () => {
   const location = useLocation()
   const searchRef = useRef(null)
 
-
+  // Check if user is a tourist
   const isTourist = isAuthenticated && user?.role === "tourist"
 
+  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
@@ -33,7 +34,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-
+  // Handle click outside search results
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -47,7 +48,7 @@ const Navbar = () => {
     }
   }, [])
 
-
+  // Check if a route is active
   const isActive = (path) => {
     return location.pathname === path
   }
@@ -130,6 +131,20 @@ const Navbar = () => {
               )}
             >
               Become a Supplier
+            </Link>
+
+            <Link
+              to="/community"
+              className={cn(
+                "text-sm font-medium transition-colors",
+                isActive("/community")
+                  ? "text-[#ff5d5d]"
+                  : theme === "dark"
+                    ? "hover:text-gray-300"
+                    : "hover:text-gray-600",
+              )}
+            >
+              Community
             </Link>
 
             {/* Navigation Icons */}
@@ -249,6 +264,14 @@ const Navbar = () => {
                 Become a Supplier
               </Link>
 
+              <MobileNavLink
+                to="/community"
+                icon={<Users className="h-5 w-5" />}
+                label="Community"
+                onClick={() => setIsMobileMenuOpen(false)}
+                isActive={isActive("/community")}
+              />
+
               {/* Mobile Navigation Links */}
               <MobileNavLink
                 to="/wishlist"
@@ -322,7 +345,7 @@ const NavIcon = ({ to, icon, label, badge, isActive }) => {
   )
 }
 
-
+// Mobile Navigation Link Component
 const MobileNavLink = ({ to, icon, label, badge, onClick, isActive }) => {
   const { theme } = useTheme()
 

@@ -18,6 +18,7 @@ import GuideDashboard from "./pages/Dashboard/Guide/index"
 import { useAuth } from "./context/AuthContext"
 import ProfilePage from "./pages/Profile"
 import EmailVerification from "./pages/Auth/EmailVerification"
+import CommunityPage from "./pages/Community"
 
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth()
@@ -43,9 +44,10 @@ function AppContent() {
   const location = useLocation()
   const isDashboardRoute = location.pathname.includes("/Dashboard")
   const isAuthRoute = location.pathname.includes("/Auth")
+  const isCommunityRoute = location.pathname.includes("/community")
 
-  // Hide navbar and footer on dashboard routes and auth pages
-  const hideNavbarAndFooter = isDashboardRoute || isAuthRoute
+  // Hide navbar and footer on dashboard routes, auth pages, and community page
+  const hideNavbarAndFooter = isDashboardRoute || isAuthRoute || isCommunityRoute
 
   const treks = [
     {
@@ -88,7 +90,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
-      {/* Only show Navbar if not on a dashboard route or auth page */}
+      {/* Only show Navbar if not on a dashboard route, auth page, or community page */}
       {!hideNavbarAndFooter && <Navbar />}
 
       <Routes>
@@ -149,6 +151,9 @@ function AppContent() {
         <Route path="/Auth/RegisterGuide" element={<RegisterGuide />} />
         <Route path="/Auth/EmailVerification" element={<EmailVerification />} />
 
+        {/* Community Route */}
+        <Route path="/community" element={<CommunityPage />} />
+
         {/* Dashboard Routes */}
         <Route
           path="Dashboard/Admin"
@@ -181,7 +186,7 @@ function AppContent() {
         />
       </Routes>
 
-      {/* Only show Footer if not on a dashboard route or auth page */}
+      {/* Only show Footer if not on a dashboard route, auth page, or community page */}
       {!hideNavbarAndFooter && <Footer />}
     </div>
   )
