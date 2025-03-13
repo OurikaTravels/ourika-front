@@ -12,10 +12,12 @@ import AboutSection from "./components/layout/About"
 import Footer from "./components/layout/Footer"
 import WishlistPage from "./pages/Wishlist/index"
 import Login from "./pages/Auth/Login"
+import RegisterGuide from "./pages/Auth/RegisterGuide"
 import AdminDashboard from "./pages/Dashboard/Admin/index"
 import GuideDashboard from "./pages/Dashboard/Guide/index"
 import { useAuth } from "./context/AuthContext"
 import ProfilePage from "./pages/Profile"
+import EmailVerification from "./pages/Auth/EmailVerification"
 
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth()
@@ -40,10 +42,10 @@ function ProtectedRoute({ children, requiredRole }) {
 function AppContent() {
   const location = useLocation()
   const isDashboardRoute = location.pathname.includes("/Dashboard")
-  const isLoginPage = location.pathname === "/Auth/Login"
+  const isAuthRoute = location.pathname.includes("/Auth")
 
-  // Hide navbar and footer on dashboard routes and login page
-  const hideNavbarAndFooter = isDashboardRoute || isLoginPage
+  // Hide navbar and footer on dashboard routes and auth pages
+  const hideNavbarAndFooter = isDashboardRoute || isAuthRoute
 
   const treks = [
     {
@@ -86,7 +88,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
-      {/* Only show Navbar if not on a dashboard route or login page */}
+      {/* Only show Navbar if not on a dashboard route or auth page */}
       {!hideNavbarAndFooter && <Navbar />}
 
       <Routes>
@@ -144,6 +146,8 @@ function AppContent() {
 
         {/* Auth Routes */}
         <Route path="/Auth/Login" element={<Login />} />
+        <Route path="/Auth/RegisterGuide" element={<RegisterGuide />} />
+        <Route path="/Auth/EmailVerification" element={<EmailVerification />} />
 
         {/* Dashboard Routes */}
         <Route
@@ -177,7 +181,7 @@ function AppContent() {
         />
       </Routes>
 
-      {/* Only show Footer if not on a dashboard route or login page */}
+      {/* Only show Footer if not on a dashboard route or auth page */}
       {!hideNavbarAndFooter && <Footer />}
     </div>
   )

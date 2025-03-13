@@ -3,8 +3,7 @@
 import { useState } from "react"
 import { User, Mail, Phone, MapPin, Calendar, Camera, Edit2 } from "lucide-react"
 import { useTheme } from "../../context/ThemeContext"
-import Navbar from "../../components/layout/Navbar"
-import Footer from "../../components/layout/Footer"
+
 
 export default function ProfilePage() {
   const { theme } = useTheme()
@@ -30,7 +29,7 @@ export default function ProfilePage() {
       
       <div className="flex-grow container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          {/* Profile Header */}
+
           <div className={`shadow rounded-lg transition-colors duration-200 ${
             theme === "dark" ? "bg-gray-800" : "bg-white"
           }`}>
