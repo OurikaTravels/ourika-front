@@ -1,18 +1,35 @@
 "use client"
 
 import { useState } from "react"
-import { User, Globe, Monitor, HelpCircle, Download, CreditCard, Sun, Moon } from "lucide-react"
+import { User, Globe, Monitor, HelpCircle, Download, CreditCard, Sun, Moon, LogOut, Settings } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import AuthModal from "../auth/AuthModal"
 import { useTheme } from "../../context/ThemeContext"
+import { useAuth } from "../../context/AuthContext"
+import { Link } from "react-router-dom"
+import { toast } from "react-hot-toast"
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
+  const { user, isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
 
   const handleLoginClick = () => {
     setIsOpen(false)
     setIsAuthModalOpen(true)
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      toast.success("Logged out successfully")
+      navigate("/")
+      setIsOpen(false)
+    } catch (error) {
+      toast.error("Failed to logout")
+    }
   }
 
   const handleThemeChange = () => {
@@ -21,14 +38,17 @@ const ProfileDropdown = () => {
 
   return (
     <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`text-gray-700 hover:text-[#ff5d5d] transition-colors duration-200 ${
-          theme === "dark" ? "text-gray-300 hover:text-[#ff5d5d]" : "text-gray-700 hover:text-[#ff5d5d]"
-        }`}
-      >
-        <User className="h-6 w-6" />
-      </button>
+      <div className="flex flex-col items-center">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`p-2 rounded-full transition-colors duration-200 ${
+            theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
+          }`}
+        >
+          <User className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+        </button>
+        <span className="text-xs mt-1 text-gray-600 dark:text-gray-400">{isAuthenticated ? "Account" : "Profile"}</span>
+      </div>
 
       {isOpen && (
         <div
@@ -37,18 +57,58 @@ const ProfileDropdown = () => {
           }`}
         >
           <div className="p-4">
-            <h2 className={`text-xl font-semibold mb-4 ${theme === "dark" ? "text-gray-100" : "text-gray-800"}`}>
-              Profile
-            </h2>
+            {isAuthenticated ? (
+              <>
 
-            <button
-              onClick={handleLoginClick}
-              className="w-full py-2 px-4 rounded-full bg-[#ff5d5d] text-white hover:bg-[#ff4040] transition-colors duration-200 mb-4 flex items-center justify-center font-medium"
-            >
-              <User className="h-5 w-5 mr-2" />
-              Log in or sign up
-            </button>
+                <div className="mb-4">
+                  <h2 className={`text-xl font-semibold ${theme === "dark" ? "text-gray-100" : "text-gray-800"}`}>
+                    {user.lastName}
+                  </h2>
+                  <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>{user.email}</p>
+                </div>
 
+                {/* Profile and Logout Links */}
+                <div className="space-y-2">
+                  <Link
+                    to="/profile"
+                    className={`w-full flex items-center py-2 px-4 rounded-md transition-colors duration-200 ${
+                      theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Settings className="h-5 w-5 mr-3" />
+                    <span>Your Profile</span>
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className={`w-full flex items-center py-2 px-4 rounded-md text-red-600 transition-colors duration-200 ${
+                      theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                    }`}
+                  >
+                    <LogOut className="h-5 w-5 mr-3" />
+                    <span>Log out</span>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+
+                <h2 className={`text-xl font-semibold mb-4 ${theme === "dark" ? "text-gray-100" : "text-gray-800"}`}>
+                  Profile
+                </h2>
+
+                <button
+                  onClick={handleLoginClick}
+                  className="w-full py-2 px-4 rounded-full bg-[#ff5d5d] text-white hover:bg-[#ff4040] transition-colors duration-200 mb-4 flex items-center justify-center font-medium"
+                >
+                  <User className="h-5 w-5 mr-2" />
+                  Log in or sign up
+                </button>
+              </>
+            )}
+
+            {/* Additional Options */}
             <div className="space-y-2">
               <DropdownItem
                 icon={<CreditCard className="h-5 w-5" />}
@@ -61,7 +121,9 @@ const ProfileDropdown = () => {
               {/* Theme Toggle Item */}
               <button
                 onClick={handleThemeChange}
-                className="w-full flex items-center justify-between py-2 px-1 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                className={`w-full flex items-center justify-between py-2 px-4 rounded-md transition-colors duration-200 ${
+                  theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                }`}
               >
                 <div className="flex items-center">
                   <Monitor className="h-5 w-5" />
@@ -88,7 +150,7 @@ const ProfileDropdown = () => {
 
 const DropdownItem = ({ icon, label, value, theme }) => (
   <button
-    className={`w-full flex items-center justify-between py-2 px-1 rounded-md transition-colors duration-200 ${
+    className={`w-full flex items-center justify-between py-2 px-4 rounded-md transition-colors duration-200 ${
       theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
     }`}
   >
@@ -108,4 +170,3 @@ const DropdownItem = ({ icon, label, value, theme }) => (
 )
 
 export default ProfileDropdown
-

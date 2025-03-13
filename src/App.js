@@ -1,13 +1,44 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "./context/ThemeContext";
-import "./App.css";
-import Navbar from "./components/layout/Navbar";
-import Hero from "./components/layout/Hero";
-import Categories from "./components/layout/Categories";
-import TrekCard from "./components/common/TrekCard";
-import AboutSection from "./components/layout/About";
-import Footer from "./components/layout/Footer";
-import WishlistPage from "./pages/Wishlist/index"; // Import the WishlistPage component
+"use client"
+
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import { ThemeProvider } from "./context/ThemeContext"
+import { AuthProvider } from "./context/AuthContext"
+import "./App.css"
+import Navbar from "./components/layout/Navbar"
+import Hero from "./components/layout/Hero"
+import Categories from "./components/layout/Categories"
+import TrekCard from "./components/common/TrekCard"
+import AboutSection from "./components/layout/About"
+import Footer from "./components/layout/Footer"
+import WishlistPage from "./pages/Wishlist/index"
+import Login from "./pages/Auth/Login"
+import AdminDashboard from "./pages/Dashboard/Admin/index"
+import GuideDashboard from "./pages/Dashboard/Guide/index"
+import { useAuth } from "./context/AuthContext"
+
+import ProfilePage from "./pages/Profile"
+
+
+function ProtectedRoute({ children, requiredRole }) {
+  const { user, isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    return <Navigate to="/Auth/Login" replace />
+  }
+
+  if (requiredRole && user.role !== requiredRole) {
+
+    if (user.role === "admin") {
+      return <Navigate to="/Dashboard/Admin" replace />
+    } else if (user.role === "guide") {
+      return <Navigate to="/Dashboard/Guide" replace />
+    } else {
+      return <Navigate to="/" replace />
+    }
+  }
+
+  return children
+}
 
 function App() {
   const treks = [
@@ -42,81 +73,119 @@ function App() {
       duration: "3 days",
       pickup: "Included",
       rating: 4.9,
-      reviews: 3254,
+      reviews: 3254,      // Token expired or invalid
       originalPrice: 450,
       discountedPrice: 380,
       currency: "MAD",
     },
-  ];
+  ]
 
   return (
-    <ThemeProvider>
-      <Router>
-        <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
-          <Navbar />
-          <Routes>
-            {/* Home Route */}
-            <Route
-              path="/"
-              element={
-                <>
-                  <Hero />
-                  <Categories />
+    <Router>
+      <AuthProvider>
+        <ThemeProvider>
+          <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
+            <Navbar />
+            <Routes>
+              {/* Home Route */}
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Hero />
+                   
+                    <Categories />
 
-                  {/* Trek Cards Section */}
-                  <section className="container mx-auto px-4 py-12">
-                    <div className="space-y-8">
-                      {/* Section Header */}
-                      <div className="text-center">
-                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-200">
-                          Popular Tours
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-200">
-                          Discover our most popular adventures and experiences
-                        </p>
+                    {/* Trek Cards Section */}
+                    <section className="container mx-auto px-4 py-12">
+                      <div className="space-y-8">
+                        {/* Section Header */}+              <div className="text-center">
+                          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-200">
+                            Popular Tours
+                          </h2>
+                          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-200">
+                            Discover our most popular adventures and experiences
+                          </p>
+                        </div>
+
+                        {/* Trek Cards Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {treks.map((trek, index) => (
+                            <div
+                              key={index}
+                              className="transform transition-all duration-300 hover:-translate-y-1 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/20"
+                            >
+                              <TrekCard
+                                imageUrl={trek.imageUrl}
+                                type={trek.type}
+                                title={trek.title}
+                                duration={trek.duration}
+                                pickup={trek.pickup}
+                                rating={trek.rating}
+                                reviews={trek.reviews}
+                                originalPrice={trek.originalPrice}
+                                discountedPrice={trek.discountedPrice}
+                                currency={trek.currency}
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
+                    </section>
 
-                      {/* Trek Cards Grid */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {treks.map((trek, index) => (
-                          <div
-                            key={index}
-                            className="transform transition-all duration-300 hover:-translate-y-1 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/20"
-                          >
-                            <TrekCard
-                              imageUrl={trek.imageUrl}
-                              type={trek.type}
-                              title={trek.title}
-                              duration={trek.duration}
-                              pickup={trek.pickup}
-                              rating={trek.rating}
-                              reviews={trek.reviews}
-                              originalPrice={trek.originalPrice}
-                              discountedPrice={trek.discountedPrice}
-                              currency={trek.currency}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
+                    {/* About Section */}
+                    <AboutSection />
+                  </>
+                }
+              />
 
-                  {/* About Section */}
-                  <AboutSection />
-                </>
-              }
-            />
+              {/* Auth Routes */}
+              <Route path="/Auth/Login" element={<Login />} />
 
-            {/* Wishlist Route */}
-            <Route path="/wishlist" element={<WishlistPage />} />
-          </Routes>
+              {/* Dashboard Routes */}
+              <Route
+                
+              >
+                <Route
+                  path="Dashboard/Admin"
+                  element={
+                    <ProtectedRoute requiredRole="admin">
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="Dashboard/Guide"
+                  element={
+                    <ProtectedRoute requiredRole="guide">
+                      <GuideDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
 
-          {/* Footer */}
-          <Footer />
-        </div>
-      </Router>
-    </ThemeProvider>
-  );
+              {/* Wishlist Route */}
+              <Route path="/wishlist" element={<WishlistPage />} />
+
+              {/* Profile Route */}
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute requiredRole="tourist">
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+
+            {/* Footer */}
+            <Footer />
+          </div>
+        </ThemeProvider>
+      </AuthProvider>
+    </Router>
+  )
 }
 
-export default App;
+export default App
+

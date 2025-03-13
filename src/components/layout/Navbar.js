@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { Search, Heart, X, Menu } from "lucide-react"
+import { Link, useNavigate, useLocation } from "react-router-dom"
+import { Search, Heart, X, Menu, User, Calendar } from "lucide-react"
 import { useTheme } from "../../context/ThemeContext"
+import { useAuth } from "../../context/AuthContext"
 import ProfileDropdown from "../common/ProfileDropdown"
 import ThemeToggle from "../common/ThemeToggle"
 
@@ -11,15 +12,28 @@ const cn = (...classes) => classes.filter(Boolean).join(" ")
 
 const Navbar = () => {
   const { theme } = useTheme()
+  const { user, isAuthenticated } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState([])
   const [showResults, setShowResults] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
   const searchRef = useRef(null)
 
-  // Handle click outside search results
+
+  const isTourist = isAuthenticated && user?.role === "tourist"
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -32,6 +46,11 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [])
+
+
+  const isActive = (path) => {
+    return location.pathname === path
+  }
 
   return (
     <nav
@@ -70,6 +89,7 @@ const Navbar = () => {
                 />
                 {searchQuery && (
                   <button
+                    onClick={() => setSearchQuery("")}
                     className="p-2 mr-2 hover:text-gray-600 text-gray-400 transition-colors"
                     aria-label="Clear search"
                   >
@@ -112,24 +132,48 @@ const Navbar = () => {
               Become a Supplier
             </Link>
 
-            {/* Updated Wishlist Link */}
-            <Link
-              to="/wishlist"
-              className="relative group"
-              aria-label="Wishlist"
-            >
-              <Heart
-                className={cn(
-                  "h-6 w-6 transition-colors",
-                  theme === "dark" ? "group-hover:text-gray-300" : "group-hover:text-[#ff5d5d]",
-                )}
+            {/* Navigation Icons */}
+            <div className="flex items-center space-x-4">
+              {/* Wishlist */}
+              <NavIcon
+                to="/wishlist"
+                icon={<Heart className="h-6 w-6" />}
+                label="Wishlist"
+                badge={0}
+                isActive={isActive("/wishlist")}
               />
-              <span className="absolute -top-2 -right-2 bg-[#ff5d5d] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
-            </Link>
 
-            <ProfileDropdown />
+              {/* Bookings - Only show if user is a tourist */}
+              {isTourist && (
+                <NavIcon
+                  to="/bookings"
+                  icon={<Calendar className="h-6 w-6" />}
+                  label="Bookings"
+                  isActive={isActive("/bookings")}
+                />
+              )}
+
+              {/* Profile */}
+              <div className="flex flex-col items-center">
+                <div
+                  className={cn(
+                    "transition-colors",
+                    isActive("/profile")
+                      ? "text-[#ff5d5d]"
+                      : theme === "dark"
+                        ? "text-gray-300 hover:text-[#ff5d5d]"
+                        : "text-gray-700 hover:text-[#ff5d5d]",
+                  )}
+                >
+                  <ProfileDropdown />
+                </div>
+                {isAuthenticated && user?.lastName && (
+                  <span className="text-xs mt-1 text-gray-600 dark:text-gray-400 truncate max-w-[60px]">
+                    {user.lastName}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -189,22 +233,6 @@ const Navbar = () => {
                   <Search className="h-5 w-5" />
                 </button>
               </div>
-
-              {/* Mobile Search Results */}
-              {showResults && searchQuery && (
-                <div
-                  className={cn(
-                    "absolute top-full left-0 right-0 mt-2 rounded-lg shadow-lg border z-50",
-                    theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
-                  )}
-                >
-                  {searchResults.length > 0 ? (
-                    <div className="p-2">{/* Search results would go here */}</div>
-                  ) : (
-                    <div className="p-4 text-center text-gray-500">No results found for "{searchQuery}"</div>
-                  )}
-                </div>
-              )}
             </div>
 
             <div
@@ -221,21 +249,36 @@ const Navbar = () => {
                 Become a Supplier
               </Link>
 
-              {/* Updated Wishlist Link for Mobile */}
-              <Link
+              {/* Mobile Navigation Links */}
+              <MobileNavLink
                 to="/wishlist"
-                className={cn(
-                  "flex items-center space-x-3 w-full px-4 py-3 text-sm font-medium rounded-md transition-colors",
-                  theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100",
-                )}
+                icon={<Heart className="h-5 w-5" />}
+                label="Wishlist"
+                badge={0}
                 onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <Heart className="h-5 w-5" />
-                <span>Wishlist</span>
-                <span className="ml-auto bg-[#ff5d5d] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  0
-                </span>
-              </Link>
+                isActive={isActive("/wishlist")}
+              />
+
+              {/* Bookings - Only show if user is a tourist */}
+              {isTourist && (
+                <MobileNavLink
+                  to="/bookings"
+                  icon={<Calendar className="h-5 w-5" />}
+                  label="Bookings"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  isActive={isActive("/bookings")}
+                />
+              )}
+
+              {isAuthenticated && (
+                <MobileNavLink
+                  to="/profile"
+                  icon={<User className="h-5 w-5" />}
+                  label="Profile"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  isActive={isActive("/profile")}
+                />
+              )}
 
               <div className={cn("px-4 py-3", theme === "dark" ? "text-gray-300" : "text-gray-700")}>
                 <div className="flex items-center justify-between">
@@ -251,4 +294,63 @@ const Navbar = () => {
   )
 }
 
+// Navigation Icon Component
+const NavIcon = ({ to, icon, label, badge, isActive }) => {
+  const { theme } = useTheme()
+
+  return (
+    <Link to={to} className="relative group flex flex-col items-center" aria-label={label}>
+      <div
+        className={cn(
+          "transition-colors",
+          isActive
+            ? "text-[#ff5d5d]"
+            : theme === "dark"
+              ? "text-gray-300 group-hover:text-[#ff5d5d]"
+              : "text-gray-700 group-hover:text-[#ff5d5d]",
+        )}
+      >
+        {icon}
+      </div>
+      <span className="text-xs mt-1 text-gray-600 dark:text-gray-400">{label}</span>
+      {badge !== undefined && (
+        <span className="absolute -top-2 -right-2 bg-[#ff5d5d] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+          {badge}
+        </span>
+      )}
+    </Link>
+  )
+}
+
+
+const MobileNavLink = ({ to, icon, label, badge, onClick, isActive }) => {
+  const { theme } = useTheme()
+
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "flex items-center space-x-3 w-full px-4 py-3 text-sm font-medium rounded-md transition-colors",
+        isActive
+          ? theme === "dark"
+            ? "bg-gray-700 text-[#ff5d5d]"
+            : "bg-gray-100 text-[#ff5d5d]"
+          : theme === "dark"
+            ? "hover:bg-gray-800"
+            : "hover:bg-gray-100",
+      )}
+      onClick={onClick}
+    >
+      {icon}
+      <span>{label}</span>
+      {badge !== undefined && (
+        <span className="ml-auto bg-[#ff5d5d] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+          {badge}
+        </span>
+      )}
+    </Link>
+  )
+}
+
 export default Navbar
+
