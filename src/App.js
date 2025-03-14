@@ -20,6 +20,7 @@ import { useAuth } from "./context/AuthContext"
 import ProfilePage from "./pages/Profile"
 import ServiceManagement from "./pages/Dashboard/Admin/Treks/ServiceManagement"
 import HighlightsManagement from "./pages/Dashboard/Admin/Treks/HighlightsManagement"
+import AddTrek from "./pages/Dashboard/Admin/Treks/AddTrek"
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRole }) {
@@ -168,7 +169,15 @@ function AppContent({ treks }) {
               </ProtectedRoute>
             }
           />
-        
+
+          <Route
+            path="admin/treks/add-trek"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AddTrek />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Wishlist Route */}
           <Route path="/wishlist" element={<WishlistPage />} />
