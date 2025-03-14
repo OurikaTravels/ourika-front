@@ -97,6 +97,67 @@ const highlightApi = {
       return { success: false, message: error.message || "Failed to delete highlight" }
     }
   },
+
+  // Add a highlight to a trek
+  addHighlightToTrek: async (trekId, highlightId) => {
+    try {
+      const token = localStorage.getItem("token")
+      console.log("API call params:", { trekId, highlightId, token: !!token })
+      
+      const response = await fetch(`${API_BASE_URL}/treks/${trekId}/highlights/${highlightId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+  
+      console.log("API response status:", response.status)
+      
+      if (!response.ok) {
+        let errorMessage = "Failed to add highlight to trek"
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.message || errorMessage
+        } catch (e) {
+          console.error("Error parsing error response:", e)
+        }
+        throw { success: false, message: errorMessage }
+      }
+  
+      return { success: true, message: "Highlight added to trek successfully" }
+    } catch (error) {
+      console.error("Error in addHighlightToTrek:", error)
+      return { 
+        success: false, 
+        message: error.message || "Failed to add highlight to trek",
+        error
+      }
+    }
+  },
+
+  // Remove a highlight from a trek
+  removeHighlightFromTrek: async (trekId, highlightId) => {
+    try {
+      const token = localStorage.getItem("token")
+      const response = await fetch(`${API_BASE_URL}/treks/${trekId}/highlights/${highlightId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw { success: false, message: errorData.message || "Failed to remove highlight from trek" }
+      }
+
+      return { success: true, message: "Highlight removed from trek successfully" }
+    } catch (error) {
+      return { success: false, message: error.message || "Failed to remove highlight from trek" }
+    }
+  },
 }
 
 export default highlightApi

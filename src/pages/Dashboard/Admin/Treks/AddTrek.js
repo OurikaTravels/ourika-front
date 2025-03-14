@@ -2,18 +2,20 @@
 
 import { useState, useEffect } from "react"
 import { useAuth } from "../../../../context/AuthContext"
-import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { ArrowLeft, Save, Loader, Check, Info, MapPin, Clock, DollarSign } from "lucide-react"
 import DashboardHeader from "../../../../components/dashboard/DashboardHeader"
 import DashboardSidebar from "../../../../components/dashboard/DashboardSidebar"
-import { Link } from "react-router-dom"
 import trekApi from "../../../../services/trekApi"
 import categoryApi from "../../../../services/categoryApi"
+import highlightApi from "../../../../services/highlightApi"
+import HighlightSelector from "../../../../components/treks/HighlightSelector"
 import { toast } from "react-hot-toast"
+import ServiceSelector from "../../../../components/treks/ServiceSelector"
+import serviceApi from "../../../../services/serviceApi"
 
 export default function AddTrek() {
   const { user } = useAuth()
-  const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [activeSection, setActiveSection] = useState("treks")
   const [notifications] = useState(3)
@@ -22,6 +24,14 @@ export default function AddTrek() {
   const [categories, setCategories] = useState([])
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
   const [error, setError] = useState(null)
+  const [redirectToList, setRedirectToList] = useState(false)
+  const [trekId, setTrekId] = useState(null)
+  const [availableHighlights, setAvailableHighlights] = useState([])
+  const [selectedHighlights, setSelectedHighlights] = useState([])
+  const [isLoadingHighlights, setIsLoadingHighlights] = useState(false)
+  const [availableServices, setAvailableServices] = useState([])
+  const [selectedServices, setSelectedServices] = useState([])
+  const [isLoadingServices, setIsLoadingServices] = useState(false)
 
   // Form state for Step 1: Basic Info
   const [basicInfo, setBasicInfo] = useState({
@@ -43,6 +53,20 @@ export default function AddTrek() {
     fetchCategories()
   }, [])
 
+  // Handle redirect after successful submission
+  useEffect(() => {
+    if (redirectToList) {
+      window.location.href = "/admin/treks/all-treks"
+    }
+  }, [redirectToList])
+
+  // Add a useEffect to log the trekId when it changes, to help with debugging
+  useEffect(() => {
+    if (trekId) {
+      console.log("Trek ID set:", trekId)
+    }
+  }, [trekId])
+
   const fetchCategories = async () => {
     setIsLoadingCategories(true)
     try {
@@ -59,6 +83,44 @@ export default function AddTrek() {
       toast.error(errorMessage)
     } finally {
       setIsLoadingCategories(false)
+    }
+  }
+
+  const fetchHighlights = async () => {
+    setIsLoadingHighlights(true)
+    try {
+      const response = await highlightApi.getAllHighlights()
+      if (response.success) {
+        setAvailableHighlights(response.data)
+      } else {
+        setError(response.message || "Failed to fetch highlights")
+        toast.error(response.message || "Failed to fetch highlights")
+      }
+    } catch (err) {
+      const errorMessage = err.message || "An error occurred while fetching highlights"
+      setError(errorMessage)
+      toast.error(errorMessage)
+    } finally {
+      setIsLoadingHighlights(false)
+    }
+  }
+
+  const fetchServices = async () => {
+    setIsLoadingServices(true)
+    try {
+      const response = await serviceApi.getAllServices()
+      if (response.success) {
+        setAvailableServices(response.data)
+      } else {
+        setError(response.message || "Failed to fetch services")
+        toast.error(response.message || "Failed to fetch services")
+      }
+    } catch (err) {
+      const errorMessage = err.message || "An error occurred while fetching services"
+      setError(errorMessage)
+      toast.error(errorMessage)
+    } finally {
+      setIsLoadingServices(false)
     }
   }
 
@@ -110,6 +172,7 @@ export default function AddTrek() {
     return Object.keys(newErrors).length === 0
   }
 
+  // Update the handleSubmitBasicInfo function to properly set the trekId
   const handleSubmitBasicInfo = async (e) => {
     e.preventDefault()
 
@@ -122,14 +185,22 @@ export default function AddTrek() {
 
     try {
       const response = await trekApi.createTrek(basicInfo)
+      console.log("Full API response:", response)
 
       if (response.success) {
+        const newTrekId = response.data.id // Access the id from response.data
+        console.log("New trek created with ID:", newTrekId)
+
+        if (!newTrekId) {
+          throw new Error("Trek ID not found in the response")
+        }
+
+        // Set the trek ID in state
+        setTrekId(newTrekId)
+
         toast.success("Trek basic information saved successfully!")
-        // In a real multi-step form, you would store the trek ID and move to the next step
-        // For now, we'll navigate back to a hypothetical trek list page
-        setTimeout(() => {
-          navigate("/admin/treks/all-treks")
-        }, 1500)
+        setCurrentStep(2) // Move to step 2
+        fetchServices() // Fetch services for step 2
       } else {
         setError(response.message || "Failed to create trek")
         toast.error(response.message || "Failed to create trek")
@@ -143,13 +214,32 @@ export default function AddTrek() {
     }
   }
 
+  // Add this function to handle moving to the previous step
+  const handlePrevStep = () => {
+    setCurrentStep(currentStep - 1)
+  }
+
+  // Add this function to handle completing the highlights step
+  const handleCompleteHighlightsStep = () => {
+    toast.success("Highlights saved successfully!")
+    setRedirectToList(true)
+  }
+
+  const handleCompleteServicesStep = async () => {
+    setCurrentStep(3)
+    fetchHighlights() // Fetch highlights for the next step
+    toast.success("Services saved successfully!")
+  }
+
+  const handleNextStep = () => {
+    setCurrentStep(currentStep + 1)
+  }
+
   // Steps configuration
   const steps = [
     { id: 1, name: "Basic Information", description: "Trek details and category" },
-    { id: 2, name: "Media", description: "Images and videos" },
-    { id: 3, name: "Services", description: "Included services" },
-    { id: 4, name: "Highlights", description: "Key attractions" },
-    { id: 5, name: "Review", description: "Final check" },
+    { id: 2, name: "Services", description: "Included services" },
+    { id: 3, name: "Highlights", description: "Key attractions" },
   ]
 
   return (
@@ -519,13 +609,111 @@ export default function AddTrek() {
             </div>
           )}
 
+          {/* Step 2: Services */}
+          {currentStep === 2 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Trek Services</h2>
+
+              {isLoadingServices ? (
+                <div className="flex justify-center items-center p-12">
+                  <Loader className="w-8 h-8 text-[#ff5c5c] animate-spin" />
+                  <span className="ml-2 text-gray-600 dark:text-gray-300">Loading services...</span>
+                </div>
+              ) : (
+                <ServiceSelector
+                  trekId={trekId}
+                  availableServices={availableServices}
+                  selectedServices={selectedServices}
+                  setSelectedServices={setSelectedServices}
+                />
+              )}
+
+              {/* Form Actions */}
+              <div className="flex justify-between space-x-3 pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={handlePrevStep}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-70"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleCompleteServicesStep}
+                  disabled={isSubmitting}
+                  className="flex items-center px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-5 h-5 mr-2" />
+                      Save & Continue
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Highlights */}
+          {currentStep === 3 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Trek Highlights</h2>
+
+              {isLoadingHighlights ? (
+                <div className="flex justify-center items-center p-12">
+                  <Loader className="w-8 h-8 text-[#ff5c5c] animate-spin" />
+                  <span className="ml-2 text-gray-600 dark:text-gray-300">Loading highlights...</span>
+                </div>
+              ) : (
+                <HighlightSelector
+                  trekId={trekId}
+                  availableHighlights={availableHighlights}
+                  selectedHighlights={selectedHighlights}
+                  setSelectedHighlights={setSelectedHighlights}
+                />
+              )}
+
+              {/* Form Actions */}
+              <div className="flex justify-between space-x-3 pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={handlePrevStep}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-70"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleCompleteHighlightsStep}
+                  disabled={isSubmitting}
+                  className="flex items-center px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-5 h-5 mr-2" />
+                      Complete
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Placeholder for future steps */}
-          {currentStep > 1 && (
+          {currentStep > 3 && (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 text-center">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Step {currentStep}</h2>
               <p className="text-gray-600 dark:text-gray-400">
-                This step would be implemented in a full multi-step form. For now, we're focusing on the basic
-                information step.
+                This step would be implemented in a full multi-step form. For now, we're focusing on the first two
+                steps.
               </p>
             </div>
           )}

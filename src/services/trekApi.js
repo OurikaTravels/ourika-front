@@ -5,6 +5,7 @@ const trekApi = {
   createTrek: async (trekData) => {
     try {
       const token = localStorage.getItem("token")
+      
       const response = await fetch(`${API_BASE_URL}/treks`, {
         method: "POST",
         headers: {
@@ -13,16 +14,34 @@ const trekApi = {
         },
         body: JSON.stringify(trekData),
       })
-
+  
       if (!response.ok) {
-        const errorData = await response.json()
-        throw { success: false, message: errorData.message || "Failed to create trek" }
+        let errorMessage = "Failed to create trek"
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.message || errorMessage
+        } catch (e) {
+          console.error("Error parsing error response:", e)
+        }
+        return { success: false, message: errorMessage }
       }
-
+  
       const data = await response.json()
-      return { success: true, data, message: "Trek created successfully" }
+      console.log("Trek API response:", data)
+      
+      // Return the ENTIRE data object from the API, not just a subset
+      return {
+        success: true,
+        data: data.data, // Make sure we're returning the full data object
+        message: data.message || "Trek created successfully"
+      }
     } catch (error) {
-      return { success: false, message: error.message || "Failed to create trek" }
+      console.error("Error in createTrek:", error)
+      return { 
+        success: false, 
+        message: error.message || "Failed to create trek",
+        error
+      }
     }
   },
 
