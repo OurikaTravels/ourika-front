@@ -18,6 +18,8 @@ import AllCategories from "./pages/Dashboard/Admin/Categories/AllCategories"
 import AddCategory from "./pages/Dashboard/Admin/Categories/AddCategory"
 import { useAuth } from "./context/AuthContext"
 import ProfilePage from "./pages/Profile"
+import ServiceManagement from "./pages/Dashboard/Admin/Treks/ServiceManagement"
+import HighlightsManagement from "./pages/Dashboard/Admin/Treks/HighlightsManagement"
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRole }) {
@@ -44,7 +46,12 @@ function ProtectedRoute({ children, requiredRole }) {
 function AppContent({ treks }) {
   const location = useLocation()
   const isLoginPage = location.pathname === "/Auth/Login"
-  const isDashboardPage = location.pathname.includes("/Dashboard") || location.pathname.includes("/admin/categories")
+  const isDashboardPage =
+    location.pathname.includes("/Dashboard") ||
+    location.pathname.includes("/admin/categories") ||
+    location.pathname.includes("/admin/treks/service-management") ||
+    location.pathname.includes("/admin/treks/highlights-management") ||
+    location.pathname.includes("/admin/treks/add-trek")
 
   return (
     <>
@@ -141,6 +148,27 @@ function AppContent({ treks }) {
               </ProtectedRoute>
             }
           />
+
+          {/* Service Management Route */}
+          <Route
+            path="admin/treks/service-management"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <ServiceManagement />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Highlights Management Route */}
+          <Route
+            path="admin/treks/highlights-management"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <HighlightsManagement />
+              </ProtectedRoute>
+            }
+          />
+        
 
           {/* Wishlist Route */}
           <Route path="/wishlist" element={<WishlistPage />} />

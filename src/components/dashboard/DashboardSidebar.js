@@ -14,7 +14,15 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       id: "treks",
       name: "Trek Management",
       icon: <Map className="w-5 h-5" />,
-      subsections: ["All Treks", "Categories", "Reviews", "Pricing"],
+      subsections: [
+        "All Treks",
+        "Add Trek",
+        "Categories",
+        "Service Management",
+        "Highlights Management",
+        "Reviews",
+        "Pricing",
+      ],
     },
     {
       id: "guides",
@@ -103,7 +111,13 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
                         ? subsection === "All Categories"
                           ? "/admin/categories/all-categories"
                           : "/admin/categories/add-category"
-                        : `/admin/${section.id}/${subsection.toLowerCase().replace(" ", "-")}`
+                        : section.id === "treks" && subsection === "Add Trek"
+                          ? "/admin/treks/add-trek"
+                          : section.id === "treks" && subsection === "Service Management"
+                            ? "/admin/treks/service-management"
+                            : section.id === "treks" && subsection === "Highlights Management"
+                              ? "/admin/treks/highlights-management"
+                              : `/admin/${section.id}/${subsection.toLowerCase().replace(" ", "-")}`
                     }
                     className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
                   >
