@@ -1,24 +1,14 @@
 "use client"
+
 import { Link } from "react-router-dom"
-import {
-  LayoutDashboard,
-  Users,
-  Map,
-  UserCog,
-  FileText,
-  Calendar,
-  Settings,
-  ChevronDown,
-  ChevronRight,
-  Menu,
-} from "lucide-react"
+import { FileText, Users, Calendar, Settings, ChevronDown, ChevronRight, Menu, Map, User, Tag } from "lucide-react"
 
 export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, activeSection, setActiveSection }) {
   const sidebarSections = [
     {
       id: "dashboard",
       name: "Dashboard",
-      icon: <LayoutDashboard className="w-5 h-5" />,
+      icon: <Map className="w-5 h-5" />,
     },
     {
       id: "treks",
@@ -29,7 +19,7 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
     {
       id: "guides",
       name: "Guide Management",
-      icon: <UserCog className="w-5 h-5" />,
+      icon: <User className="w-5 h-5" />,
       subsections: ["All Guides", "Applications", "Performance", "Schedule"],
     },
     {
@@ -49,6 +39,12 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       name: "Post Management",
       icon: <FileText className="w-5 h-5" />,
       subsections: ["All Posts", "Categories", "Comments", "Reports"],
+    },
+    {
+      id: "categories",
+      name: "Categories",
+      icon: <Tag className="w-5 h-5" />,
+      subsections: ["All Categories", "Add Category"],
     },
     {
       id: "settings",
@@ -102,7 +98,13 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
                 {section.subsections.map((subsection) => (
                   <Link
                     key={subsection}
-                    to={`/admin/${section.id}/${subsection.toLowerCase().replace(" ", "-")}`}
+                    to={
+                      section.id === "categories"
+                        ? subsection === "All Categories"
+                          ? "/admin/categories/all-categories"
+                          : "/admin/categories/add-category"
+                        : `/admin/${section.id}/${subsection.toLowerCase().replace(" ", "-")}`
+                    }
                     className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
                   >
                     <ChevronRight className="w-4 h-4 mr-2" />

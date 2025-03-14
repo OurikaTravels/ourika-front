@@ -12,15 +12,14 @@ import AboutSection from "./components/layout/About"
 import Footer from "./components/layout/Footer"
 import WishlistPage from "./pages/Wishlist/index"
 import Login from "./pages/Auth/Login"
-import RegisterGuide from "./pages/Auth/RegisterGuide"
 import AdminDashboard from "./pages/Dashboard/Admin/index"
 import GuideDashboard from "./pages/Dashboard/Guide/index"
+import AllCategories from "./pages/Dashboard/Admin/Categories/AllCategories"
+import AddCategory from "./pages/Dashboard/Admin/Categories/AddCategory"
 import { useAuth } from "./context/AuthContext"
 import ProfilePage from "./pages/Profile"
-import EmailVerification from "./pages/Auth/EmailVerification"
-import CommunityPage from "./pages/Community"
-import GuideProfilePage from "./pages/GuideProfile"
 
+// Protected Route Component
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth()
 
@@ -41,16 +40,128 @@ function ProtectedRoute({ children, requiredRole }) {
   return children
 }
 
-function AppContent() {
+// Component to handle conditional rendering of Navbar and Footer
+function AppContent({ treks }) {
   const location = useLocation()
-  const isDashboardRoute = location.pathname.includes("/Dashboard")
-  const isAuthRoute = location.pathname.includes("/Auth")
-  const isCommunityRoute = location.pathname.includes("/community")
-  const isGuideProfileRoute = location.pathname.includes("/guide/")
+  const isLoginPage = location.pathname === "/Auth/Login"
+  const isDashboardPage = location.pathname.includes("/Dashboard") || location.pathname.includes("/admin/categories")
 
-  // Hide navbar and footer on dashboard routes, auth pages, and community page
-  const hideNavbarAndFooter = isDashboardRoute || isAuthRoute || isCommunityRoute || isGuideProfileRoute
+  return (
+    <>
+      {!isLoginPage && !isDashboardPage && <Navbar />}
+      <div className="flex-grow">
+        <Routes>
+          {/* Home Route */}
+          <Route
+            path="/"
+            element={
+              <>
+                <Hero />
+                <Categories />
 
+                {/* Trek Cards Section */}
+                <section className="container mx-auto px-4 py-12">
+                  <div className="space-y-8">
+                    {/* Section Header */}
+                    <div className="text-center">
+                      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-200">
+                        Popular Tours
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-200">
+                        Discover our most popular adventures and experiences
+                      </p>
+                    </div>
+
+                    {/* Trek Cards Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {treks.map((trek, index) => (
+                        <div
+                          key={index}
+                          className="transform transition-all duration-300 hover:-translate-y-1 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/20"
+                        >
+                          <TrekCard
+                            imageUrl={trek.imageUrl}
+                            type={trek.type}
+                            title={trek.title}
+                            duration={trek.duration}
+                            pickup={trek.pickup}
+                            rating={trek.rating}
+                            reviews={trek.reviews}
+                            originalPrice={trek.originalPrice}
+                            discountedPrice={trek.discountedPrice}
+                            currency={trek.currency}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                {/* About Section */}
+                <AboutSection />
+              </>
+            }
+          />
+
+          {/* Auth Routes */}
+          <Route path="/Auth/Login" element={<Login />} />
+
+          {/* Dashboard Routes */}
+          <Route
+            path="Dashboard/Admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="Dashboard/Guide"
+            element={
+              <ProtectedRoute requiredRole="guide">
+                <GuideDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Category Management Routes */}
+          <Route
+            path="admin/categories/all-categories"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AllCategories />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="admin/categories/add-category"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AddCategory />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Wishlist Route */}
+          <Route path="/wishlist" element={<WishlistPage />} />
+
+          {/* Profile Route */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute requiredRole="tourist">
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </div>
+      {!isLoginPage && !isDashboardPage && <Footer />}
+    </>
+  )
+}
+
+function App() {
   const treks = [
     {
       imageUrl: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
@@ -91,118 +202,12 @@ function AppContent() {
   ]
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
-      {/* Only show Navbar if not on a dashboard route, auth page, or community page */}
-      {!hideNavbarAndFooter && <Navbar />}
-
-      <Routes>
-        {/* Home Route */}
-        <Route
-          path="/"
-          element={
-            <>
-              <Hero />
-              <Categories />
-
-              {/* Trek Cards Section */}
-              <section className="container mx-auto px-4 py-12">
-                <div className="space-y-8">
-                  {/* Section Header */}
-                  <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-200">
-                      Popular Tours
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-200">
-                      Discover our most popular adventures and experiences
-                    </p>
-                  </div>
-
-                  {/* Trek Cards Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {treks.map((trek, index) => (
-                      <div
-                        key={index}
-                        className="transform transition-all duration-300 hover:-translate-y-1 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/20"
-                      >
-                        <TrekCard
-                          imageUrl={trek.imageUrl}
-                          type={trek.type}
-                          title={trek.title}
-                          duration={trek.duration}
-                          pickup={trek.pickup}
-                          rating={trek.rating}
-                          reviews={trek.reviews}
-                          originalPrice={trek.originalPrice}
-                          discountedPrice={trek.discountedPrice}
-                          currency={trek.currency}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              {/* About Section */}
-              <AboutSection />
-            </>
-          }
-        />
-
-        {/* Auth Routes */}
-        <Route path="/Auth/Login" element={<Login />} />
-        <Route path="/Auth/RegisterGuide" element={<RegisterGuide />} />
-        <Route path="/Auth/EmailVerification" element={<EmailVerification />} />
-
-        {/* Community Route */}
-        <Route path="/community" element={<CommunityPage />} />
-
-        {/* Guide Profile Route */}
-        <Route path="/guide/:username" element={<GuideProfilePage />} />
-
-        {/* Dashboard Routes */}
-        <Route
-          path="Dashboard/Admin"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="Dashboard/Guide"
-          element={
-            <ProtectedRoute requiredRole="guide">
-              <GuideDashboard />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Wishlist Route */}
-        <Route path="/wishlist" element={<WishlistPage />} />
-
-        {/* Profile Route */}
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute requiredRole="tourist">
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-
-      {/* Only show Footer if not on a dashboard route, auth page, or community page */}
-      {!hideNavbarAndFooter && <Footer />}
-    </div>
-  )
-}
-
-function App() {
-  return (
     <Router>
       <AuthProvider>
         <ThemeProvider>
-          <AppContent />
+          <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
+            <AppContent treks={treks} />
+          </div>
         </ThemeProvider>
       </AuthProvider>
     </Router>
