@@ -3,6 +3,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { ThemeProvider } from "./context/ThemeContext"
 import { AuthProvider } from "./context/AuthContext"
+import { useEffect, useState } from "react" // Import useEffect and useState
 import "./App.css"
 import Navbar from "./components/layout/Navbar"
 import Hero from "./components/layout/Hero"
@@ -20,7 +21,9 @@ import { useAuth } from "./context/AuthContext"
 import ProfilePage from "./pages/Profile"
 import ServiceManagement from "./pages/Dashboard/Admin/Treks/ServiceManagement"
 import HighlightsManagement from "./pages/Dashboard/Admin/Treks/HighlightsManagement"
+import TrekCardsSection from "./components/layout/TrekCardsSection";
 import AddTrek from "./pages/Dashboard/Admin/Treks/AddTrek"
+import trekApi from "./services/trekApi" // Import the trekApi
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRole }) {
@@ -44,7 +47,7 @@ function ProtectedRoute({ children, requiredRole }) {
 }
 
 // Component to handle conditional rendering of Navbar and Footer
-function AppContent({ treks }) {
+function AppContent() {
   const location = useLocation()
   const isLoginPage = location.pathname === "/Auth/Login"
   const isDashboardPage =
@@ -53,6 +56,38 @@ function AppContent({ treks }) {
     location.pathname.includes("/admin/treks/service-management") ||
     location.pathname.includes("/admin/treks/highlights-management") ||
     location.pathname.includes("/admin/treks/add-trek")
+
+  const [treks, setTreks] = useState([]) // State to store treks
+  const [loading, setLoading] = useState(true) // State to track loading
+  const [error, setError] = useState(null) // State to store errors
+
+  // Fetch treks from the API
+  useEffect(() => {
+    const fetchTreks = async () => {
+      try {
+        const response = await trekApi.getAllTreks()
+        if (response.success) {
+          setTreks(response.data) // Set the fetched treks
+        } else {
+          setError(response.message) // Set error message
+        }
+      } catch (err) {
+        setError(err.message) // Set error message
+      } finally {
+        setLoading(false) // Stop loading
+      }
+    }
+
+    fetchTreks()
+  }, [])
+
+  if (loading) {
+    return <div className="text-center py-8">Loading treks...</div> // Show loading message
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500">Error: {error}</div> // Show error message
+  }
 
   return (
     <>
@@ -68,43 +103,7 @@ function AppContent({ treks }) {
                 <Categories />
 
                 {/* Trek Cards Section */}
-                <section className="container mx-auto px-4 py-12">
-                  <div className="space-y-8">
-                    {/* Section Header */}
-                    <div className="text-center">
-                      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-200">
-                        Popular Tours
-                      </h2>
-                      <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto transition-colors duration-200">
-                        Discover our most popular adventures and experiences
-                      </p>
-                    </div>
-
-                    {/* Trek Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {treks.map((trek, index) => (
-                        <div
-                          key={index}
-                          className="transform transition-all duration-300 hover:-translate-y-1 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/20"
-                        >
-                          <TrekCard
-                            imageUrl={trek.imageUrl}
-                            type={trek.type}
-                            title={trek.title}
-                            duration={trek.duration}
-                            pickup={trek.pickup}
-                            rating={trek.rating}
-                            reviews={trek.reviews}
-                            originalPrice={trek.originalPrice}
-                            discountedPrice={trek.discountedPrice}
-                            currency={trek.currency}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
+                <TrekCardsSection treks={treks} />
                 {/* About Section */}
                 <AboutSection />
               </>
@@ -199,51 +198,12 @@ function AppContent({ treks }) {
 }
 
 function App() {
-  const treks = [
-    {
-      imageUrl: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
-      type: "DAY TRIP",
-      title: "From Marrakech: Ouzoud Waterfalls Guided Tour & Boat Ride",
-      duration: "10 hours",
-      pickup: "Pickup available",
-      rating: 4.8,
-      reviews: 8951,
-      originalPrice: 220,
-      discountedPrice: 176,
-      currency: "MAD",
-    },
-    {
-      imageUrl: "https://images.unsplash.com/photo-1542224566-6cf2c9d03c24",
-      type: "FULL DAY",
-      title: "Atlas Mountains & 4 Valleys Guided Day Tour from Marrakech",
-      duration: "8 hours",
-      pickup: "Hotel pickup",
-      rating: 4.6,
-      reviews: 5621,
-      originalPrice: 180,
-      discountedPrice: 145,
-      currency: "MAD",
-    },
-    {
-      imageUrl: "https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272",
-      type: "PRIVATE",
-      title: "Sahara Desert 3-Day Tour from Marrakech to Merzouga",
-      duration: "3 days",
-      pickup: "Included",
-      rating: 4.9,
-      reviews: 3254,
-      originalPrice: 450,
-      discountedPrice: 380,
-      currency: "MAD",
-    },
-  ]
-
   return (
     <Router>
       <AuthProvider>
         <ThemeProvider>
           <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
-            <AppContent treks={treks} />
+            <AppContent />
           </div>
         </ThemeProvider>
       </AuthProvider>
@@ -252,4 +212,3 @@ function App() {
 }
 
 export default App
-

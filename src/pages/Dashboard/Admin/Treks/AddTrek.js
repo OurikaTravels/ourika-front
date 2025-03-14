@@ -3,16 +3,32 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "../../../../context/AuthContext"
 import { Link } from "react-router-dom"
-import { ArrowLeft, Save, Loader, Check, Info, MapPin, Clock, DollarSign } from "lucide-react"
+import { ArrowLeft, Info } from "lucide-react"
+import { toast } from "react-hot-toast"
+
 import DashboardHeader from "../../../../components/dashboard/DashboardHeader"
 import DashboardSidebar from "../../../../components/dashboard/DashboardSidebar"
+import { TrekProgressSteps } from "../../../../components/treks/TrekProgressSteps"
+import { BasicTrekForm } from "../../../../components/treks/BasicTrekForm"
+import { StepContainer } from "../../../../components/treks/StepContainer"
+import { StepNavigation } from "../../../../components/treks/StepNavigation"
+import { ActivityForm } from "../../../../components/treks/ActivityForm"
+import ServiceSelector from "../../../../components/treks/ServiceSelector"
+import HighlightSelector from "../../../../components/treks/HighlightSelector"
+
 import trekApi from "../../../../services/trekApi"
 import categoryApi from "../../../../services/categoryApi"
 import highlightApi from "../../../../services/highlightApi"
-import HighlightSelector from "../../../../components/treks/HighlightSelector"
-import { toast } from "react-hot-toast"
-import ServiceSelector from "../../../../components/treks/ServiceSelector"
 import serviceApi from "../../../../services/serviceApi"
+import activityApi from "../../../../services/activityApi"
+
+// Steps configuration
+const STEPS = [
+  { id: 1, name: "Basic Information", description: "Trek details and category" },
+  { id: 2, name: "Services", description: "Included services" },
+  { id: 3, name: "Highlights", description: "Key attractions" },
+  { id: 4, name: "Activities", description: "Trek activities and transportation" },
+]
 
 export default function AddTrek() {
   const { user } = useAuth()
@@ -21,19 +37,11 @@ export default function AddTrek() {
   const [notifications] = useState(3)
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [categories, setCategories] = useState([])
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true)
   const [error, setError] = useState(null)
   const [redirectToList, setRedirectToList] = useState(false)
-  const [trekId, setTrekId] = useState(null)
-  const [availableHighlights, setAvailableHighlights] = useState([])
-  const [selectedHighlights, setSelectedHighlights] = useState([])
-  const [isLoadingHighlights, setIsLoadingHighlights] = useState(false)
-  const [availableServices, setAvailableServices] = useState([])
-  const [selectedServices, setSelectedServices] = useState([])
-  const [isLoadingServices, setIsLoadingServices] = useState(false)
 
-  // Form state for Step 1: Basic Info
+  // Trek Data States
+  const [trekId, setTrekId] = useState(null)
   const [basicInfo, setBasicInfo] = useState({
     title: "",
     description: "",
@@ -45,28 +53,44 @@ export default function AddTrek() {
     categoryId: "",
   })
 
+  // Categories State
+  const [categories, setCategories] = useState([])
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true)
+
+  // Services State
+  const [availableServices, setAvailableServices] = useState([])
+  const [selectedServices, setSelectedServices] = useState([])
+  const [isLoadingServices, setIsLoadingServices] = useState(false)
+
+  // Highlights State
+  const [availableHighlights, setAvailableHighlights] = useState([])
+  const [selectedHighlights, setSelectedHighlights] = useState([])
+  const [isLoadingHighlights, setIsLoadingHighlights] = useState(false)
+
+  // Activities State
+  const [activities, setActivities] = useState([])
+
   // Form validation errors
   const [errors, setErrors] = useState({})
 
-  // Fetch categories on component mount
+  // Effects
   useEffect(() => {
     fetchCategories()
   }, [])
 
-  // Handle redirect after successful submission
   useEffect(() => {
     if (redirectToList) {
       window.location.href = "/admin/treks/all-treks"
     }
   }, [redirectToList])
 
-  // Add a useEffect to log the trekId when it changes, to help with debugging
   useEffect(() => {
     if (trekId) {
       console.log("Trek ID set:", trekId)
     }
   }, [trekId])
 
+  // API Calls
   const fetchCategories = async () => {
     setIsLoadingCategories(true)
     try {
@@ -74,8 +98,7 @@ export default function AddTrek() {
       if (response.success) {
         setCategories(response.data)
       } else {
-        setError(response.message || "Failed to fetch categories")
-        toast.error(response.message || "Failed to fetch categories")
+        throw new Error(response.message || "Failed to fetch categories")
       }
     } catch (err) {
       const errorMessage = err.message || "An error occurred while fetching categories"
@@ -86,25 +109,6 @@ export default function AddTrek() {
     }
   }
 
-  const fetchHighlights = async () => {
-    setIsLoadingHighlights(true)
-    try {
-      const response = await highlightApi.getAllHighlights()
-      if (response.success) {
-        setAvailableHighlights(response.data)
-      } else {
-        setError(response.message || "Failed to fetch highlights")
-        toast.error(response.message || "Failed to fetch highlights")
-      }
-    } catch (err) {
-      const errorMessage = err.message || "An error occurred while fetching highlights"
-      setError(errorMessage)
-      toast.error(errorMessage)
-    } finally {
-      setIsLoadingHighlights(false)
-    }
-  }
-
   const fetchServices = async () => {
     setIsLoadingServices(true)
     try {
@@ -112,8 +116,7 @@ export default function AddTrek() {
       if (response.success) {
         setAvailableServices(response.data)
       } else {
-        setError(response.message || "Failed to fetch services")
-        toast.error(response.message || "Failed to fetch services")
+        throw new Error(response.message || "Failed to fetch services")
       }
     } catch (err) {
       const errorMessage = err.message || "An error occurred while fetching services"
@@ -124,41 +127,76 @@ export default function AddTrek() {
     }
   }
 
+  const fetchHighlights = async () => {
+    setIsLoadingHighlights(true)
+    try {
+      const response = await highlightApi.getAllHighlights()
+      if (response.success) {
+        setAvailableHighlights(response.data)
+      } else {
+        throw new Error(response.message || "Failed to fetch highlights")
+      }
+    } catch (err) {
+      const errorMessage = err.message || "An error occurred while fetching highlights"
+      setError(errorMessage)
+      toast.error(errorMessage)
+    } finally {
+      setIsLoadingHighlights(false)
+    }
+  }
+
+  const fetchActivities = async () => {
+    if (!trekId) return
+
+    try {
+      const response = await activityApi.getTrekActivities(trekId)
+      if (response.success) {
+        setActivities(response.data)
+      } else {
+        throw new Error(response.message || "Failed to fetch activities")
+      }
+    } catch (err) {
+      const errorMessage = err.message || "An error occurred while fetching activities"
+      setError(errorMessage)
+      toast.error(errorMessage)
+    }
+  }
+
+  // Event Handlers
   const handleBasicInfoChange = (e) => {
     const { name, value } = e.target
+    const newValue = name === "price" ? (value === "" ? "" : Number.parseFloat(value)) : value
 
-    // Handle price as a number
-    if (name === "price") {
-      const numValue = value === "" ? "" : Number.parseFloat(value)
-      setBasicInfo({
-        ...basicInfo,
-        [name]: numValue,
-      })
-    } else {
-      setBasicInfo({
-        ...basicInfo,
-        [name]: value,
-      })
-    }
+    setBasicInfo((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }))
 
-    // Clear error when field is edited
     if (errors[name]) {
-      setErrors({
-        ...errors,
+      setErrors((prev) => ({
+        ...prev,
         [name]: "",
-      })
+      }))
     }
   }
 
   const validateBasicInfo = () => {
     const newErrors = {}
+    const requiredFields = [
+      "title",
+      "description",
+      "duration",
+      "startLocation",
+      "endLocation",
+      "fullDescription",
+      "categoryId",
+    ]
 
-    if (!basicInfo.title.trim()) newErrors.title = "Title is required"
-    if (!basicInfo.description.trim()) newErrors.description = "Description is required"
-    if (!basicInfo.duration.trim()) newErrors.duration = "Duration is required"
-    if (!basicInfo.startLocation.trim()) newErrors.startLocation = "Start location is required"
-    if (!basicInfo.endLocation.trim()) newErrors.endLocation = "End location is required"
-    if (!basicInfo.fullDescription.trim()) newErrors.fullDescription = "Full description is required"
+    requiredFields.forEach((field) => {
+      if (!basicInfo[field]?.toString().trim()) {
+        newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`
+      }
+    })
 
     if (basicInfo.price === "" || isNaN(basicInfo.price)) {
       newErrors.price = "Price must be a valid number"
@@ -166,13 +204,10 @@ export default function AddTrek() {
       newErrors.price = "Price must be greater than zero"
     }
 
-    if (!basicInfo.categoryId) newErrors.categoryId = "Category selection is required"
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  // Update the handleSubmitBasicInfo function to properly set the trekId
   const handleSubmitBasicInfo = async (e) => {
     e.preventDefault()
 
@@ -185,25 +220,19 @@ export default function AddTrek() {
 
     try {
       const response = await trekApi.createTrek(basicInfo)
-      console.log("Full API response:", response)
 
       if (response.success) {
-        const newTrekId = response.data.id // Access the id from response.data
-        console.log("New trek created with ID:", newTrekId)
-
+        const newTrekId = response.data.id
         if (!newTrekId) {
           throw new Error("Trek ID not found in the response")
         }
 
-        // Set the trek ID in state
         setTrekId(newTrekId)
-
         toast.success("Trek basic information saved successfully!")
-        setCurrentStep(2) // Move to step 2
-        fetchServices() // Fetch services for step 2
+        setCurrentStep(2)
+        fetchServices()
       } else {
-        setError(response.message || "Failed to create trek")
-        toast.error(response.message || "Failed to create trek")
+        throw new Error(response.message || "Failed to create trek")
       }
     } catch (err) {
       const errorMessage = err.message || "An error occurred while creating the trek"
@@ -214,37 +243,34 @@ export default function AddTrek() {
     }
   }
 
-  // Add this function to handle moving to the previous step
+  const handleCompleteServicesStep = async () => {
+    setCurrentStep(3)
+    fetchHighlights()
+    toast.success("Services saved successfully!")
+  }
+
+  const handleCompleteHighlightsStep = () => {
+    setCurrentStep(4)
+    fetchActivities()
+    toast.success("Highlights saved successfully!")
+  }
+
+  const handleCompleteActivitiesStep = () => {
+    toast.success("Activities saved successfully!")
+    setRedirectToList(true)
+  }
+
+  const handleActivityAdded = (activity) => {
+    setActivities([...activities, activity])
+    toast.success(`${activity.type === "TRANSPORTATION" ? "Transportation" : "Activity"} added successfully!`)
+  }
+
   const handlePrevStep = () => {
     setCurrentStep(currentStep - 1)
   }
 
-  // Add this function to handle completing the highlights step
-  const handleCompleteHighlightsStep = () => {
-    toast.success("Highlights saved successfully!")
-    setRedirectToList(true)
-  }
-
-  const handleCompleteServicesStep = async () => {
-    setCurrentStep(3)
-    fetchHighlights() // Fetch highlights for the next step
-    toast.success("Services saved successfully!")
-  }
-
-  const handleNextStep = () => {
-    setCurrentStep(currentStep + 1)
-  }
-
-  // Steps configuration
-  const steps = [
-    { id: 1, name: "Basic Information", description: "Trek details and category" },
-    { id: 2, name: "Services", description: "Included services" },
-    { id: 3, name: "Highlights", description: "Key attractions" },
-  ]
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      {/* Sidebar Component */}
       <DashboardSidebar
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
@@ -252,13 +278,11 @@ export default function AddTrek() {
         setActiveSection={setActiveSection}
       />
 
-      {/* Main Content */}
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
-        {/* Header Component */}
         <DashboardHeader user={user} notifications={notifications} />
 
-        {/* Main Content */}
         <main className="p-6">
+          {/* Header */}
           <div className="mb-8">
             <div className="flex items-center mb-4">
               <Link
@@ -273,65 +297,7 @@ export default function AddTrek() {
           </div>
 
           {/* Progress Steps */}
-          <div className="mb-8">
-            <nav aria-label="Progress">
-              <ol className="flex items-center">
-                {steps.map((step, stepIdx) => (
-                  <li
-                    key={step.id}
-                    className={`relative ${stepIdx !== steps.length - 1 ? "pr-8 sm:pr-20" : ""} ${stepIdx !== 0 ? "pl-4 sm:pl-8" : ""} flex-1`}
-                  >
-                    {step.id < currentStep ? (
-                      <div className="group">
-                        <span className="flex items-center">
-                          <span className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#ff5c5c] group-hover:bg-[#ff4040]">
-                            <Check className="h-5 w-5 text-white" aria-hidden="true" />
-                          </span>
-                          <span className="ml-3 text-sm font-medium text-gray-900 dark:text-white">{step.name}</span>
-                        </span>
-                        {stepIdx !== steps.length - 1 && (
-                          <span
-                            className="absolute top-4 left-4 -ml-px mt-0.5 h-0.5 w-full sm:w-full bg-[#ff5c5c]"
-                            aria-hidden="true"
-                          />
-                        )}
-                      </div>
-                    ) : step.id === currentStep ? (
-                      <div className="group" aria-current="step">
-                        <span className="flex items-center">
-                          <span className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-[#ff5c5c] bg-white dark:bg-gray-800">
-                            <span className="h-2.5 w-2.5 rounded-full bg-[#ff5c5c]" aria-hidden="true" />
-                          </span>
-                          <span className="ml-3 text-sm font-medium text-[#ff5c5c]">{step.name}</span>
-                        </span>
-                        {stepIdx !== steps.length - 1 && (
-                          <span
-                            className="absolute top-4 left-4 -ml-px mt-0.5 h-0.5 w-full sm:w-full bg-gray-300 dark:bg-gray-600"
-                            aria-hidden="true"
-                          />
-                        )}
-                      </div>
-                    ) : (
-                      <div className="group">
-                        <span className="flex items-center">
-                          <span className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
-                            <span className="h-2.5 w-2.5 rounded-full bg-transparent" aria-hidden="true" />
-                          </span>
-                          <span className="ml-3 text-sm font-medium text-gray-500 dark:text-gray-400">{step.name}</span>
-                        </span>
-                        {stepIdx !== steps.length - 1 && (
-                          <span
-                            className="absolute top-4 left-4 -ml-px mt-0.5 h-0.5 w-full sm:w-full bg-gray-300 dark:bg-gray-600"
-                            aria-hidden="true"
-                          />
-                        )}
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ol>
-            </nav>
-          </div>
+          <TrekProgressSteps steps={STEPS} currentStep={currentStep} />
 
           {/* Error Message */}
           {error && (
@@ -343,379 +309,61 @@ export default function AddTrek() {
             </div>
           )}
 
-          {/* Step 1: Basic Information Form */}
+          {/* Step Content */}
           {currentStep === 1 && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Basic Trek Information</h2>
-
-              <form onSubmit={handleSubmitBasicInfo}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  {/* Title */}
-                  <div className="col-span-2">
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Trek Title <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="title"
-                      name="title"
-                      value={basicInfo.title}
-                      onChange={handleBasicInfoChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.title ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
-                      } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                      placeholder="Enter trek title"
-                    />
-                    {errors.title && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>}
-                  </div>
-
-                  {/* Short Description */}
-                  <div className="col-span-2">
-                    <label
-                      htmlFor="description"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      Short Description <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="description"
-                      name="description"
-                      value={basicInfo.description}
-                      onChange={handleBasicInfoChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.description
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                      } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                      placeholder="Brief description of the trek"
-                    />
-                    {errors.description && (
-                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
-                    )}
-                  </div>
-
-                  {/* Duration */}
-                  <div>
-                    <label
-                      htmlFor="duration"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      Duration <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Clock className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        id="duration"
-                        name="duration"
-                        value={basicInfo.duration}
-                        onChange={handleBasicInfoChange}
-                        className={`w-full pl-10 px-4 py-2 rounded-lg border ${
-                          errors.duration
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                        placeholder="e.g., PT240H for 10 days"
-                      />
-                    </div>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      Use ISO 8601 duration format (e.g., PT240H for 10 days)
-                    </p>
-                    {errors.duration && (
-                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.duration}</p>
-                    )}
-                  </div>
-
-                  {/* Price */}
-                  <div>
-                    <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Price <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <DollarSign className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <input
-                        type="number"
-                        id="price"
-                        name="price"
-                        value={basicInfo.price}
-                        onChange={handleBasicInfoChange}
-                        min="0"
-                        step="0.01"
-                        className={`w-full pl-10 px-4 py-2 rounded-lg border ${
-                          errors.price ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
-                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                        placeholder="0.00"
-                      />
-                    </div>
-                    {errors.price && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.price}</p>}
-                  </div>
-
-                  {/* Start Location */}
-                  <div>
-                    <label
-                      htmlFor="startLocation"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      Start Location <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MapPin className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        id="startLocation"
-                        name="startLocation"
-                        value={basicInfo.startLocation}
-                        onChange={handleBasicInfoChange}
-                        className={`w-full pl-10 px-4 py-2 rounded-lg border ${
-                          errors.startLocation
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                        placeholder="Starting point of the trek"
-                      />
-                    </div>
-                    {errors.startLocation && (
-                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.startLocation}</p>
-                    )}
-                  </div>
-
-                  {/* End Location */}
-                  <div>
-                    <label
-                      htmlFor="endLocation"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      End Location <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <MapPin className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <input
-                        type="text"
-                        id="endLocation"
-                        name="endLocation"
-                        value={basicInfo.endLocation}
-                        onChange={handleBasicInfoChange}
-                        className={`w-full pl-10 px-4 py-2 rounded-lg border ${
-                          errors.endLocation
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                        placeholder="Ending point of the trek"
-                      />
-                    </div>
-                    {errors.endLocation && (
-                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.endLocation}</p>
-                    )}
-                  </div>
-
-                  {/* Category Selection */}
-                  <div className="col-span-2">
-                    <label
-                      htmlFor="categoryId"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      Category <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      id="categoryId"
-                      name="categoryId"
-                      value={basicInfo.categoryId}
-                      onChange={handleBasicInfoChange}
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.categoryId
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                      } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                    >
-                      <option value="">Select a category</option>
-                      {isLoadingCategories ? (
-                        <option disabled>Loading categories...</option>
-                      ) : (
-                        categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))
-                      )}
-                    </select>
-                    {errors.categoryId && (
-                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.categoryId}</p>
-                    )}
-                  </div>
-
-                  {/* Full Description */}
-                  <div className="col-span-2">
-                    <label
-                      htmlFor="fullDescription"
-                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                    >
-                      Full Description <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      id="fullDescription"
-                      name="fullDescription"
-                      value={basicInfo.fullDescription}
-                      onChange={handleBasicInfoChange}
-                      rows="6"
-                      className={`w-full px-4 py-2 rounded-lg border ${
-                        errors.fullDescription
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                      } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                      placeholder="Detailed description of the trek experience"
-                    ></textarea>
-                    {errors.fullDescription && (
-                      <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.fullDescription}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Form Actions */}
-                <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Link
-                    to="/admin/treks/all-treks"
-                    className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                  >
-                    Cancel
-                  </Link>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex items-center px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-5 h-5 mr-2" />
-                        Save & Continue
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
+            <BasicTrekForm
+              basicInfo={basicInfo}
+              onBasicInfoChange={handleBasicInfoChange}
+              onSubmit={handleSubmitBasicInfo}
+              categories={categories}
+              isLoadingCategories={isLoadingCategories}
+              errors={errors}
+              isSubmitting={isSubmitting}
+            />
           )}
 
-          {/* Step 2: Services */}
           {currentStep === 2 && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Trek Services</h2>
-
-              {isLoadingServices ? (
-                <div className="flex justify-center items-center p-12">
-                  <Loader className="w-8 h-8 text-[#ff5c5c] animate-spin" />
-                  <span className="ml-2 text-gray-600 dark:text-gray-300">Loading services...</span>
-                </div>
-              ) : (
-                <ServiceSelector
-                  trekId={trekId}
-                  availableServices={availableServices}
-                  selectedServices={selectedServices}
-                  setSelectedServices={setSelectedServices}
-                />
-              )}
-
-              {/* Form Actions */}
-              <div className="flex justify-between space-x-3 pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
-                <button
-                  onClick={handlePrevStep}
-                  disabled={isSubmitting}
-                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-70"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleCompleteServicesStep}
-                  disabled={isSubmitting}
-                  className="flex items-center px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5 mr-2" />
-                      Save & Continue
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
+            <StepContainer title="Trek Services" isLoading={isLoadingServices} loadingText="Loading services...">
+              <ServiceSelector
+                trekId={trekId}
+                availableServices={availableServices}
+                selectedServices={selectedServices}
+                setSelectedServices={setSelectedServices}
+              />
+              <StepNavigation
+                onPrevStep={handlePrevStep}
+                onNextStep={handleCompleteServicesStep}
+                isSubmitting={isSubmitting}
+              />
+            </StepContainer>
           )}
 
-          {/* Step 2: Highlights */}
           {currentStep === 3 && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Trek Highlights</h2>
-
-              {isLoadingHighlights ? (
-                <div className="flex justify-center items-center p-12">
-                  <Loader className="w-8 h-8 text-[#ff5c5c] animate-spin" />
-                  <span className="ml-2 text-gray-600 dark:text-gray-300">Loading highlights...</span>
-                </div>
-              ) : (
-                <HighlightSelector
-                  trekId={trekId}
-                  availableHighlights={availableHighlights}
-                  selectedHighlights={selectedHighlights}
-                  setSelectedHighlights={setSelectedHighlights}
-                />
-              )}
-
-              {/* Form Actions */}
-              <div className="flex justify-between space-x-3 pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
-                <button
-                  onClick={handlePrevStep}
-                  disabled={isSubmitting}
-                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-70"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={handleCompleteHighlightsStep}
-                  disabled={isSubmitting}
-                  className="flex items-center px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Check className="w-5 h-5 mr-2" />
-                      Complete
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
+            <StepContainer title="Trek Highlights" isLoading={isLoadingHighlights} loadingText="Loading highlights...">
+              <HighlightSelector
+                trekId={trekId}
+                availableHighlights={availableHighlights}
+                selectedHighlights={selectedHighlights}
+                setSelectedHighlights={setSelectedHighlights}
+              />
+              <StepNavigation
+                onPrevStep={handlePrevStep}
+                onNextStep={handleCompleteHighlightsStep}
+                isSubmitting={isSubmitting}
+              />
+            </StepContainer>
           )}
 
-          {/* Placeholder for future steps */}
-          {currentStep > 3 && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 text-center">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Step {currentStep}</h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                This step would be implemented in a full multi-step form. For now, we're focusing on the first two
-                steps.
-              </p>
-            </div>
+          {currentStep === 4 && (
+            <StepContainer title="Trek Activities">
+              <ActivityForm trekId={trekId} onActivityAdded={handleActivityAdded} />
+              <StepNavigation
+                onPrevStep={handlePrevStep}
+                onNextStep={handleCompleteActivitiesStep}
+                isSubmitting={isSubmitting}
+                isLastStep
+              />
+            </StepContainer>
           )}
         </main>
       </div>
