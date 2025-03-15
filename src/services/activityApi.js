@@ -55,7 +55,7 @@ const addActivityToTrek = async (trekId, activityData) => {
  */
 const getTrekActivities = async (trekId) => {
   try {
-    const response = await fetch(
+     const response = await fetch(
       `http://localhost:8080/api/treks/${trekId}/activities`
     );
 
@@ -94,10 +94,15 @@ const getTrekActivities = async (trekId) => {
  */
 const removeActivityFromTrek = async (trekId, activityId) => {
   try {
+    const token = localStorage.getItem("token");  
     const response = await fetch(
       `http://localhost:8080/api/treks/${trekId}/activities/${activityId}`,
       {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
       }
     );
 

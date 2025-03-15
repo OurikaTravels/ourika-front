@@ -8,7 +8,6 @@ import "./App.css"
 import Navbar from "./components/layout/Navbar"
 import Hero from "./components/layout/Hero"
 import Categories from "./components/layout/Categories"
-import TrekCard from "./components/common/TrekCard"
 import AboutSection from "./components/layout/About"
 import Footer from "./components/layout/Footer"
 import WishlistPage from "./pages/Wishlist/index"
@@ -21,8 +20,9 @@ import { useAuth } from "./context/AuthContext"
 import ProfilePage from "./pages/Profile"
 import ServiceManagement from "./pages/Dashboard/Admin/Treks/ServiceManagement"
 import HighlightsManagement from "./pages/Dashboard/Admin/Treks/HighlightsManagement"
-import TrekCardsSection from "./components/layout/TrekCardsSection";
+import TrekCardsSection from "./components/layout/TrekCardsSection"
 import AddTrek from "./pages/Dashboard/Admin/Treks/AddTrek"
+import TrekPreview from "./pages/Dashboard/Admin/Treks/TrekPreview" // Import the TrekPreview component
 import trekApi from "./services/trekApi" // Import the trekApi
 
 // Protected Route Component
@@ -55,7 +55,8 @@ function AppContent() {
     location.pathname.includes("/admin/categories") ||
     location.pathname.includes("/admin/treks/service-management") ||
     location.pathname.includes("/admin/treks/highlights-management") ||
-    location.pathname.includes("/admin/treks/add-trek")
+    location.pathname.includes("/admin/treks/add-trek") ||
+    (location.pathname.includes("/admin/treks/") && location.pathname.includes("/preview")) // Add preview page to dashboard pages
 
   const [treks, setTreks] = useState([]) // State to store treks
   const [loading, setLoading] = useState(true) // State to track loading
@@ -169,11 +170,22 @@ function AppContent() {
             }
           />
 
+          {/* Trek Management Routes */}
           <Route
             path="admin/treks/add-trek"
             element={
               <ProtectedRoute requiredRole="admin">
                 <AddTrek />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Trek Preview Route */}
+          <Route
+            path="admin/treks/:id/preview"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <TrekPreview />
               </ProtectedRoute>
             }
           />
@@ -212,3 +224,4 @@ function App() {
 }
 
 export default App
+

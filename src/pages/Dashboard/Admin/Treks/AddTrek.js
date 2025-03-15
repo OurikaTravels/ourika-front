@@ -15,6 +15,8 @@ import { StepNavigation } from "../../../../components/treks/StepNavigation"
 import { ActivityForm } from "../../../../components/treks/ActivityForm"
 import ServiceSelector from "../../../../components/treks/ServiceSelector"
 import HighlightSelector from "../../../../components/treks/HighlightSelector"
+import { ImageUploadForm } from "../../../../components/treks/ImageUploadForm"
+import imageApi from "../../../../services/imageApi"
 
 import trekApi from "../../../../services/trekApi"
 import categoryApi from "../../../../services/categoryApi"
@@ -28,6 +30,7 @@ const STEPS = [
   { id: 2, name: "Services", description: "Included services" },
   { id: 3, name: "Highlights", description: "Key attractions" },
   { id: 4, name: "Activities", description: "Trek activities and transportation" },
+  { id: 5, name: "Images", description: "Trek photos and gallery" },
 ]
 
 export default function AddTrek() {
@@ -69,6 +72,10 @@ export default function AddTrek() {
 
   // Activities State
   const [activities, setActivities] = useState([])
+
+  // Add state for images
+  const [trekImages, setTrekImages] = useState([])
+  const [isLoadingImages, setIsLoadingImages] = useState(false)
 
   // Form validation errors
   const [errors, setErrors] = useState({})
@@ -162,6 +169,27 @@ export default function AddTrek() {
     }
   }
 
+  // Add function to fetch images
+  const fetchTrekImages = async () => {
+    if (!trekId) return
+
+    setIsLoadingImages(true)
+    try {
+      const response = await imageApi.getTrekImages(trekId)
+      if (response.success) {
+        setTrekImages(response.data)
+      } else {
+        throw new Error(response.message || "Failed to fetch images")
+      }
+    } catch (err) {
+      const errorMessage = err.message || "An error occurred while fetching images"
+      setError(errorMessage)
+      toast.error(errorMessage)
+    } finally {
+      setIsLoadingImages(false)
+    }
+  }
+
   // Event Handlers
   const handleBasicInfoChange = (e) => {
     const { name, value } = e.target
@@ -243,6 +271,25 @@ export default function AddTrek() {
     }
   }
 
+  // Update handleCompleteActivitiesStep
+  const handleCompleteActivitiesStep = () => {
+    setCurrentStep(5)
+    fetchTrekImages()
+    toast.success("Activities saved successfully!")
+  }
+
+  // Add handler for completing images step
+  const handleCompleteImagesStep = () => {
+    toast.success("Trek created successfully!")
+    // Redirect to preview page instead of list
+    window.location.href = `/admin/treks/${trekId}/preview`
+  }
+
+  // Add handler for when images are uploaded
+  const handleImagesUploaded = (newImages) => {
+    setTrekImages((prev) => [...prev, ...newImages])
+  }
+
   const handleCompleteServicesStep = async () => {
     setCurrentStep(3)
     fetchHighlights()
@@ -253,11 +300,6 @@ export default function AddTrek() {
     setCurrentStep(4)
     fetchActivities()
     toast.success("Highlights saved successfully!")
-  }
-
-  const handleCompleteActivitiesStep = () => {
-    toast.success("Activities saved successfully!")
-    setRedirectToList(true)
   }
 
   const handleActivityAdded = (activity) => {
@@ -360,6 +402,18 @@ export default function AddTrek() {
               <StepNavigation
                 onPrevStep={handlePrevStep}
                 onNextStep={handleCompleteActivitiesStep}
+                isSubmitting={isSubmitting}
+              />
+            </StepContainer>
+          )}
+
+          {/* Add the Images step */}
+          {currentStep === 5 && (
+            <StepContainer title="Trek Images" isLoading={isLoadingImages} loadingText="Loading images...">
+              <ImageUploadForm trekId={trekId} onImagesUploaded={handleImagesUploaded} />
+              <StepNavigation
+                onPrevStep={handlePrevStep}
+                onNextStep={handleCompleteImagesStep}
                 isSubmitting={isSubmitting}
                 isLastStep
               />

@@ -29,10 +29,9 @@ const trekApi = {
       const data = await response.json()
       console.log("Trek API response:", data)
       
-      // Return the ENTIRE data object from the API, not just a subset
       return {
         success: true,
-        data: data.data, // Make sure we're returning the full data object
+        data: data.data,
         message: data.message || "Trek created successfully"
       }
     } catch (error) {
