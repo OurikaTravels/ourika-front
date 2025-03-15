@@ -167,8 +167,8 @@ const imageApi = {
     }
   },
 
-  // Set an image as primary for a trek
-  setImageAsPrimary: async (trekId, imageId) => {
+  // Toggle primary status of an image (POST request)
+  toggleImagePrimaryStatus: async (trekId, imageId) => {
     try {
       const token = localStorage.getItem("token")
 
@@ -184,47 +184,22 @@ const imageApi = {
         const errorData = await response.json().catch(() => ({}))
         throw {
           success: false,
-          message: errorData.message || `Failed to set image as primary. Status: ${response.status}`,
+          message: errorData.message || `Failed to toggle primary status. Status: ${response.status}`,
         }
       }
 
-      return { success: true, message: "Image set as primary successfully" }
+      const data = await response.json().catch(() => ({}))
+      return {
+        success: true,
+        message: "Image primary status toggled successfully",
+        data,
+      }
     } catch (error) {
-      console.error("Error setting image as primary:", error)
+      console.error("Error toggling primary status:", error)
       return {
         success: false,
-        message: error.message || "An error occurred while setting image as primary",
-      }
-    }
-  },
-
-  // Remove primary status from an image
-  removePrimaryStatus: async (trekId, imageId) => {
-    try {
-      const token = localStorage.getItem("token")
-
-      const response = await fetch(`${API_BASE_URL}/treks/${trekId}/images/${imageId}/primary`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw {
-          success: false,
-          message: errorData.message || `Failed to remove primary status. Status: ${response.status}`,
-        }
-      }
-
-      return { success: true, message: "Primary status removed successfully" }
-    } catch (error) {
-      console.error("Error removing primary status:", error)
-      return {
-        success: false,
-        message: error.message || "An error occurred while removing primary status",
+        message: error.message || "An error occurred while toggling primary status",
+        data: null,
       }
     }
   },

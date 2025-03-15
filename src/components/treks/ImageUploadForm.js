@@ -15,8 +15,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
   const [primaryImageId, setPrimaryImageId] = useState(null)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [imageToSetAsPrimary, setImageToSetAsPrimary] = useState(null)
-  const [showRemovePrimaryDialog, setShowRemovePrimaryDialog] = useState(false)
-  const [imageToRemovePrimary, setImageToRemovePrimary] = useState(null)
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -103,6 +101,7 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
   }
 
   const handleDeleteUploadedImage = async (imageId) => {
+    // Don't allow deleting the primary image
     const imageToDelete = uploadedImages.find((img) => img.id === imageId)
     if (imageToDelete?.isPrimary) {
       toast.error("Cannot delete the primary image. Please set another image as primary first.")
@@ -130,85 +129,40 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
 
   // Show confirmation dialog before setting an image as primary
   const confirmSetImageAsPrimary = (imageId) => {
-    // Check if this image is already primary
-    const image = uploadedImages.find((img) => img.id === imageId)
-    if (image?.isPrimary) {
-      // If it's already primary, confirm removing primary status
-      setImageToRemovePrimary(imageId)
-      setShowRemovePrimaryDialog(true)
-    } else {
-      // Otherwise, confirm setting as primary
-      setImageToSetAsPrimary(imageId)
-      setShowConfirmDialog(true)
-    }
+    // No need to check if image is already primary - the API will handle the toggle
+    setImageToSetAsPrimary(imageId)
+    setShowConfirmDialog(true)
   }
 
-  // Handle setting an image as primary
-  const handleSetImageAsPrimary = async () => {
+  // Replace handleSetImageAsPrimary function with handleToggleImagePrimary
+  // Remove the handleRemovePrimaryStatus function entirely
+
+  // Replace this function:
+  // const handleSetImageAsPrimary = async () => { ... }
+
+  // With this new function:
+  const handleToggleImagePrimary = async () => {
     if (!imageToSetAsPrimary) return
 
     setIsSettingPrimary(true)
     setShowConfirmDialog(false)
 
     try {
-      const response = await imageApi.setImageAsPrimary(trekId, imageToSetAsPrimary)
+      const response = await imageApi.toggleImagePrimaryStatus(trekId, imageToSetAsPrimary)
 
       if (response.success) {
-        // Update all images to remove primary status, then set the selected one as primary
-        setUploadedImages((prevImages) =>
-          prevImages.map((img) => ({
-            ...img,
-            isPrimary: img.id === imageToSetAsPrimary,
-          })),
-        )
-        setPrimaryImageId(imageToSetAsPrimary)
-        toast.success("Primary image updated successfully")
+        // Refresh the images to get the updated primary status
+        await fetchTrekImages()
+        toast.success("Image primary status updated successfully")
       } else {
         throw new Error(response.message)
       }
     } catch (error) {
-      console.error("Error setting primary image:", error)
-      toast.error(error.message || "Failed to set primary image")
+      console.error("Error toggling primary image:", error)
+      toast.error(error.message || "Failed to update primary image status")
     } finally {
       setIsSettingPrimary(false)
       setImageToSetAsPrimary(null)
-    }
-  }
-
-  // Handle removing primary status from an image
-  const handleRemovePrimaryStatus = async () => {
-    if (!imageToRemovePrimary) return
-
-    setIsSettingPrimary(true)
-    setShowRemovePrimaryDialog(false)
-
-    try {
-      const response = await imageApi.removePrimaryStatus(trekId, imageToRemovePrimary)
-
-      if (response.success) {
-        // Update the image to remove primary status
-        setUploadedImages((prevImages) =>
-          prevImages.map((img) => ({
-            ...img,
-            isPrimary: img.id === imageToRemovePrimary ? false : img.isPrimary,
-          })),
-        )
-
-        // If this was the primary image, clear the primaryImageId
-        if (primaryImageId === imageToRemovePrimary) {
-          setPrimaryImageId(null)
-        }
-
-        toast.success("Primary status removed successfully")
-      } else {
-        throw new Error(response.message)
-      }
-    } catch (error) {
-      console.error("Error removing primary status:", error)
-      toast.error(error.message || "Failed to remove primary status")
-    } finally {
-      setIsSettingPrimary(false)
-      setImageToRemovePrimary(null)
     }
   }
 
@@ -310,7 +264,7 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
             className={`p-2 rounded-full bg-white text-gray-800 ${
               isPrimary ? "hover:bg-yellow-500" : "hover:bg-[#ff5c5c]"
             } hover:text-white transition-colors transform scale-0 group-hover:scale-100 duration-200`}
-            title={isPrimary ? "Remove Primary Status" : "Set as Primary Image"}
+            title="Toggle Primary Image Status"
           >
             <ImageIcon className="w-5 h-5" />
           </button>
@@ -344,10 +298,10 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
             <div className="flex items-start mb-4">
               <AlertCircle className="w-6 h-6 text-amber-500 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Set as Primary Image?</h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Update Primary Image</h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  This will replace the current primary image. The primary image is used as the main image for this
-                  trek.
+                  This will toggle the primary status of this image. The primary image is used as the main image for
+                  this trek.
                 </p>
               </div>
             </div>
@@ -359,42 +313,10 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
                 Cancel
               </button>
               <button
-                onClick={handleSetImageAsPrimary}
+                onClick={handleToggleImagePrimary}
                 className="px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors"
               >
-                Set as Primary
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Confirmation Dialog for Removing Primary Status */}
-      {showRemovePrimaryDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl">
-            <div className="flex items-start mb-4">
-              <AlertCircle className="w-6 h-6 text-amber-500 mr-3 flex-shrink-0" />
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Remove Primary Status?</h3>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  This will remove the primary status from this image. You'll need to set another image as primary
-                  later.
-                </p>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => setShowRemovePrimaryDialog(false)}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRemovePrimaryStatus}
-                className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors"
-              >
-                Remove Primary Status
+                Update Primary Status
               </button>
             </div>
           </div>
