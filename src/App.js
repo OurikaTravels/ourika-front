@@ -25,6 +25,7 @@ import AddTrek from "./pages/Dashboard/Admin/Treks/AddTrek"
 import AllTreks from "./pages/Dashboard/Admin/Treks/AllTreks" // Import the AllTreks component
 import TrekPreview from "./pages/Dashboard/Admin/Treks/TrekPreview" // Import the TrekPreview component
 import trekApi from "./services/trekApi" // Import the trekApi
+import EditTrek from "./pages/Dashboard/Admin/Treks/EditTrek"
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRole }) {
@@ -57,8 +58,9 @@ function AppContent() {
     location.pathname.includes("/admin/treks/service-management") ||
     location.pathname.includes("/admin/treks/highlights-management") ||
     location.pathname.includes("/admin/treks/add-trek") ||
-    location.pathname.includes("/admin/treks/all-treks") || // Add all-treks to dashboard pages
-    (location.pathname.includes("/admin/treks/") && location.pathname.includes("/preview")) // Add preview page to dashboard pages
+    location.pathname.includes("/admin/treks/all-treks") ||
+    (location.pathname.includes("/admin/treks/") && location.pathname.includes("/edit")) || // Add edit page
+    (location.pathname.includes("/admin/treks/") && location.pathname.includes("/preview"))
 
   const [treks, setTreks] = useState([]) // State to store treks
   const [loading, setLoading] = useState(true) // State to track loading
@@ -198,6 +200,14 @@ function AppContent() {
             element={
               <ProtectedRoute requiredRole="admin">
                 <TrekPreview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="admin/treks/:id/edit"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <EditTrek />
               </ProtectedRoute>
             }
           />

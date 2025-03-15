@@ -1,6 +1,6 @@
-import { useState } from "react"
+"use client"
 import { Link } from "react-router-dom"
-import { Save, Loader, Clock, DollarSign, MapPin } from 'lucide-react'
+import { Save, Loader, Clock, DollarSign, MapPin } from "lucide-react"
 
 export function BasicTrekForm({
   basicInfo,
@@ -10,10 +10,13 @@ export function BasicTrekForm({
   isLoadingCategories,
   errors,
   isSubmitting,
+  isEditMode = false,
 }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Basic Trek Information</h2>
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+        {isEditMode ? "Update Trek Information" : "Basic Trek Information"}
+      </h2>
 
       <form onSubmit={onSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -109,11 +112,7 @@ export function BasicTrekForm({
           </div>
 
           {/* Location Fields */}
-          <LocationFields
-            basicInfo={basicInfo}
-            onBasicInfoChange={onBasicInfoChange}
-            errors={errors}
-          />
+          <LocationFields basicInfo={basicInfo} onBasicInfoChange={onBasicInfoChange} errors={errors} />
 
           {/* Category Selection */}
           <div className="col-span-2">
@@ -145,7 +144,10 @@ export function BasicTrekForm({
 
           {/* Full Description */}
           <div className="col-span-2">
-            <label htmlFor="fullDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="fullDescription"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Full Description <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -181,12 +183,12 @@ export function BasicTrekForm({
             {isSubmitting ? (
               <>
                 <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                Saving...
+                {isEditMode ? "Updating..." : "Saving..."}
               </>
             ) : (
               <>
                 <Save className="w-5 h-5 mr-2" />
-                Save & Continue
+                {isEditMode ? "Update & Continue" : "Save & Continue"}
               </>
             )}
           </button>
@@ -248,3 +250,4 @@ function LocationFields({ basicInfo, onBasicInfoChange, errors }) {
     </>
   )
 }
+

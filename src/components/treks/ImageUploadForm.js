@@ -8,7 +8,7 @@ import imageApi from "../../services/imageApi"
 export function ImageUploadForm({ trekId, onImagesUploaded }) {
   const [selectedFiles, setSelectedFiles] = useState([])
   const [uploadedImages, setUploadedImages] = useState([])
-  const [isPrimary, setIsPrimary] = useState(null)
+  const [isPrimary, setIsPrimary] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isLoadingImages, setIsLoadingImages] = useState(false)
@@ -105,13 +105,14 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     }
   }
 
+  // Modified handleSetImageAsPrimary function to ensure only one primary image
   const handleSetImageAsPrimary = async (imageId) => {
-    setIsSettingPrimary(false)
+    setIsSettingPrimary(true)
     try {
       const response = await imageApi.setImageAsPrimary(trekId, imageId)
 
       if (response.success) {
-        // Update the local state to reflect the change
+        // Update all images to remove primary status, then set the selected one as primary
         setUploadedImages((prevImages) =>
           prevImages.map((img) => ({
             ...img,
@@ -130,9 +131,16 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     }
   }
 
+  // Modified handleUpload function to handle primary image status
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       toast.error("Please select at least one image")
+      return
+    }
+
+    // Check minimum file requirement
+    if (selectedFiles.length < 4) {
+      toast.error("At least 4 images are required for upload")
       return
     }
 
@@ -140,15 +148,7 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     setUploadProgress(0)
 
     try {
-      // Create a map of which file is primary
-      const primaryMap = selectedFiles.map((_, idx) => idx === isPrimary)
-
-      const response = await imageApi.uploadTrekImages(
-        trekId,
-        selectedFiles,
-        primaryMap, // Pass the primary map instead of a single boolean
-        (progress) => setUploadProgress(progress),
-      )
+      const response = await imageApi.uploadTrekImages(trekId, selectedFiles, (progress) => setUploadProgress(progress))
 
       if (!response.success) {
         throw new Error(response.message)
@@ -156,9 +156,8 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
 
       toast.success("Images uploaded successfully")
       setSelectedFiles([])
-      setIsPrimary(null) // Reset primary selection
 
-      // Refresh the images list to get the updated data
+      // Refresh the images list
       fetchTrekImages()
 
       if (onImagesUploaded) {
@@ -174,8 +173,27 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
   }
 
   const renderPreview = (file, index) => {
-    // We don't need this function anymore as we've integrated the preview with primary selection
-    return null
+    return (
+      <div
+        key={`${file.name}-${index}`}
+        className="relative group rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700"
+      >
+        <img
+          src={URL.createObjectURL(file)}
+          alt={`Preview ${index + 1}`}
+          className="w-full h-32 object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+          <button
+            onClick={() => handleRemoveFile(index)}
+            className="p-1 rounded-full bg-white text-gray-800 hover:bg-red-500 hover:text-white transition-colors"
+            title="Remove Image"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    )
   }
 
   const renderUploadedImage = (image) => {
@@ -187,12 +205,12 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
         }`}
       >
         <img
-          src={`http://localhost:8080/api/images/${image.path}`}
+          src={`http://localhost:8080/api/treks/${trekId}/images/${image.path}`}
           alt={`Trek image ${image.id}`}
           className="w-full h-32 object-cover"
           onError={(e) => {
             e.target.onerror = null
-            e.target.src = "/placeholder.svg"
+            
           }}
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -222,58 +240,10 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     )
   }
 
+  // Modified Primary Image Toggle section in the return statement
   return (
     <div className="space-y-6">
-      
-      <div className="mb-4">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Select Primary Image</h3>
-        {selectedFiles.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {selectedFiles.map((file, index) => (
-              <div
-                key={`${file.name}-${index}`}
-                className={`relative group rounded-lg overflow-hidden border-2 ${
-                  isPrimary === index ? "border-[#ff5c5c]" : "border-gray-200 dark:border-gray-700"
-                } cursor-pointer`}
-                onClick={() => setIsPrimary(index)}
-              >
-                <img
-                  src={URL.createObjectURL(file) || "/placeholder.svg"}
-                  alt={`Preview ${index + 1}`}
-                  className="w-full h-32 object-cover"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
-                  <input
-                    type="radio"
-                    checked={isPrimary === index}
-                    onChange={() => setIsPrimary(index)}
-                    className="form-radio h-5 w-5 text-[#ff5c5c]"
-                  />
-                </div>
-                {isPrimary === index && (
-                  <span className="absolute top-2 left-2 px-2 py-1 bg-[#ff5c5c] text-white text-xs rounded-full">
-                    Primary
-                  </span>
-                )}
-                <div className="absolute bottom-2 right-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleRemoveFile(index)
-                    }}
-                    className="p-1 rounded-full bg-white text-gray-800 hover:bg-red-500 hover:text-white transition-colors"
-                    title="Remove Image"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-gray-500 dark:text-gray-400">Upload images to select a primary image</p>
-        )}
-      </div>
+      {/* Primary Image Toggle - Removed as all images are now non-primary by default */}
 
       {/* Drop Zone */}
       <div
@@ -295,37 +265,54 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Drag and drop your images here, or click to select files
         </p>
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">PNG, JPG, GIF up to 5MB</p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
+          PNG, JPG, GIF up to 5MB. At least 4 images required.
+        </p>
       </div>
 
-      {/* Upload Progress */}
-      {isUploading && (
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
-          <div
-            className="bg-[#ff5c5c] h-2.5 rounded-full transition-all duration-300"
-            style={{ width: `${uploadProgress}%` }}
-          ></div>
+      {/* Selected Files Preview */}
+      {selectedFiles.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Selected Images</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {selectedFiles.map((file, index) => renderPreview(file, index))}
+          </div>
+
+          {/* Add this right before the Upload Progress section */}
+          <div className="text-sm text-amber-600 dark:text-amber-400 font-medium">
+            Note: You must select at least 4 images to upload.
+          </div>
+
+          {/* Upload Progress */}
+          {isUploading && (
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
+              <div
+                className="bg-[#ff5c5c] h-2.5 rounded-full transition-all duration-300"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+          )}
+
+          {/* Upload Button */}
+          <button
+            onClick={handleUpload}
+            disabled={isUploading}
+            className="w-full flex items-center justify-center px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isUploading ? (
+              <>
+                <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Upload className="w-5 h-5 mr-2" />
+                Upload {selectedFiles.length} {selectedFiles.length === 1 ? "Image" : "Images"}
+              </>
+            )}
+          </button>
         </div>
       )}
-
-      {/* Upload Button */}
-      <button
-        onClick={handleUpload}
-        disabled={isUploading}
-        className="w-full flex items-center justify-center px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-      >
-        {isUploading ? (
-          <>
-            <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-            Uploading...
-          </>
-        ) : (
-          <>
-            <Upload className="w-5 h-5 mr-2" />
-            Upload {selectedFiles.length} {selectedFiles.length === 1 ? "Image" : "Images"}
-          </>
-        )}
-      </button>
 
       {/* Uploaded Images */}
       {isLoadingImages ? (
