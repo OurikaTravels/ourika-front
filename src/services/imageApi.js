@@ -173,7 +173,7 @@ const imageApi = {
       const token = localStorage.getItem("token")
 
       const response = await fetch(`${API_BASE_URL}/treks/${trekId}/images/${imageId}/primary`, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` }),
@@ -194,6 +194,37 @@ const imageApi = {
       return {
         success: false,
         message: error.message || "An error occurred while setting image as primary",
+      }
+    }
+  },
+
+  // Remove primary status from an image
+  removePrimaryStatus: async (trekId, imageId) => {
+    try {
+      const token = localStorage.getItem("token")
+
+      const response = await fetch(`${API_BASE_URL}/treks/${trekId}/images/${imageId}/primary`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw {
+          success: false,
+          message: errorData.message || `Failed to remove primary status. Status: ${response.status}`,
+        }
+      }
+
+      return { success: true, message: "Primary status removed successfully" }
+    } catch (error) {
+      console.error("Error removing primary status:", error)
+      return {
+        success: false,
+        message: error.message || "An error occurred while removing primary status",
       }
     }
   },

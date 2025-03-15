@@ -1,18 +1,22 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Upload, X, Trash, Loader, ImageIcon } from "lucide-react"
+import { Upload, X, Trash, Loader, ImageIcon, AlertCircle, Check } from "lucide-react"
 import { toast } from "react-hot-toast"
 import imageApi from "../../services/imageApi"
 
 export function ImageUploadForm({ trekId, onImagesUploaded }) {
   const [selectedFiles, setSelectedFiles] = useState([])
   const [uploadedImages, setUploadedImages] = useState([])
-  const [isPrimary, setIsPrimary] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isLoadingImages, setIsLoadingImages] = useState(false)
   const [isSettingPrimary, setIsSettingPrimary] = useState(false)
+  const [primaryImageId, setPrimaryImageId] = useState(null)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [imageToSetAsPrimary, setImageToSetAsPrimary] = useState(null)
+  const [showRemovePrimaryDialog, setShowRemovePrimaryDialog] = useState(false)
+  const [imageToRemovePrimary, setImageToRemovePrimary] = useState(null)
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -28,7 +32,16 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     try {
       const response = await imageApi.getTrekImages(trekId)
       if (response.success) {
-        setUploadedImages(response.data)
+        const images = response.data
+        setUploadedImages(images)
+
+        // Find primary image if any
+        const primaryImage = images.find((img) => img.isPrimary)
+        if (primaryImage) {
+          setPrimaryImageId(primaryImage.id)
+        } else {
+          setPrimaryImageId(null)
+        }
       } else {
         toast.error(response.message || "Failed to fetch images")
       }
@@ -65,17 +78,17 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
 
   const handleDragOver = (event) => {
     event.preventDefault()
-    event.currentTarget.classList.add("border-[#ff5c5c]")
+    event.currentTarget.classList.add("border-[#ff5c5c]", "bg-red-50", "dark:bg-red-900/10")
   }
 
   const handleDragLeave = (event) => {
     event.preventDefault()
-    event.currentTarget.classList.remove("border-[#ff5c5c]")
+    event.currentTarget.classList.remove("border-[#ff5c5c]", "bg-red-50", "dark:bg-red-900/10")
   }
 
   const handleDrop = (event) => {
     event.preventDefault()
-    event.currentTarget.classList.remove("border-[#ff5c5c]")
+    event.currentTarget.classList.remove("border-[#ff5c5c]", "bg-red-50", "dark:bg-red-900/10")
 
     const files = Array.from(event.dataTransfer.files)
     validateAndSetFiles(files)
@@ -90,6 +103,16 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
   }
 
   const handleDeleteUploadedImage = async (imageId) => {
+    const imageToDelete = uploadedImages.find((img) => img.id === imageId)
+    if (imageToDelete?.isPrimary) {
+      toast.error("Cannot delete the primary image. Please set another image as primary first.")
+      return
+    }
+
+    if (!window.confirm("Are you sure you want to delete this image? This action cannot be undone.")) {
+      return
+    }
+
     try {
       const response = await imageApi.deleteTrekImage(trekId, imageId)
 
@@ -105,20 +128,40 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     }
   }
 
-  // Modified handleSetImageAsPrimary function to ensure only one primary image
-  const handleSetImageAsPrimary = async (imageId) => {
+  // Show confirmation dialog before setting an image as primary
+  const confirmSetImageAsPrimary = (imageId) => {
+    // Check if this image is already primary
+    const image = uploadedImages.find((img) => img.id === imageId)
+    if (image?.isPrimary) {
+      // If it's already primary, confirm removing primary status
+      setImageToRemovePrimary(imageId)
+      setShowRemovePrimaryDialog(true)
+    } else {
+      // Otherwise, confirm setting as primary
+      setImageToSetAsPrimary(imageId)
+      setShowConfirmDialog(true)
+    }
+  }
+
+  // Handle setting an image as primary
+  const handleSetImageAsPrimary = async () => {
+    if (!imageToSetAsPrimary) return
+
     setIsSettingPrimary(true)
+    setShowConfirmDialog(false)
+
     try {
-      const response = await imageApi.setImageAsPrimary(trekId, imageId)
+      const response = await imageApi.setImageAsPrimary(trekId, imageToSetAsPrimary)
 
       if (response.success) {
         // Update all images to remove primary status, then set the selected one as primary
         setUploadedImages((prevImages) =>
           prevImages.map((img) => ({
             ...img,
-            isPrimary: img.id === imageId,
+            isPrimary: img.id === imageToSetAsPrimary,
           })),
         )
+        setPrimaryImageId(imageToSetAsPrimary)
         toast.success("Primary image updated successfully")
       } else {
         throw new Error(response.message)
@@ -128,10 +171,48 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
       toast.error(error.message || "Failed to set primary image")
     } finally {
       setIsSettingPrimary(false)
+      setImageToSetAsPrimary(null)
     }
   }
 
-  // Modified handleUpload function to handle primary image status
+  // Handle removing primary status from an image
+  const handleRemovePrimaryStatus = async () => {
+    if (!imageToRemovePrimary) return
+
+    setIsSettingPrimary(true)
+    setShowRemovePrimaryDialog(false)
+
+    try {
+      const response = await imageApi.removePrimaryStatus(trekId, imageToRemovePrimary)
+
+      if (response.success) {
+        // Update the image to remove primary status
+        setUploadedImages((prevImages) =>
+          prevImages.map((img) => ({
+            ...img,
+            isPrimary: img.id === imageToRemovePrimary ? false : img.isPrimary,
+          })),
+        )
+
+        // If this was the primary image, clear the primaryImageId
+        if (primaryImageId === imageToRemovePrimary) {
+          setPrimaryImageId(null)
+        }
+
+        toast.success("Primary status removed successfully")
+      } else {
+        throw new Error(response.message)
+      }
+    } catch (error) {
+      console.error("Error removing primary status:", error)
+      toast.error(error.message || "Failed to remove primary status")
+    } finally {
+      setIsSettingPrimary(false)
+      setImageToRemovePrimary(null)
+    }
+  }
+
+  // Handle upload of images
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       toast.error("Please select at least one image")
@@ -176,74 +257,170 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     return (
       <div
         key={`${file.name}-${index}`}
-        className="relative group rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700"
+        className="relative group rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200"
       >
-        <img
-          src={URL.createObjectURL(file)}
-          alt={`Preview ${index + 1}`}
-          className="w-full h-32 object-cover"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+        <div className="aspect-square">
+          <img
+            src={URL.createObjectURL(file) || "/placeholder.svg?height=200&width=200"}
+            alt={`Preview ${index + 1}`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center">
           <button
             onClick={() => handleRemoveFile(index)}
-            className="p-1 rounded-full bg-white text-gray-800 hover:bg-red-500 hover:text-white transition-colors"
+            className="p-2 rounded-full bg-white text-gray-800 hover:bg-red-500 hover:text-white transition-colors transform scale-0 group-hover:scale-100 duration-200"
             title="Remove Image"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1 truncate">
+          {file.name}
         </div>
       </div>
     )
   }
 
   const renderUploadedImage = (image) => {
+    const isPrimary = image.isPrimary || image.id === primaryImageId
+
     return (
       <div
         key={image.id}
         className={`relative group rounded-lg overflow-hidden border-2 ${
-          image.isPrimary ? "border-[#ff5c5c]" : "border-gray-200 dark:border-gray-700"
-        }`}
+          isPrimary ? "border-[#ff5c5c] ring-2 ring-[#ff5c5c] ring-opacity-50" : "border-gray-200 dark:border-gray-700"
+        } shadow-sm hover:shadow-md transition-all duration-200`}
       >
-        <img
-          src={`http://localhost:8080/api/treks/${trekId}/images/${image.path}`}
-          alt={`Trek image ${image.id}`}
-          className="w-full h-32 object-cover"
-          onError={(e) => {
-            e.target.onerror = null
-            
-          }}
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-          {!image.isPrimary && (
-            <button
-              onClick={() => handleSetImageAsPrimary(image.id)}
-              disabled={isSettingPrimary}
-              className="p-1 rounded-full bg-white text-gray-800 hover:bg-[#ff5c5c] hover:text-white transition-colors"
-              title="Set as Primary Image"
-            >
-              <ImageIcon className="w-4 h-4" />
-            </button>
-          )}
+        <div className="aspect-square">
+          <img
+            src={`http://localhost:8080/api/treks/${trekId}/images/${image.path}`}
+            alt={`Trek image ${image.id}`}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.onerror = null
+              e.target.src = "/placeholder.svg?height=200&width=200"
+            }}
+          />
+        </div>
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center gap-3">
+          <button
+            onClick={() => confirmSetImageAsPrimary(image.id)}
+            disabled={isSettingPrimary}
+            className={`p-2 rounded-full bg-white text-gray-800 ${
+              isPrimary ? "hover:bg-yellow-500" : "hover:bg-[#ff5c5c]"
+            } hover:text-white transition-colors transform scale-0 group-hover:scale-100 duration-200`}
+            title={isPrimary ? "Remove Primary Status" : "Set as Primary Image"}
+          >
+            <ImageIcon className="w-5 h-5" />
+          </button>
           <button
             onClick={() => handleDeleteUploadedImage(image.id)}
-            disabled={isSettingPrimary}
-            className="p-1 rounded-full bg-white text-gray-800 hover:bg-red-500 hover:text-white transition-colors"
-            title="Delete Image"
+            disabled={isSettingPrimary || isPrimary}
+            className={`p-2 rounded-full bg-white text-gray-800 hover:bg-red-500 hover:text-white transition-colors transform scale-0 group-hover:scale-100 duration-200 ${
+              isPrimary ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            title={isPrimary ? "Cannot delete primary image" : "Delete Image"}
           >
-            <Trash className="w-4 h-4" />
+            <Trash className="w-5 h-5" />
           </button>
         </div>
-        {image.isPrimary && (
-          <span className="absolute top-2 left-2 px-2 py-1 bg-[#ff5c5c] text-white text-xs rounded-full">Primary</span>
+        {isPrimary && (
+          <div className="absolute top-2 left-2 px-2 py-1 bg-[#ff5c5c] text-white text-xs rounded-full flex items-center">
+            <Check className="w-3 h-3 mr-1" />
+            Primary
+          </div>
         )}
       </div>
     )
   }
 
-  // Modified Primary Image Toggle section in the return statement
   return (
-    <div className="space-y-6">
-      {/* Primary Image Toggle - Removed as all images are now non-primary by default */}
+    <div className="space-y-8">
+      {/* Confirmation Dialog for Setting Primary Image */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl">
+            <div className="flex items-start mb-4">
+              <AlertCircle className="w-6 h-6 text-amber-500 mr-3 flex-shrink-0" />
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Set as Primary Image?</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  This will replace the current primary image. The primary image is used as the main image for this
+                  trek.
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setShowConfirmDialog(false)}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSetImageAsPrimary}
+                className="px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors"
+              >
+                Set as Primary
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Dialog for Removing Primary Status */}
+      {showRemovePrimaryDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl">
+            <div className="flex items-start mb-4">
+              <AlertCircle className="w-6 h-6 text-amber-500 mr-3 flex-shrink-0" />
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Remove Primary Status?</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  This will remove the primary status from this image. You'll need to set another image as primary
+                  later.
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setShowRemovePrimaryDialog(false)}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRemovePrimaryStatus}
+                className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors"
+              >
+                Remove Primary Status
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Instructions */}
+      <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded-r-md">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <AlertCircle className="h-5 w-5 text-blue-500" />
+          </div>
+          <div className="ml-3">
+            <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Image Requirements</h3>
+            <div className="mt-2 text-sm text-blue-700 dark:text-blue-400">
+              <ul className="list-disc pl-5 space-y-1">
+                <li>You must upload at least 4 images</li>
+                <li>Each image must be less than 5MB</li>
+                <li>Supported formats: JPG, PNG, GIF</li>
+                <li>One image must be set as the primary image</li>
+                <li>You can toggle an image's primary status by clicking the image icon</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Drop Zone */}
       <div
@@ -273,35 +450,44 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
       {/* Selected Files Preview */}
       {selectedFiles.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Selected Images</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {selectedFiles.map((file, index) => renderPreview(file, index))}
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Selected Images</h3>
+            <span
+              className={`text-sm font-medium ${selectedFiles.length >= 4 ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}
+            >
+              {selectedFiles.length} of 4 required
+            </span>
           </div>
 
-          {/* Add this right before the Upload Progress section */}
-          <div className="text-sm text-amber-600 dark:text-amber-400 font-medium">
-            Note: You must select at least 4 images to upload.
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {selectedFiles.map((file, index) => renderPreview(file, index))}
           </div>
 
           {/* Upload Progress */}
           {isUploading && (
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
-              <div
-                className="bg-[#ff5c5c] h-2.5 rounded-full transition-all duration-300"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Uploading...</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{uploadProgress}%</span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                <div
+                  className="bg-[#ff5c5c] h-2.5 rounded-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
             </div>
           )}
 
           {/* Upload Button */}
           <button
             onClick={handleUpload}
-            disabled={isUploading}
-            className="w-full flex items-center justify-center px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={isUploading || selectedFiles.length < 4}
+            className="w-full flex items-center justify-center px-4 py-3 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isUploading ? (
               <>
-                <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                <Loader className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
                 Uploading...
               </>
             ) : (
@@ -311,27 +497,50 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
               </>
             )}
           </button>
+
+          {selectedFiles.length < 4 && (
+            <p className="text-sm text-amber-600 dark:text-amber-400 text-center">
+              Please select at least 4 images to upload
+            </p>
+          )}
         </div>
       )}
 
       {/* Uploaded Images */}
       {isLoadingImages ? (
-        <div className="flex justify-center items-center p-6">
+        <div className="flex justify-center items-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
           <Loader className="animate-spin h-8 w-8 text-[#ff5c5c]" />
-          <span className="ml-2 text-gray-600 dark:text-gray-300">Loading images...</span>
+          <span className="ml-3 text-gray-600 dark:text-gray-300">Loading images...</span>
         </div>
       ) : (
         uploadedImages.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Uploaded Images</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Trek Images</h3>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {uploadedImages.length} {uploadedImages.length === 1 ? "image" : "images"}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {uploadedImages.map((image) => renderUploadedImage(image))}
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              <p>
-                <span className="font-medium">Tip:</span> Hover over an image and click the{" "}
-                <ImageIcon className="inline-block w-4 h-4" /> icon to set it as the primary image.
-              </p>
+
+            <div className="bg-gray-50 dark:bg-gray-700/30 rounded-md p-4 mt-4">
+              <div className="flex items-start">
+                <ImageIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 mt-0.5 mr-2" />
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-white">Managing Images</h4>
+                  <ul className="mt-1 text-sm text-gray-500 dark:text-gray-400 space-y-1">
+                    <li>• Hover over an image to see available actions</li>
+                    <li>
+                      • Click the <ImageIcon className="inline-block w-3 h-3" /> icon to toggle primary status
+                    </li>
+                    <li>• The primary image cannot be deleted</li>
+                    <li>• You can remove primary status from an image and set another as primary</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         )
