@@ -17,11 +17,8 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       subsections: [
         "All Treks",
         "Add Trek",
-        "Categories",
         "Service Management",
         "Highlights Management",
-        "Reviews",
-        "Pricing",
       ],
     },
     {
@@ -103,28 +100,40 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
 
             {isSidebarOpen && section.subsections && activeSection === section.id && (
               <div className="bg-gray-800 py-2">
-                {section.subsections.map((subsection) => (
-                  <Link
-                    key={subsection}
-                    to={
-                      section.id === "categories"
-                        ? subsection === "All Categories"
-                          ? "/admin/categories/all-categories"
-                          : "/admin/categories/add-category"
-                        : section.id === "treks" && subsection === "Add Trek"
-                          ? "/admin/treks/add-trek"
-                          : section.id === "treks" && subsection === "Service Management"
-                            ? "/admin/treks/service-management"
-                            : section.id === "treks" && subsection === "Highlights Management"
-                              ? "/admin/treks/highlights-management"
-                              : `/admin/${section.id}/${subsection.toLowerCase().replace(" ", "-")}`
+                {section.subsections.map((subsection) => {
+                  // Determine the correct route for each subsection
+                  let route = `/admin/${section.id}/${subsection.toLowerCase().replace(/\s+/g, "-")}`
+
+                  // Special cases for specific routes
+                  if (section.id === "categories") {
+                    if (subsection === "All Categories") {
+                      route = "/admin/categories/all-categories"
+                    } else if (subsection === "Add Category") {
+                      route = "/admin/categories/add-category"
                     }
-                    className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
-                  >
-                    <ChevronRight className="w-4 h-4 mr-2" />
-                    {subsection}
-                  </Link>
-                ))}
+                  } else if (section.id === "treks") {
+                    if (subsection === "All Treks") {
+                      route = "/admin/treks/all-treks"
+                    } else if (subsection === "Add Trek") {
+                      route = "/admin/treks/add-trek"
+                    } else if (subsection === "Service Management") {
+                      route = "/admin/treks/service-management"
+                    } else if (subsection === "Highlights Management") {
+                      route = "/admin/treks/highlights-management"
+                    }
+                  }
+
+                  return (
+                    <Link
+                      key={subsection}
+                      to={route}
+                      className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+                    >
+                      <ChevronRight className="w-4 h-4 mr-2" />
+                      {subsection}
+                    </Link>
+                  )
+                })}
               </div>
             )}
           </div>
