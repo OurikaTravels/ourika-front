@@ -37,6 +37,7 @@ import AllGuides from "./pages/Dashboard/Admin/Guide/AllGuides";
 import AllReservations from "./pages/Dashboard/Admin/Reservations/AllReservations";
 import GuidePosts from "./pages/Dashboard/Guide/Posts/GuidePosts";
 import EditProfile from "./pages/Dashboard/Guide/Profile/EditProfile";
+import AllTourists from "./pages/Dashboard/Admin/Tourist/AllTourists";
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth();
 
@@ -273,6 +274,15 @@ function AppContent() {
             element={
               <ProtectedRoute requiredRole="guide">
                 <EditProfile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="admin/users/all-tourist"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AllTourists />
               </ProtectedRoute>
             }
           />

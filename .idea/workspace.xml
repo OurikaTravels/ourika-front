@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="283f6265-e555-44d0-b00e-2c923187f285" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/layout/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/layout/Navbar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Auth/RegisterGuide.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/dashboard/DashboardSidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dashboard/DashboardSidebar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/dashboard/guide/GuideSidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/dashboard/guide/GuideSidebar.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,9 +14,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="2uG0EqMBXJupc7uhUbXkYSL4p94" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -29,7 +29,9 @@
     "git-widget-placeholder": "main",
     "last_opened_file_path": "/home/ouchin55edcx/new-ourikaf",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
@@ -37,7 +39,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-WS-243.25659.40" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-WS-243.26053.12" />
       </set>
     </attachedChunks>
   </component>
@@ -50,6 +52,8 @@
       <option name="presentableId" value="Default" />
       <updated>1741859494469</updated>
       <workItem from="1741859495782" duration="300000" />
+      <workItem from="1742252897960" duration="115000" />
+      <workItem from="1742253013821" duration="318000" />
     </task>
     <servers />
   </component>

@@ -14,25 +14,13 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
       id: "posts",
       name: "Post Management",
       icon: <FileText className="w-5 h-5" />,
-      subsections: ["My Posts", "Create Post", "Drafts", "Analytics"],
-    },
-    {
-      id: "reservations",
-      name: "Reservations",
-      icon: <Calendar className="w-5 h-5" />,
-      subsections: ["Upcoming Tours", "Past Tours", "Requests", "Calendar"],
-    },
-    {
-      id: "reviews",
-      name: "Reviews & Ratings",
-      icon: <MessageSquare className="w-5 h-5" />,
-      subsections: ["All Reviews", "Responses", "Analytics"],
+      subsections: ["My Posts", "Analytics"],
     },
     {
       id: "profile",
       name: "Profile",
       icon: <User className="w-5 h-5" />,
-      subsections: ["Edit Profile", "Certifications", "Experience", "Settings"],
+      subsections: ["Edit Profile"],
     },
   ]
 

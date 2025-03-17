@@ -17,48 +17,34 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       subsections: [
         "All Treks",
         "Add Trek",
-        "Categories",
         "Service Management",
         "Highlights Management",
-        "Reviews",
-        "Pricing",
       ],
     },
     {
       id: "guides",
       name: "Guide Management",
       icon: <User className="w-5 h-5" />,
-      subsections: ["All Guides", "Applications", "Performance", "Schedule", "Edit Profile"],
+      subsections: ["All Guides"],
     },
     {
       id: "reservations",
       name: "Reservations",
       icon: <Calendar className="w-5 h-5" />,
-      subsections: ["All Reservations", "Pending", "Confirmed", "Cancelled"],
+      subsections: ["All Reservations"],
     },
     {
       id: "users",
-      name: "User Management",
+      name: "Tourist Management",
       icon: <Users className="w-5 h-5" />,
-      subsections: ["All Users", "Roles", "Permissions", "Activity"],
-    },
-    {
-      id: "posts",
-      name: "Post Management",
-      icon: <FileText className="w-5 h-5" />,
-      subsections: ["All Posts", "Categories", "Comments", "Reports"],
+      subsections: ["All Tourist"],
     },
     {
       id: "categories",
       name: "Categories",
       icon: <Tag className="w-5 h-5" />,
       subsections: ["All Categories", "Add Category"],
-    },
-    {
-      id: "settings",
-      name: "Settings",
-      icon: <Settings className="w-5 h-5" />,
-    },
+    }
   ]
 
   return (
