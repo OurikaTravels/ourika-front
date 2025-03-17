@@ -1,14 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Star, MapPin } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useState } from "react";
+import { Star, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function TopGuides({ guides }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="font-semibold text-gray-900 dark:text-white">Top Guides</h3>
+        <h3 className="font-semibold text-gray-900 dark:text-white">
+          Top Guides
+        </h3>
       </div>
 
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -23,18 +25,18 @@ export default function TopGuides({ guides }) {
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 function GuideCard({ guide }) {
-  const [isFollowing, setIsFollowing] = useState(false)
+  const [isFollowing, setIsFollowing] = useState(false);
 
   return (
     <div className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
       <div className="flex items-start space-x-3">
-        <Link to={`/guide/${guide.username}`}>
+        <Link to={`/guide/${guide.id}`}>
           <img
-            src={guide.avatar || "/placeholder.svg?height=48&width=48"}
+            src={`http://localhost:8080/api/uploads/images/${guide.avatar}`}
             alt={guide.name}
             className="w-12 h-12 rounded-full object-cover"
           />
@@ -43,13 +45,17 @@ function GuideCard({ guide }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center">
             <Link
-              to={`/guide/${guide.username}`}
+              to={`/guide/${guide.id}`}
               className="font-medium text-gray-900 dark:text-white hover:text-[#ff5c5c] dark:hover:text-[#ff5c5c] transition-colors truncate"
             >
               {guide.name}
             </Link>
             {guide.verified && (
-              <svg className="w-4 h-4 ml-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="w-4 h-4 ml-1 text-blue-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -59,7 +65,9 @@ function GuideCard({ guide }) {
             )}
           </div>
 
-          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">@{guide.username}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+            @{guide.username}
+          </p>
 
           <div className="flex items-center mt-1 text-sm">
             <div className="flex items-center text-yellow-500 mr-3">
@@ -96,6 +104,5 @@ function GuideCard({ guide }) {
         </div>
       )}
     </div>
-  )
+  );
 }
-

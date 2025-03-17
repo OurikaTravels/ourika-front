@@ -131,6 +131,67 @@ const guideApi = {
       }
     }
   },
+
+  // Get guide profile by ID
+  getGuideProfile: async (guideId) => {
+    try {
+      const token = localStorage.getItem("token")
+      const response = await fetch(`${API_BASE_URL}/users/guides/${guideId}`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        return {
+          success: false,
+          message: errorData.message || "Failed to fetch guide profile"
+        }
+      }
+
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error("Error fetching guide profile:", error)
+      return {
+        success: false,
+        message: error.message || "Failed to fetch guide profile"
+      }
+    }
+  },
+
+  // Update guide profile
+  updateGuideProfile: async (guideId, profileData) => {
+    try {
+      const token = localStorage.getItem("token")
+      const response = await fetch(`${API_BASE_URL}/users/guides/${guideId}/profile`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify(profileData)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        return {
+          success: false,
+          message: errorData.message || "Failed to update guide profile"
+        }
+      }
+
+      const data = await response.json()
+      return data
+    } catch (error) {
+      console.error("Error updating guide profile:", error)
+      return {
+        success: false,
+        message: error.message || "Failed to update guide profile"
+      }
+    }
+  },
 }
 
 export default guideApi

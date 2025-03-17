@@ -6,6 +6,8 @@ import Post from "../../components/community/Post"
 import CreatePostCard from "../../components/community/CreatePostCard"
 import CommunitySidebar from "../../components/community/CommunitySidebar"
 import CommunityHeader from "../../components/community/CommunityHeader"
+import postApi from "../../services/postApi"
+import { toast } from "react-hot-toast"
 
 export default function CommunityPage() {
   const { isAuthenticated, user } = useAuth()
@@ -14,140 +16,33 @@ export default function CommunityPage() {
   const [isMobile, setIsMobile] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
+  const fetchPosts = async () => {
+    try {
+      const response = await postApi.getAllPosts()
+      if (response.success) {
+        setPosts(response.data)
+      } else {
+        toast.error(response.message)
+      }
+    } catch (error) {
+      toast.error("Failed to fetch posts")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Check if we're on mobile
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 1024)
     }
-
-    // Initial check
     checkIfMobile()
-
-    // Add event listener for window resize
     window.addEventListener("resize", checkIfMobile)
-
-    // Cleanup
     return () => window.removeEventListener("resize", checkIfMobile)
-  }, [])
-
-  // Mock data for initial rendering
-  const mockPosts = [
-    {
-      id: 1,
-      author: {
-        name: "Ahmed Hassan",
-        username: "ahmedguide",
-        avatar:
-          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
-        verified: true,
-      },
-      date: "2023-06-15T10:30:00Z",
-      content:
-        "Just finished an amazing trek through the Atlas Mountains with a wonderful group from Canada! The views were breathtaking and the weather was perfect. 🏔️\n\nHighly recommend this route for experienced hikers looking for a challenge with rewarding panoramas.",
-      image:
-        "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      location: "Atlas Mountains, Morocco",
-      tags: ["hiking", "mountains", "adventure", "morocco"],
-      likes: 124,
-      comments: 18,
-      shares: 5,
-      commentsList: [
-        {
-          id: 101,
-          author: {
-            name: "Leila Mansouri",
-            username: "leilaexplores",
-            avatar:
-              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
-            verified: true,
-          },
-          content: "The views look absolutely stunning! Which trail did you take?",
-          date: "2023-06-15T11:45:00Z",
-          likes: 3,
-        },
-        {
-          id: 102,
-          author: {
-            name: "John Smith",
-            username: "johnsmith",
-            avatar:
-              "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
-            verified: false,
-          },
-          content: "I'm planning a trip there next month. Any tips for a first-timer?",
-          date: "2023-06-15T13:20:00Z",
-          likes: 1,
-        },
-      ],
-    }
-  ]
-
-  const mockGuides = [
-    {
-      id: 1,
-      name: "Ahmed Hassan",
-      username: "ahmedguide",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
-      verified: true,
-      rating: 4.9,
-      location: "Marrakech, Morocco",
-      speciality: "Mountain Trekking",
-      },
-      {
-        id: 2,
-        name: "Fatima Zahra",
-        username: "fatimaexplorer",
-        avatar:
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
-        verified: true,
-        rating: 4.8,
-        location: "Fes, Morocco",
-        speciality: "Food Tours",
-      },
-      {
-        id: 3,
-        name: "Youssef Berrada",
-        username: "desertguide",
-        avatar:
-          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
-        verified: true,
-        rating: 4.9,
-        location: "Merzouga, Morocco",
-        speciality: "Desert Expeditions",
-      },
-      {
-        id: 4,
-        name: "Leila Mansouri",
-        username: "leilaexplores",
-        avatar:
-          "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
-        verified: true,
-        rating: 4.7,
-        location: "Chefchaouen, Morocco",
-        speciality: "Cultural Tours",
-      },
-  ]
-
-  const trendingTopics = [
-    "morocco",
-    "hiking",
-    "adventure",
-    "desert",
-    "mountains",
-    "food",
-    "culture",
-    "photography",
-    "travel",
-    "trekking",
-  ]
-
-  useEffect(() => {
-    // Simulate API fetch
-    setTimeout(() => {
-      setPosts(mockPosts)
-      setIsLoading(false)
-    }, 1000)
   }, [])
 
   const handlePostCreated = (newPost) => {
@@ -160,7 +55,6 @@ export default function CommunityPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Community Header */}
       <CommunityHeader toggleSidebar={toggleSidebar} />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
@@ -172,55 +66,67 @@ export default function CommunityPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Create Post */}
             {isAuthenticated && <CreatePostCard onPostCreated={handlePostCreated} />}
 
-            {/* Posts Feed */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Latest Posts</h2>
 
               {isLoading ? (
-                // Loading skeleton
                 <div className="space-y-4">
                   {[1, 2, 3].map((i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 animate-pulse">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
-                        <div className="flex-1">
-                          <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/4 mb-2"></div>
-                          <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-1/3"></div>
-                        </div>
-                      </div>
-                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-full mb-2"></div>
-                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-5/6 mb-2"></div>
-                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-                      <div className="h-48 bg-gray-300 dark:bg-gray-700 rounded mb-4"></div>
-                      <div className="flex justify-between">
-                        <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-12"></div>
-                        <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-12"></div>
-                        <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-12"></div>
-                        <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-12"></div>
-                      </div>
+                      {/* ... existing loading skeleton ... */}
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="space-y-6">
                   {posts.map((post) => (
-                    <Post key={post.id} post={post} />
+                    <Post 
+                      key={post.id} 
+                      post={{
+                        id: post.id,
+                        content: post.description,
+                        images: post.images,
+                        date: post.createdAt,
+                        likes: post.likeCount,
+                        comments: post.commentCount,
+                        commentsList: post.comments,
+                        author: {
+                          id: post.guide.id,
+                          name: `${post.guide.firstName} ${post.guide.lastName}`,
+                          username: post.guide.email.split('@')[0],
+                          avatar: post.guide.profileImage,
+                          verified: post.guide.isValidateGuide,
+                          speciality: post.guide.speciality
+                        }
+                      }} 
+                    />
                   ))}
                 </div>
               )}
             </div>
           </div>
 
-         
           <div className="lg:col-span-1">
             <CommunitySidebar
-              guides={mockGuides}
-              topics={trendingTopics}
+              guides={posts
+                .map(post => post.guide)
+                .filter((guide, index, self) => 
+                  index === self.findIndex(g => g.id === guide.id)
+                )
+                .map(guide => ({
+                  id: guide.id,
+                  name: `${guide.firstName} ${guide.lastName}`,
+                  username: guide.email.split('@')[0],
+                  avatar: guide.profileImage,
+                  verified: guide.isValidateGuide,
+                  rating: 4.5, // This could be added to the API response later
+                  location: guide.location || "Morocco",
+                  speciality: guide.speciality
+                }))}
+              topics={["morocco", "hiking", "adventure", "desert", "mountains"]}
               externalIsSidebarOpen={isSidebarOpen}
               externalToggleSidebar={toggleSidebar}
             />

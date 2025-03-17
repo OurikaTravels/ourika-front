@@ -156,7 +156,35 @@ const postApi = {
     }
   },
 
+  // Get all posts
+  getAllPosts: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/posts`)
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        return {
+          success: false,
+          message: errorData.message || `Failed to fetch posts. Status: ${response.status}`,
+          data: [],
+        }
+      }
+
+      const data = await response.json()
+      return {
+        success: true,
+        message: "Posts fetched successfully",
+        data,
+      }
+    } catch (error) {
+      console.error("Error fetching posts:", error)
+      return {
+        success: false,
+        message: error.message || "An error occurred while fetching posts",
+        data: [],
+      }
+    }
+  },
 }
 
 export default postApi

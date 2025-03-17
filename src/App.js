@@ -36,6 +36,7 @@ import GuideProfilePage from "./pages/GuideProfile/index";
 import AllGuides from "./pages/Dashboard/Admin/Guide/AllGuides";
 import AllReservations from "./pages/Dashboard/Admin/Reservations/AllReservations";
 import GuidePosts from "./pages/Dashboard/Guide/Posts/GuidePosts";
+import EditProfile from "./pages/Dashboard/Guide/Profile/EditProfile";
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth();
 
@@ -67,6 +68,7 @@ function AppContent() {
     location.pathname.includes("/admin/treks/add-trek") ||
     location.pathname.includes("/admin/treks/all-treks") ||
     location.pathname.includes("/guide/posts/my-posts") ||
+    location.pathname.includes("/guide/profile/edit-profile") ||
     (location.pathname.includes("/admin/treks/") &&
       location.pathname.includes("/edit")) ||
     (location.pathname.includes("/admin/treks/") &&
@@ -262,6 +264,15 @@ function AppContent() {
             element={
               <ProtectedRoute requiredRole="guide">
                 <GuidePosts />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/guide/profile/edit-profile"
+            element={
+              <ProtectedRoute requiredRole="guide">
+                <EditProfile />
               </ProtectedRoute>
             }
           />

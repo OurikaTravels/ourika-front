@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "react-router-dom"
-import { FileText, Calendar, ChevronDown, ChevronRight, Menu, MessageSquare, Map, User } from "lucide-react"
+import { FileText, Calendar, ChevronDown, ChevronRight, Menu, Map, User, MessageSquare } from "lucide-react"
 
 export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSection, setActiveSection }) {
   const sidebarSections = [
@@ -78,16 +78,24 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
 
             {isSidebarOpen && section.subsections && activeSection === section.id && (
               <div className="bg-gray-800 py-2">
-                {section.subsections.map((subsection) => (
-                  <Link
-                    key={subsection}
-                    to={`/guide/${section.id}/${subsection.toLowerCase().replace(" ", "-")}`}
-                    className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
-                  >
-                    <ChevronRight className="w-4 h-4 mr-2" />
-                    {subsection}
-                  </Link>
-                ))}
+                {section.subsections.map((subsection) => {
+                  let route = `/guide/${section.id}/${subsection.toLowerCase().replace(/\s+/g, "-")}`
+
+                  if (section.id === "profile" && subsection === "Edit Profile") {
+                    route = "/guide/profile/edit-profile"
+                  }
+
+                  return (
+                    <Link
+                      key={subsection}
+                      to={route}
+                      className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+                    >
+                      <ChevronRight className="w-4 h-4 mr-2" />
+                      {subsection}
+                    </Link>
+                  )
+                })}
               </div>
             )}
           </div>

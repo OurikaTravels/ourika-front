@@ -28,7 +28,7 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       id: "guides",
       name: "Guide Management",
       icon: <User className="w-5 h-5" />,
-      subsections: ["All Guides", "Applications", "Performance", "Schedule"],
+      subsections: ["All Guides", "Applications", "Performance", "Schedule", "Edit Profile"],
     },
     {
       id: "reservations",
@@ -133,6 +133,8 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
                       route = "/admin/guides/performance"
                     } else if (subsection === "Schedule") {
                       route = "/admin/guides/schedule"
+                    } else if (subsection === "Edit Profile") {
+                      route = "/guide/profile/edit"
                     }
                   } else if (section.id === "reservations") {
                     if (subsection === "All Reservations") {
