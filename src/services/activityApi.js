@@ -11,7 +11,7 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:808
 const addActivityToTrek = async (trekId, activityData) => {
   try {
     const token = localStorage.getItem("token")
-    const response = await fetch(`${API_BASE_URL}/api/treks/${trekId}/activities`, {
+    const response = await fetch(`${API_BASE_URL}/treks/${trekId}/activities`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const addActivityToTrek = async (trekId, activityData) => {
  */
 const getTrekActivities = async (trekId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/treks/${trekId}/activities`)
+    const response = await fetch(`${API_BASE_URL}/treks/${trekId}/activities`)
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
@@ -83,7 +83,7 @@ const getTrekActivities = async (trekId) => {
 const removeActivityFromTrek = async (trekId, activityId) => {
   try {
     const token = localStorage.getItem("token")
-    const response = await fetch(`${API_BASE_URL}/api/treks/${trekId}/activities/${activityId}`, {
+    const response = await fetch(`${API_BASE_URL}/treks/${trekId}/activities/${activityId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -124,7 +124,7 @@ const removeActivityFromTrek = async (trekId, activityId) => {
  */
 const updateActivityOrder = async (trekId, activityId, newOrder) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/treks/${trekId}/activities/${activityId}/order`, {
+    const response = await fetch(`${API_BASE_URL}/treks/${trekId}/activities/${activityId}/order`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -164,7 +164,7 @@ const updateActivityOrder = async (trekId, activityId, newOrder) => {
  */
 const getActivityById = async (activityId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/activities/${activityId}`)
+    const response = await fetch(`${API_BASE_URL}/activities/${activityId}`)
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
@@ -200,7 +200,7 @@ const getActivityById = async (activityId) => {
 const updateActivity = async (activityId, activityData) => {
   try {
     const token = localStorage.getItem("token")
-    const response = await fetch(`${API_BASE_URL}/api/activities/${activityId}`, {
+    const response = await fetch(`${API_BASE_URL}/activities/${activityId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

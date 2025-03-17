@@ -5,9 +5,9 @@ import { Heart, Star } from "lucide-react"
 import { useTheme } from "../../context/ThemeContext"
 
 const TrekCard = ({
-  imageUrl = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-jqVG1DVX3DddWY8orqu90x9IBBGdMs.png",
-  type = "DAY TRIP",
+  images = [],  // Add images prop
   title = "From Marrakech: Ouzoud Waterfalls Guided Tour & Boat Ride",
+  type = "DAY TRIP",
   duration = "10 hours",
   pickup = "Pickup available",
   rating = 4.6,
@@ -15,11 +15,16 @@ const TrekCard = ({
   price = 176,
   currency = "MAD",
   isFavorite = false,
+  trekId, // Add trekId prop
 }) => {
   const [isLiked, setIsLiked] = useState(isFavorite)
   const { theme } = useTheme()
   
-  
+  // Get primary image or first image as fallback
+    const primaryImage = images?.find(img => img.isPrimary) || images?.[0]
+    const imageUrl = primaryImage 
+      ? `http://localhost:8080/api/treks/${trekId}/images/${primaryImage.path}`
+      : ''    
   const fullStars = Math.floor(rating)
   const decimal = rating % 1
   const percentage = Math.round(decimal * 100)
@@ -33,9 +38,13 @@ const TrekCard = ({
       {/* Image container */}
       <div className="relative aspect-[4/3] overflow-hidden group">
         <img 
-          src={imageUrl || "/placeholder.svg"} 
+          src={imageUrl} 
           alt={title} 
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" 
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          onError={(e) => {
+            e.target.onerror = null
+            e.target.src = "/placeholder.svg"
+          }}
         />
 
         {/* Type badge */}

@@ -17,22 +17,20 @@ const TrekCardsSection = ({ treks }) => {
 
         {/* Trek Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {treks.map((trek, index) => (
-            <div
-              key={index}
-              className="transform transition-all duration-300 hover:-translate-y-1 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/20"
-            >
+          {treks.map((trek) => (
+            <div key={trek.id} className="transform transition-all duration-300 hover:-translate-y-1">
               <TrekCard
-                imageUrl={trek.imageUrl}
+                images={trek.images}
+                trekId={trek.id}
                 type={trek.type}
                 title={trek.title}
                 duration={trek.duration}
                 pickup={trek.pickup}
                 rating={trek.rating}
                 reviews={trek.reviews}
-                originalPrice={trek.originalPrice}
-                discountedPrice={trek.discountedPrice}
+                price={trek.price}
                 currency={trek.currency}
+                isFavorite={trek.isFavorite}
               />
             </div>
           ))}
