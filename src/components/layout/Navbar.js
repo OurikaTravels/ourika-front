@@ -124,7 +124,7 @@ const Navbar = () => {
             <ThemeToggle />
 
             <Link
-              to="/supplier"
+              to="/Auth/Login"
               className={cn(
                 "text-sm font-medium transition-colors",
                 theme === "dark" ? "hover:text-gray-300" : "hover:text-gray-600",
@@ -254,7 +254,7 @@ const Navbar = () => {
               className={cn("space-y-1 pb-3 pt-2 border-t", theme === "dark" ? "border-gray-700" : "border-gray-200")}
             >
               <Link
-                to="/supplier"
+                to="/Auth/Login"
                 className={cn(
                   "flex items-center px-4 py-3 text-sm font-medium rounded-md transition-colors",
                   theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-100",
