@@ -34,7 +34,7 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       id: "reservations",
       name: "Reservations",
       icon: <Calendar className="w-5 h-5" />,
-      subsections: ["All Bookings", "Pending", "Confirmed", "Cancelled"],
+      subsections: ["All Reservations", "Pending", "Confirmed", "Cancelled"],
     },
     {
       id: "users",
@@ -133,6 +133,16 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
                       route = "/admin/guides/performance"
                     } else if (subsection === "Schedule") {
                       route = "/admin/guides/schedule"
+                    }
+                  } else if (section.id === "reservations") {
+                    if (subsection === "All Reservations") {
+                      route = "/admin/reservations/all-reservations"
+                    } else if (subsection === "Pending") {
+                      route = "/admin/reservations/pending"
+                    } else if (subsection === "Confirmed") {
+                      route = "/admin/reservations/confirmed"
+                    } else if (subsection === "Cancelled") {
+                      route = "/admin/reservations/cancelled"
                     }
                   }
 
