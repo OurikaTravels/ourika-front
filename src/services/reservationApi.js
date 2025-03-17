@@ -158,6 +158,35 @@ const reservationApi = {
       }
     }
   },
-}
+
+  //Upcoming Reservations
+
+  getUpcomingReservations: async (guideId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/reservations/notify-guide/${guideId}`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to fetch reservations. Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      return { success: true, message: "Upcoming reservations fetched successfully", data };
+    } catch (error) {
+      console.error("Error fetching upcoming reservations:", error);
+      return {
+        success: false,
+        message: error.message || "An error occurred while fetching upcoming reservations",
+        data: [],
+      };
+    }
+  },
+
+};
 
 export default reservationApi

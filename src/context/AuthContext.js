@@ -34,36 +34,39 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await authApi.login(email, password)
-
+      const response = await authApi.login(email, password);
+  
       if (response.success) {
-        const { token, role, email } = response.data
-
+        const { token, role, email, id, lastName } = response.data; 
+  
         const userData = {
+          id, 
           email,
-          role: role.toLowerCase(), 
+          role: role.toLowerCase(),
           token,
-        }
-
-        localStorage.setItem("token", token)
-        localStorage.setItem("user", JSON.stringify(userData))
-
-        setUser(userData)
-
+          lastName,
+        };
+  
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("guideId", id); 
+  
+        setUser(userData);
+  
         if (role === "ADMIN") {
-          navigate("/Dashboard/Admin")
+          navigate("/Dashboard/Admin");
         } else if (role === "GUIDE") {
-          navigate("/Dashboard/Guide")
+          navigate("/Dashboard/Guide");
         }
-
-        return { success: true }
+  
+        return { success: true };
       } else {
-        throw new Error(response.message || "Login failed")
+        throw new Error(response.message || "Login failed");
       }
     } catch (error) {
-      return { success: false, error: error.message }
+      return { success: false, error: error.message };
     }
-  }
+  };
 
   const logout = () => {
     localStorage.removeItem("token")
