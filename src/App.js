@@ -17,17 +17,18 @@ import GuideDashboard from "./pages/Dashboard/Guide/index"
 import AllCategories from "./pages/Dashboard/Admin/Categories/AllCategories"
 import AddCategory from "./pages/Dashboard/Admin/Categories/AddCategory"
 import { useAuth } from "./context/AuthContext"
-import ProfilePage from "./pages/Profile"
 import ServiceManagement from "./pages/Dashboard/Admin/Treks/ServiceManagement"
 import HighlightsManagement from "./pages/Dashboard/Admin/Treks/HighlightsManagement"
 import TrekCardsSection from "./components/layout/TrekCardsSection"
 import AddTrek from "./pages/Dashboard/Admin/Treks/AddTrek"
-import AllTreks from "./pages/Dashboard/Admin/Treks/AllTreks" // Import the AllTreks component
-import TrekPreview from "./pages/Dashboard/Admin/Treks/TrekPreview" // Import the TrekPreview component
-import trekApi from "./services/trekApi" // Import the trekApi
+import AllTreks from "./pages/Dashboard/Admin/Treks/AllTreks" 
+import TrekPreview from "./pages/Dashboard/Admin/Treks/TrekPreview" 
+import trekApi from "./services/trekApi"
 import EditTrek from "./pages/Dashboard/Admin/Treks/EditTrek"
+import CommunityPage from "./pages/Community/index"
+import GuideProfilePage from "./pages/GuideProfile/index"
+import AllGuides from "./pages/Dashboard/Admin/Guide/AllGuides"
 
-// Protected Route Component
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth()
 
@@ -48,7 +49,6 @@ function ProtectedRoute({ children, requiredRole }) {
   return children
 }
 
-// Component to handle conditional rendering of Navbar and Footer
 function AppContent() {
   const location = useLocation()
   const isLoginPage = location.pathname === "/Auth/Login"
@@ -59,12 +59,12 @@ function AppContent() {
     location.pathname.includes("/admin/treks/highlights-management") ||
     location.pathname.includes("/admin/treks/add-trek") ||
     location.pathname.includes("/admin/treks/all-treks") ||
-    (location.pathname.includes("/admin/treks/") && location.pathname.includes("/edit")) || // Add edit page
+    (location.pathname.includes("/admin/treks/") && location.pathname.includes("/edit")) || 
     (location.pathname.includes("/admin/treks/") && location.pathname.includes("/preview"))
 
-  const [treks, setTreks] = useState([]) // State to store treks
-  const [loading, setLoading] = useState(true) // State to track loading
-  const [error, setError] = useState(null) // State to store errors
+  const [treks, setTreks] = useState([]) 
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   // Fetch treks from the API
   useEffect(() => {
@@ -72,14 +72,14 @@ function AppContent() {
       try {
         const response = await trekApi.getAllTreks()
         if (response.success) {
-          setTreks(response.data) // Set the fetched treks
+          setTreks(response.data) 
         } else {
-          setError(response.message) // Set error message
+          setError(response.message) 
         }
       } catch (err) {
-        setError(err.message) // Set error message
+        setError(err.message)
       } finally {
-        setLoading(false) // Stop loading
+        setLoading(false)
       }
     }
 
@@ -87,7 +87,7 @@ function AppContent() {
   }, [])
 
   if (loading) {
-    return <div className="text-center py-8">Loading treks...</div> // Show loading message
+    return <div className="text-center py-8">Loading treks...</div>
   }
 
   if (error) {
@@ -194,6 +194,16 @@ function AppContent() {
             }
           />
 
+          {/* Guide Management Routes */}
+          <Route
+            path="admin/guides/all-guides"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AllGuides />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Trek Preview Route */}
           <Route
             path="admin/treks/:id/preview"
@@ -215,12 +225,20 @@ function AppContent() {
           {/* Wishlist Route */}
           <Route path="/wishlist" element={<WishlistPage />} />
 
-          {/* Profile Route */}
+          {/* Guide Profile Routes */}
           <Route
-            path="/profile"
+            path="/guide/:id"
             element={
-              <ProtectedRoute requiredRole="tourist">
-                <ProfilePage />
+              <GuideProfilePage />
+            }
+          />
+
+          {/* Community Route */}
+          <Route
+            path="/community"
+            element={
+              <ProtectedRoute>
+                <CommunityPage />
               </ProtectedRoute>
             }
           />

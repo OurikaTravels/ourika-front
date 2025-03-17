@@ -167,7 +167,7 @@ const imageApi = {
     }
   },
 
-  // Toggle primary status of an image (POST request)
+ 
   toggleImagePrimaryStatus: async (trekId, imageId) => {
     try {
       const token = localStorage.getItem("token")

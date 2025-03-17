@@ -17,8 +17,11 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       subsections: [
         "All Treks",
         "Add Trek",
+        "Categories",
         "Service Management",
         "Highlights Management",
+        "Reviews",
+        "Pricing",
       ],
     },
     {
@@ -120,6 +123,16 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
                       route = "/admin/treks/service-management"
                     } else if (subsection === "Highlights Management") {
                       route = "/admin/treks/highlights-management"
+                    }
+                  } else if (section.id === "guides") {
+                    if (subsection === "All Guides") {
+                      route = "/admin/guides/all-guides"
+                    } else if (subsection === "Applications") {
+                      route = "/admin/guides/applications"
+                    } else if (subsection === "Performance") {
+                      route = "/admin/guides/performance"
+                    } else if (subsection === "Schedule") {
+                      route = "/admin/guides/schedule"
                     }
                   }
 

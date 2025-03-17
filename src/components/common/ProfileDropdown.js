@@ -76,8 +76,19 @@ const ProfileDropdown = () => {
                     }`}
                     onClick={() => setIsOpen(false)}
                   >
+                    <User className="h-5 w-5 mr-3" />
+                    <span>View Profile</span>
+                  </Link>
+
+                  <Link
+                    to="/profile/settings"
+                    className={`w-full flex items-center py-2 px-4 rounded-md transition-colors duration-200 ${
+                      theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
                     <Settings className="h-5 w-5 mr-3" />
-                    <span>Your Profile</span>
+                    <span>Settings</span>
                   </Link>
 
                   <button
