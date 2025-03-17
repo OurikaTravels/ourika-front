@@ -1,12 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useAuth } from "../../../../context/AuthContext"
 import { toast } from "react-hot-toast"
 import guideApi from "../../../../services/guideApi"
+import { Camera, Loader } from "lucide-react"
 
 export default function EditProfile() {
   const { user } = useAuth()
+  const fileInputRef = useRef(null)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -18,6 +20,8 @@ export default function EditProfile() {
     experience: "",
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [profileImage, setProfileImage] = useState(null)
 
   useEffect(() => {
     fetchGuideProfile()
@@ -40,11 +44,50 @@ export default function EditProfile() {
           speciality: data.speciality || "",
           experience: data.experience || "",
         })
+        setProfileImage(data.profileImage)
       } else {
         toast.error(response.message || "Failed to fetch profile")
       }
     } catch (error) {
       toast.error("Failed to fetch profile data")
+    }
+  }
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file')
+      return
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB')
+      return
+    }
+
+    setIsUploadingImage(true)
+
+    try {
+      const response = await guideApi.uploadProfileImage(user.id, file)
+      
+      if (response.success) {
+        setProfileImage(response.data.profileImage)
+        toast.success('Profile image updated successfully')
+      } else {
+        throw new Error(response.message || "Failed to upload profile image")
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to upload profile image")
+    } finally {
+      setIsUploadingImage(false)
     }
   }
 
@@ -88,6 +131,48 @@ export default function EditProfile() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
+      
+      {/* Profile Image Section */}
+      <div className="mb-8 flex justify-center">
+        <div className="relative">
+          <div 
+            className="w-32 h-32 rounded-full border-4 border-gray-200 overflow-hidden cursor-pointer group"
+            onClick={handleImageClick}
+          >
+            {profileImage ? (
+              <img
+                src={`http://localhost:8080/api/uploads/images/${profileImage}`}
+                alt="Profile"
+                className="w-full h-full object-cover group-hover:opacity-75 transition-opacity"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <Camera className="w-8 h-8 text-gray-400" />
+              </div>
+            )}
+            
+            {/* Overlay */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Camera className="w-6 h-6 text-white" />
+            </div>
+
+            {/* Loading Overlay */}
+            {isUploadingImage && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <Loader className="w-6 h-6 text-white animate-spin" />
+              </div>
+            )}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageChange}
+          />
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>

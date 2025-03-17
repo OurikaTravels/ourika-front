@@ -192,6 +192,42 @@ const guideApi = {
       }
     }
   },
+
+  uploadProfileImage: async (guideId, imageFile) => {
+    try {
+      const token = localStorage.getItem("token")
+      const formData = new FormData()
+      formData.append("file", imageFile)
+
+      const response = await fetch(`${API_BASE_URL}/auth/upload-profile-image/${guideId}`, {
+        method: "POST",
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: formData
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        return {
+          success: false,
+          message: errorData.message || "Failed to upload profile image"
+        }
+      }
+
+      const data = await response.json()
+      return {
+        success: true,
+        data
+      }
+    } catch (error) {
+      console.error("Error uploading profile image:", error)
+      return {
+        success: false,
+        message: error.message || "Failed to upload profile image"
+      }
+    }
+  }
 }
 
 export default guideApi
