@@ -20,6 +20,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import trekApi from "../../services/trekApi";
 import wishlistApi from "../../services/wishlistApi";
+import reservationApi from "../../services/reservationApi";
 import { toast } from "react-hot-toast";
 
 const TrekDetails = () => {
@@ -31,8 +32,9 @@ const TrekDetails = () => {
   const [activeImage, setActiveImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
   const [inWishlist, setInWishlist] = useState(false);
-  const [participants, setParticipants] = useState(1);
-  const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [isReserving, setIsReserving] = useState(false);
 
   useEffect(() => {
     const fetchTrekDetails = async () => {
@@ -123,6 +125,42 @@ const TrekDetails = () => {
       }
     } catch (error) {
       toast.error("Failed to update wishlist");
+    }
+  };
+
+  const handleReservation = async () => {
+    if (!user) {
+      toast.error("Please login to make a reservation");
+      return;
+    }
+
+    if (!startDate || !endDate) {
+      toast.error("Please select both start and end dates");
+      return;
+    }
+
+    setIsReserving(true);
+    try {
+      const reservationData = {
+        trekId: Number(id),
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString()
+      };
+
+      const response = await reservationApi.createReservation(user.id, reservationData);
+      
+      if (response.success) {
+        toast.success("Reservation created successfully!");
+        setStartDate('');
+        setEndDate('');
+      } else {
+        toast.error(response.message || "Failed to create reservation");
+      }
+    } catch (error) {
+      toast.error("An error occurred while creating the reservation");
+      console.error(error);
+    } finally {
+      setIsReserving(false);
     }
   };
 
@@ -655,63 +693,52 @@ const TrekDetails = () => {
 
               {/* Booking form */}
               <div className="mb-4">
-                <h3 className="text-base font-bold mb-3">
-                  Select participants, date, and language
-                </h3>
+                <h3 className="text-base font-bold mb-3">Select dates</h3>
 
                 <div className="space-y-2">
-                  {/* Participants */}
-                  <div
-                    className={`flex items-center justify-between p-2 rounded-lg ${
-                      theme === "dark" ? "bg-gray-700" : "bg-gray-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4" />
-                      <span className="text-sm">Adult x {participants}</span>
+                  {/* Date inputs */}
+                  <div className={`p-4 rounded-lg ${theme === "dark" ? "bg-gray-700" : "bg-gray-100"}`}>
+                    <div className="space-y-3">
+                      <div>
+                        <label htmlFor="startDate" className="block text-sm font-medium mb-1">
+                          Start Date
+                        </label>
+                        <input
+                          type="date"
+                          id="startDate"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="w-full px-3 py-2 rounded border bg-white dark:bg-gray-800"
+                          disabled={isReserving}
+                        />
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="endDate" className="block text-sm font-medium mb-1">
+                          End Date
+                        </label>
+                        <input
+                          type="date"
+                          id="endDate"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="w-full px-3 py-2 rounded border bg-white dark:bg-gray-800"
+                          disabled={isReserving}
+                        />
+                      </div>
                     </div>
-                    <button
-                      className="text-sm text-blue-500"
-                      onClick={() =>
-                        setParticipants((prev) => Math.min(prev + 1, 10))
-                      }
-                    >
-                      +
-                    </button>
                   </div>
 
-                  {/* Date */}
-                  <div
-                    className={`flex items-center justify-between p-2 rounded-lg ${
-                      theme === "dark" ? "bg-gray-700" : "bg-gray-100"
-                    }`}
+                  {/* Reserve button */}
+                  <button 
+                    onClick={handleReservation}
+                    disabled={isReserving || !user}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      <span className="text-sm">Select date</span>
-                    </div>
-                    <button className="text-sm text-blue-500">▼</button>
-                  </div>
-
-                  {/* Language */}
-                  <div
-                    className={`flex items-center justify-between p-2 rounded-lg ${
-                      theme === "dark" ? "bg-gray-700" : "bg-gray-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Globe className="w-4 h-4" />
-                      <span className="text-sm">{selectedLanguage}</span>
-                    </div>
-                    <button className="text-sm text-blue-500">▼</button>
-                  </div>
+                    {isReserving ? "Creating Reservation..." : "Reserve Now"}
+                  </button>
                 </div>
               </div>
-
-              {/* Check availability button */}
-              <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
-                Check availability
-              </button>
 
               {/* Reserve now & pay later */}
               <div className="mt-3 flex items-center gap-2 text-sm">

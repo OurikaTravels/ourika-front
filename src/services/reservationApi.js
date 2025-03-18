@@ -187,6 +187,36 @@ const reservationApi = {
     }
   },
 
+  createReservation: async (touristId, reservationData) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/reservations/tourists/${touristId}/reserve`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify(reservationData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          message: errorData.message || `Failed to create reservation. Status: ${response.status}`,
+        };
+      }
+
+      const data = await response.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error("Error creating reservation:", error);
+      return {
+        success: false,
+        message: error.message || "An error occurred while creating the reservation",
+      };
+    }
+  },
 };
 
 export default reservationApi

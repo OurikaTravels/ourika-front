@@ -13,7 +13,6 @@ import { useEffect, useState } from "react"; // Import useEffect and useState
 import "./App.css";
 import Navbar from "./components/layout/Navbar";
 import Hero from "./components/layout/Hero";
-import Categories from "./components/layout/Categories";
 import AboutSection from "./components/layout/About";
 import Footer from "./components/layout/Footer";
 import WishlistPage from "./pages/Wishlist/index";
@@ -120,11 +119,7 @@ function AppContent() {
             element={
               <>
                 <Hero />
-                <Categories />
-
-                {/* Trek Cards Section */}
-                <TrekCardsSection treks={treks} />
-                {/* About Section */}
+                <TrekCardsSection /> {/* Replace the existing Categories and TrekCardsSection components */}
                 <AboutSection />
               </>
             }

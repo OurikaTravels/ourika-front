@@ -137,6 +137,40 @@ const trekApi = {
       return { success: false, message: error.message || "Failed to delete trek" }
     }
   },
+
+  // Get treks by category ID
+  getTreksByCategory: async (categoryId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/treks/category/${categoryId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        return { 
+          success: false, 
+          message: errorData.message || "Failed to fetch treks by category",
+          data: [] 
+        };
+      }
+
+      const data = await response.json();
+      return { 
+        success: true, 
+        data: Array.isArray(data) ? data : (data.data || [])
+      };
+    } catch (error) {
+      console.error("Error in getTreksByCategory:", error);
+      return { 
+        success: false, 
+        message: error.message || "Failed to fetch treks by category",
+        data: [] 
+      };
+    }
+  },
 }
 
 export default trekApi
