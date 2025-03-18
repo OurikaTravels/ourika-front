@@ -70,14 +70,14 @@ const ProfileDropdown = () => {
                 {/* Profile and Logout Links */}
                 <div className="space-y-2">
                   <Link
-                    to="/profile"
+                    to={user.role === "tourist" ? "/tourist/profile" : "/guide/profile/edit-profile"}
                     className={`w-full flex items-center py-2 px-4 rounded-md transition-colors duration-200 ${
                       theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
                     }`}
                     onClick={() => setIsOpen(false)}
                   >
                     <User className="h-5 w-5 mr-3" />
-                    <span>View Profile</span>
+                    <span>Edit Profile</span>
                   </Link>
 
                   <Link
