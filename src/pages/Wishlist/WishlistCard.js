@@ -1,6 +1,7 @@
 "use client"
 
-import { Trash2 } from "lucide-react"
+import { Trash2, Clock, MapPin, Star } from 'lucide-react'
+import { Link } from "react-router-dom"
 
 const WishlistCard = ({ item, onRemove, theme }) => {
   return (
@@ -15,6 +16,10 @@ const WishlistCard = ({ item, onRemove, theme }) => {
           src={item.imageUrl || "/placeholder.svg"}
           alt={item.title}
           className="w-full h-full object-cover rounded-lg"
+          onError={(e) => {
+            e.target.src = '/placeholder.svg';
+            e.target.onerror = null; // Prevent infinite loop
+          }}
         />
       </div>
 
@@ -38,38 +43,45 @@ const WishlistCard = ({ item, onRemove, theme }) => {
           </button>
         </div>
 
-        {/* Rating and Reviews */}
-        <div className="flex items-center mt-2">
-          <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-            ⭐ {item.rating} ({item.reviews} reviews)
-          </span>
+        {/* Info */}
+        <div className="mt-4 space-y-2">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center text-gray-500">
+              <Clock className="w-4 h-4 mr-1" />
+              <span className="text-sm">{item.duration}</span>
+            </div>
+            <div className="flex items-center text-gray-500">
+              <MapPin className="w-4 h-4 mr-1" />
+              <span className="text-sm">{item.pickup}</span>
+            </div>
+            <div className="flex items-center">
+              <Star className="w-4 h-4 text-yellow-400 mr-1" />
+              <span className="text-sm text-gray-500">{item.rating} ({item.reviews} reviews)</span>
+            </div>
+          </div>
         </div>
 
-        {/* Duration and Pickup */}
-        <div className="mt-2">
-          <p className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-            🕒 {item.duration} • {item.pickup}
-          </p>
-        </div>
+        {/* Description */}
+        <p className={`text-sm mt-3 line-clamp-2 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+          {item.description}
+        </p>
 
-        {/* Price */}
-        <div className="mt-4">
-          <p className={`text-lg font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-            {item.discountedPrice} {item.currency}{" "}
-            <span className="text-sm line-through text-gray-400">
+        {/* Price and Action */}
+        <div className="mt-auto pt-4 flex items-center justify-between">
+          <div className="flex items-baseline gap-2">
+            <span className={`text-2xl font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+              {item.discountedPrice} {item.currency}
+            </span>
+            <span className="text-sm text-gray-500 line-through">
               {item.originalPrice} {item.currency}
             </span>
-          </p>
-        </div>
-
-        {/* Buttons */}
-        <div className="mt-auto pt-4 flex flex-col sm:flex-row gap-3">
-          <button className="px-4 py-2 text-sm font-medium text-[#ff5c5c] border border-[#ff5c5c] rounded-md hover:bg-[#ff5c5c] hover:bg-opacity-10 transition-colors">
-            View More
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-white bg-[#ff5c5c] rounded-md hover:bg-opacity-90 transition-colors">
-            Book Now
-          </button>
+          </div>
+          <Link
+            to={`/treks/${item.id}`}
+            className="px-4 py-2 bg-[#ff5d5d] text-white rounded-lg hover:bg-[#ff4040] transition-colors"
+          >
+            View Details
+          </Link>
         </div>
       </div>
     </div>
@@ -77,4 +89,3 @@ const WishlistCard = ({ item, onRemove, theme }) => {
 }
 
 export default WishlistCard
-

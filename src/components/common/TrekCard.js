@@ -1,11 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Heart, Star } from "lucide-react"
 import { useTheme } from "../../context/ThemeContext"
+import { useAuth } from "../../context/AuthContext"
+import wishlistApi from "../../services/wishlistApi"
+import { toast } from "react-hot-toast"
 
 const TrekCard = ({
-  images = [],  // Add images prop
+  trekId,
+  images = [],
   title = "From Marrakech: Ouzoud Waterfalls Guided Tour & Boat Ride",
   type = "DAY TRIP",
   duration = "10 hours",
@@ -15,16 +19,79 @@ const TrekCard = ({
   price = 176,
   currency = "MAD",
   isFavorite = false,
-  trekId, // Add trekId prop
+  onWishlistUpdate,
 }) => {
   const [isLiked, setIsLiked] = useState(isFavorite)
+  const [isLoading, setIsLoading] = useState(false)
   const { theme } = useTheme()
-  
-  // Get primary image or first image as fallback
-    const primaryImage = images?.find(img => img.isPrimary) || images?.[0]
-    const imageUrl = primaryImage 
-      ? `http://localhost:8080/api/treks/${trekId}/images/${primaryImage.path}`
-      : ''    
+  const { user, isAuthenticated } = useAuth()
+
+  const handleWishlistClick = async () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to your wishlist")
+      return
+    }
+
+    if (!user?.id || !trekId) {
+      toast.error("Unable to process request")
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      if (!isLiked) {
+        // Add to wishlist
+        const response = await wishlistApi.addToWishlist(user.id, trekId)
+        if (response.success) {
+          setIsLiked(true)
+          toast.success("Added to wishlist")
+          if (onWishlistUpdate) onWishlistUpdate()
+        } else {
+          throw new Error(response.message)
+        }
+      } else {
+        // Remove from wishlist
+        const response = await wishlistApi.removeFromWishlist(user.id, trekId)
+        if (response.success) {
+          setIsLiked(false)
+          toast.success("Removed from wishlist")
+          if (onWishlistUpdate) onWishlistUpdate()
+        } else {
+          throw new Error(response.message)
+        }
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to update wishlist")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Check if trek is in wishlist when component mounts
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (!user?.id || !trekId) return
+
+      try {
+        const response = await wishlistApi.getTouristWishlist(user.id)
+        if (response.success && Array.isArray(response.data.wishlistItems)) {
+          const isInWishlist = response.data.wishlistItems.some(
+            item => item.trek.id === trekId
+          )
+          setIsLiked(isInWishlist)
+        }
+      } catch (error) {
+        console.error("Error checking wishlist status:", error)
+      }
+    }
+
+    checkWishlistStatus()
+  }, [user?.id, trekId])
+
+  const primaryImage = images?.find(img => img.isPrimary) || images?.[0]
+  const imageUrl = primaryImage 
+    ? `http://localhost:8080/api/treks/${trekId}/images/${primaryImage.path}`
+    : ''    
   const fullStars = Math.floor(rating)
   const decimal = rating % 1
   const percentage = Math.round(decimal * 100)
@@ -60,13 +127,14 @@ const TrekCard = ({
 
         {/* Heart button */}
         <button
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={handleWishlistClick}
+          disabled={isLoading}
           className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300
             ${theme === "dark"
               ? "bg-gray-900/20 hover:bg-gray-900/40"
               : "bg-gray-50/20 hover:bg-gray-50/40"
-            } backdrop-blur-sm`}
-          aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}
+            } backdrop-blur-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          aria-label={isLiked ? "Remove from wishlist" : "Add to wishlist"}
         >
           <Heart
             className={`w-5 h-5 transition-colors duration-300

@@ -1,244 +1,194 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Heart } from "lucide-react"
+import { Heart } from 'lucide-react'
 import { Link } from "react-router-dom"
 import { useTheme } from "../../context/ThemeContext"
+import { useAuth } from "../../context/AuthContext"
+import wishlistApi from "../../services/wishlistApi"
+import { toast } from "react-hot-toast"
 import WishlistHeader from "./WishlistHeader"
-import WishlistControls from "./WishlistControls"
 import WishlistCard from "./WishlistCard"
-import { sampleWishlist } from "./wishlist-data" // Move sample data to separate file
 
 const WishlistPage = () => {
   const { theme } = useTheme()
-  const [wishlist, setWishlist] = useState(sampleWishlist)
-  const [filteredWishlist, setFilteredWishlist] = useState(sampleWishlist)
+  const { user } = useAuth()
+  const [wishlist, setWishlist] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [sortOption, setSortOption] = useState("dateAdded")
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [filters, setFilters] = useState({
     type: "all",
-    priceRange: [0, 1000],
+    priceRange: [0, 5000],
     duration: "all",
+    rating: 0
   })
-  const [sortOption, setSortOption] = useState("dateAdded")
 
-  // Filter and sort wishlist items
+  const formatDuration = (isoDuration) => {
+    try {
+      
+      const hourMatch = isoDuration.match(/PT(\d+)H/)
+      const minuteMatch = isoDuration.match(/(\d+)M/)
+      const dayMatch = isoDuration.match(/P(\d+)D/)
+      
+      let result = ""
+      
+      if (dayMatch) {
+        result += `${dayMatch[1]} day${dayMatch[1] > 1 ? 's' : ''} `
+      }
+      
+      if (hourMatch) {
+        result += `${hourMatch[1]} hour${hourMatch[1] > 1 ? 's' : ''} `
+      }
+      
+      if (minuteMatch) {
+        result += `${minuteMatch[1]} min`
+      }
+      
+      return result.trim() || "Duration not specified"
+    } catch (error) {
+      console.error("Error formatting duration:", error)
+      return isoDuration
+    }
+  }
+
+  const fetchWishlist = async () => {
+    if (!user?.id) return
+    
+    setIsLoading(true)
+    try {
+      const response = await wishlistApi.getTouristWishlist(user.id)
+      console.log("Wishlist API response:", response) // Debug log
+      
+      if (response.success) {
+        // Check if response.data exists and is an array
+        if (Array.isArray(response.data)) {
+          const wishlistData = response.data
+          console.log("Wishlist data:", wishlistData) // Debug log
+          
+          // Transform the data according to the actual API response structure
+          const transformedData = wishlistData.map(item => {
+            const trek = item.trek || {}
+            
+            // Find primary image or use the first one
+            const primaryImage = trek.images?.find(img => img.isPrimary)?.path || 
+                                (trek.images?.length > 0 ? trek.images[0].path : null)
+            
+            return {
+              id: trek.id,
+              title: trek.title || "No Title",
+              type: trek.categoryId === 1 ? "DAY TRIP" : "MULTI-DAY",
+              duration: formatDuration(trek.duration || "PT0H"),
+              description: trek.description || "",
+              pickup: trek.services?.some(service => 
+                service.name?.toLowerCase().includes("pickup")) ? "Pickup available" : "No pickup",
+              rating: 4.5, // Default since it's not in the response
+              reviews: 0,  // Default since it's not in the response
+              imageUrl: primaryImage 
+                ? `http://localhost:8080/api/treks/${trek.id}/images/${primaryImage}`
+                : '/placeholder.svg',
+              discountedPrice: trek.price || 0,
+              originalPrice: Math.round((trek.price || 0) * 1.2),
+              currency: "MAD",
+              addedDate: new Date(item.addedDate),
+              highlights: trek.highlights || [],
+              services: trek.services || [],
+              startLocation: trek.startLocation,
+              endLocation: trek.endLocation
+            }
+          })
+          
+          console.log("Transformed data:", transformedData) // Debug log
+          setWishlist(transformedData)
+        } else {
+          // If response.data is not an array, log it and set empty wishlist
+          console.error("Unexpected response data format:", response.data)
+          setWishlist([])
+        }
+      } else {
+        setWishlist([])
+        toast.error(response.message || "Failed to fetch wishlist")
+      }
+    } catch (error) {
+      toast.error("Failed to fetch wishlist")
+      console.error("Wishlist fetch error:", error)
+      setWishlist([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   useEffect(() => {
-    let filtered = [...wishlist]
-
-    // Apply filters
-    if (filters.type !== "all") {
-      filtered = filtered.filter((item) => item.type === filters.type)
+    if (user?.id) {
+      fetchWishlist()
     }
+  }, [user?.id])
 
-    if (filters.duration !== "all") {
-      filtered = filtered.filter((item) => {
-        if (filters.duration === "short" && item.duration.includes("hours") && Number.parseInt(item.duration) <= 4)
-          return true
-        if (
-          filters.duration === "medium" &&
-          item.duration.includes("hours") &&
-          Number.parseInt(item.duration) > 4 &&
-          Number.parseInt(item.duration) <= 8
-        )
-          return true
-        if (
-          filters.duration === "long" &&
-          (item.duration.includes("days") || (item.duration.includes("hours") && Number.parseInt(item.duration) > 8))
-        )
-          return true
-        return false
-      })
+  const removeFromWishlist = async (trekId) => {
+    if (!user?.id) return
+
+    try {
+      const response = await wishlistApi.removeFromWishlist(user.id, trekId)
+      if (response.success) {
+        setWishlist(wishlist.filter(item => item.id !== trekId))
+        toast.success("Removed from wishlist")
+      } else {
+        toast.error(response.message)
+      }
+    } catch (error) {
+      toast.error("Failed to remove from wishlist")
     }
+  }
 
-    filtered = filtered.filter(
-      (item) => item.discountedPrice >= filters.priceRange[0] && item.discountedPrice <= filters.priceRange[1],
-    )
-
-    // Apply sorting
-    filtered.sort((a, b) => {
+  // Filter and sort the wishlist
+  const filteredAndSortedWishlist = wishlist
+    .filter(item => {
+      if (filters.type !== "all" && item.type !== filters.type) return false
+      if (item.discountedPrice < filters.priceRange[0] || item.discountedPrice > filters.priceRange[1]) return false
+      if (filters.rating > 0 && item.rating < filters.rating) return false
+      return true
+    })
+    .sort((a, b) => {
       switch (sortOption) {
+        case "dateAdded":
+          return new Date(b.addedDate) - new Date(a.addedDate)
         case "priceAsc":
           return a.discountedPrice - b.discountedPrice
         case "priceDesc":
           return b.discountedPrice - a.discountedPrice
         case "rating":
           return b.rating - a.rating
-        case "dateAdded":
         default:
-          return new Date(b.dateAdded) - new Date(a.dateAdded)
+          return 0
       }
     })
 
-    setFilteredWishlist(filtered)
-  }, [wishlist, filters, sortOption])
-
-  const removeFromWishlist = (id) => {
-    setWishlist(wishlist.filter((item) => item.id !== id))
-  }
-
-  const clearWishlist = () => {
-    if (window.confirm("Are you sure you want to clear your entire wishlist?")) {
-      setWishlist([])
-    }
-  }
-
   return (
-    <div className={`${theme === "dark" ? "bg-gray-900" : "bg-gray-50"}`}>
+    <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"}`}>
       <WishlistHeader theme={theme} />
 
       <div className="container mx-auto px-4 py-8">
-        <WishlistControls
-          theme={theme}
-          filteredCount={filteredWishlist.length}
-          sortOption={sortOption}
-          setSortOption={setSortOption}
-          isFilterOpen={isFilterOpen}
-          setIsFilterOpen={setIsFilterOpen}
-          onClearAll={clearWishlist}
-          hasItems={wishlist.length > 0}
-        />
-
-        {/* Filter panel */}
-        {isFilterOpen && (
-          <div
-            className={`mb-6 p-4 rounded-lg ${
-              theme === "dark" ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200 shadow-sm"
-            }`}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className={`font-medium ${theme === "dark" ? "text-white" : "text-gray-900"}`}>Filters</h3>
-              <button
-                className={`text-sm ${
-                  theme === "dark" ? "text-gray-300 hover:text-white" : "text-gray-600 hover:text-gray-900"
-                }`}
-                onClick={() => {
-                  setFilters({
-                    type: "all",
-                    priceRange: [0, 1000],
-                    duration: "all",
-                  })
-                }}
-              >
-                Reset all
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Type filter */}
-              <div>
-                <label
-                  className={`block mb-2 text-sm font-medium ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
-                >
-                  Experience Type
-                </label>
-                <select
-                  className={`w-full p-2 rounded-md text-sm ${
-                    theme === "dark"
-                      ? "bg-gray-700 border-gray-600 text-white"
-                      : "bg-gray-50 border-gray-300 text-gray-900"
-                  } border`}
-                  value={filters.type}
-                  onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-                >
-                  <option value="all">All types</option>
-                  <option value="DAY TRIP">Day Trip</option>
-                  <option value="FULL DAY">Full Day</option>
-                  <option value="PRIVATE">Private</option>
-                  <option value="GUIDED TOUR">Guided Tour</option>
-                  <option value="EVENING">Evening</option>
-                </select>
-              </div>
-
-              {/* Duration filter */}
-              <div>
-                <label
-                  className={`block mb-2 text-sm font-medium ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
-                >
-                  Duration
-                </label>
-                <select
-                  className={`w-full p-2 rounded-md text-sm ${
-                    theme === "dark"
-                      ? "bg-gray-700 border-gray-600 text-white"
-                      : "bg-gray-50 border-gray-300 text-gray-900"
-                  } border`}
-                  value={filters.duration}
-                  onChange={(e) => setFilters({ ...filters, duration: e.target.value })}
-                >
-                  <option value="all">Any duration</option>
-                  <option value="short">Short (up to 4 hours)</option>
-                  <option value="medium">Medium (4-8 hours)</option>
-                  <option value="long">Long (8+ hours or multi-day)</option>
-                </select>
-              </div>
-
-              {/* Price range filter */}
-              <div>
-                <label
-                  className={`block mb-2 text-sm font-medium ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
-                >
-                  Price Range: {filters.priceRange[0]} - {filters.priceRange[1]} {wishlist[0]?.currency || "MAD"}
-                </label>
-                <div className="flex gap-4">
-                  <input
-                    type="range"
-                    min="0"
-                    max="1000"
-                    step="50"
-                    value={filters.priceRange[0]}
-                    onChange={(e) =>
-                      setFilters({
-                        ...filters,
-                        priceRange: [Number.parseInt(e.target.value), filters.priceRange[1]],
-                      })
-                    }
-                    className="w-full"
-                  />
-                  <input
-                    type="range"
-                    min="0"
-                    max="1000"
-                    step="50"
-                    value={filters.priceRange[1]}
-                    onChange={(e) =>
-                      setFilters({
-                        ...filters,
-                        priceRange: [filters.priceRange[0], Number.parseInt(e.target.value)],
-                      })
-                    }
-                    className="w-full"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Wishlist items */}
-        {filteredWishlist.length > 0 ? (
-          <div className="space-y-6">
-            {filteredWishlist.map((item) => (
-              <WishlistCard key={item.id} item={item} onRemove={removeFromWishlist} theme={theme} />
+        {isLoading ? (
+          <div className="text-center py-8">Loading...</div>
+        ) : filteredAndSortedWishlist.length > 0 ? (
+          <div className="grid gap-6">
+            {filteredAndSortedWishlist.map((item) => (
+              <WishlistCard
+                key={item.id}
+                item={item}
+                onRemove={removeFromWishlist}
+                theme={theme}
+              />
             ))}
           </div>
         ) : (
-          <div
-            className={`text-center py-16 px-4 rounded-lg ${
-              theme === "dark" ? "bg-gray-800" : "bg-white border border-gray-200"
-            }`}
-          >
-            <div className="inline-flex justify-center items-center w-16 h-16 rounded-full mb-4 bg-gray-100 dark:bg-gray-700">
-              <Heart className="w-8 h-8 text-gray-400 dark:text-gray-500" />
-            </div>
-            <h3 className={`text-lg font-medium mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+          <div className="text-center py-8">
+            <p className={`text-lg mb-4 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
               Your wishlist is empty
-            </h3>
-            <p className={`max-w-md mx-auto mb-6 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-              Start exploring and save your favorite experiences to plan your next adventure
             </p>
             <Link
-              to="/"
-              className="inline-flex items-center px-4 py-2 rounded-full bg-[#ff5d5d] text-white hover:bg-[#ff4040] transition-colors"
+              to="/treks"
+              className="inline-block px-6 py-3 bg-[#ff5d5d] text-white rounded-lg hover:bg-[#ff4040] transition-colors"
             >
               Explore Tours
             </Link>
@@ -250,4 +200,3 @@ const WishlistPage = () => {
 }
 
 export default WishlistPage
-
