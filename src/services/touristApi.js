@@ -15,17 +15,18 @@ const touristApi = {
         return {
           success: false,
           message: errorData.message || "Failed to fetch tourists",
+          data: []
         };
       }
 
       const data = await response.json();
-      return { success: true, data };
+      return data; // Return the complete response object {success, message, data}
     } catch (error) {
       console.error("Error fetching tourists:", error);
       return {
         success: false,
         message: error.message || "Failed to fetch tourists",
-        data: [],
+        data: []
       };
     }
   },

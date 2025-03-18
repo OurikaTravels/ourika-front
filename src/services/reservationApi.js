@@ -217,6 +217,36 @@ const reservationApi = {
       };
     }
   },
+
+  getTouristReservations: async (touristId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/reservations/tourist/${touristId}`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          message: errorData.message || `Failed to fetch tourist reservations. Status: ${response.status}`,
+          data: [],
+        };
+      }
+
+      const data = await response.json();
+      return { success: true, data };
+    } catch (error) {
+      console.error("Error fetching tourist reservations:", error);
+      return {
+        success: false,
+        message: error.message || "An error occurred while fetching tourist reservations",
+        data: [],
+      };
+    }
+  },
 };
 
 export default reservationApi

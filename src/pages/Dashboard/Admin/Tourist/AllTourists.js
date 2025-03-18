@@ -27,27 +27,33 @@ export default function AllTourists() {
     setError(null);
     try {
       const response = await touristApi.getAllTourists();
+      console.log('API Response:', response); // For debugging
+      
       if (response.success) {
-        setTourists(response.data);
+        // Correctly access the data array from the response
+        setTourists(response.data || []);
+        if (response.message) {
+          toast.success(response.message);
+        }
       } else {
-        setError(response.message || "Failed to fetch tourists");
-        toast.error(response.message || "Failed to fetch tourists");
+        throw new Error(response.message || "Failed to fetch tourists");
       }
     } catch (err) {
       const errorMessage = err.message || "An error occurred while fetching tourists";
       setError(errorMessage);
       toast.error(errorMessage);
+      setTourists([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filteredTourists = tourists.filter(
-    (tourist) =>
-      tourist.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tourist.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tourist.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tourist.nationality?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTourists = tourists.filter((tourist) =>
+    tourist &&
+    (tourist.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     tourist.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     tourist.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     tourist.nationality?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -63,13 +69,11 @@ export default function AllTourists() {
         <DashboardHeader user={user} notifications={notifications} />
 
         <main className="p-6">
-          {/* Header */}
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">All Tourists</h1>
             <p className="text-gray-600 dark:text-gray-400">View and manage tourist accounts</p>
           </div>
 
-          {/* Search Bar */}
           <div className="mb-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -83,7 +87,6 @@ export default function AllTourists() {
             </div>
           </div>
 
-          {/* Tourists Table */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
             {isLoading ? (
               <div className="flex justify-center items-center p-12">

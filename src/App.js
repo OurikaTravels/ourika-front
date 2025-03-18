@@ -39,6 +39,7 @@ import EditProfile from "./pages/Dashboard/Guide/Profile/EditProfile";
 import AllTourists from "./pages/Dashboard/Admin/Tourist/AllTourists";
 import TouristProfile from "./pages/Dashboard/Tourist/Profile/EditProfile";
 import TrekDetails from "./pages/TrekDetails";
+import BookingsPage from "./pages/Bookings";
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth();
 
@@ -293,6 +294,14 @@ function AppContent() {
             }
           />
           <Route path="/treks/:id" element={<TrekDetails />} />
+          <Route
+            path="/bookings"
+            element={
+              <ProtectedRoute requiredRole="tourist">
+                <BookingsPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
       {!isLoginPage && !isDashboardPage && <Footer />}

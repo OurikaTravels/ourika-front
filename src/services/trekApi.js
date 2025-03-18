@@ -1,4 +1,5 @@
 const API_BASE_URL = "http://localhost:8080/api"
+const IMAGES_BASE_URL = "http://localhost:8080/api/uploads/images"
 
 const trekApi = {
   // Create a new trek (Step 1: Basic Info)
@@ -169,6 +170,38 @@ const trekApi = {
         message: error.message || "Failed to fetch treks by category",
         data: [] 
       };
+    }
+  },
+
+  // Search treks
+  searchTreks: async (query) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/treks/search?title=${encodeURIComponent(query)}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw { success: false, message: errorData.message || "Failed to search treks" }
+      }
+
+      const data = await response.json()
+      return { 
+        success: true, 
+        data: data.map(trek => ({
+          ...trek,
+          primaryImageUrl: trek.primaryImageUrl ? `${IMAGES_BASE_URL}/${trek.primaryImageUrl.split('/').pop()}` : null
+        }))
+      }
+    } catch (error) {
+      return { 
+        success: false, 
+        message: error.message || "Failed to search treks",
+        data: [] 
+      }
     }
   },
 }

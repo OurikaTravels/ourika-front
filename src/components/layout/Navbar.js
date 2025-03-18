@@ -7,6 +7,7 @@ import { useTheme } from "../../context/ThemeContext"
 import { useAuth } from "../../context/AuthContext"
 import ProfileDropdown from "../common/ProfileDropdown"
 import ThemeToggle from "../common/ThemeToggle"
+import trekApi from "../../services/trekApi"
 
 const cn = (...classes) => classes.filter(Boolean).join(" ")
 
@@ -16,11 +17,52 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState([])
   const [showResults, setShowResults] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const searchRef = useRef(null)
+
+  // Search function
+  const searchTreks = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([])
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const response = await trekApi.searchTreks(query)
+      if (response.success) {
+        setSearchResults(response.data)
+        setShowResults(true)
+      } else {
+        throw new Error(response.message)
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+      setSearchResults([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Debounce search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      searchTreks(searchQuery)
+    }, 300)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchQuery])
+
+  // Handle search result click
+  const handleResultClick = (trekId) => {
+    navigate(`/treks/${trekId}`)
+    setShowResults(false)
+    setSearchQuery("")
+  }
 
   // Check if user is a tourist
   const isTourist = isAuthenticated && user?.role === "tourist"
@@ -56,18 +98,21 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300 border-b",
-        isScrolled ? "shadow-md" : "shadow-sm",
-        theme === "dark" ? "bg-gray-900 text-white border-gray-700" : "bg-white text-gray-900 border-gray-200",
+        "sticky top-0 z-50 w-full border-b transition-all duration-200",
+        isScrolled
+          ? "bg-white/80 backdrop-blur-md border-gray-200 dark:bg-gray-900/80 dark:border-gray-700"
+          : "bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4">
         {/* Desktop Layout */}
-        <div className="hidden md:flex items-center justify-between h-16">
-          <Link to="/" className="text-xl font-bold text-[#ff5d5d] hover:opacity-90 transition-opacity">
-            OURIKA TRAVELS
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link to="/" className="flex-shrink-0">
+            <span className="text-xl font-bold text-[#ff5d5d]">OURIKA TRAVELS</span>
           </Link>
 
+          {/* Search Bar */}
           <div className="flex-1 max-w-2xl mx-6" ref={searchRef}>
             <div className="relative">
               <div
@@ -90,30 +135,71 @@ const Navbar = () => {
                 />
                 {searchQuery && (
                   <button
-                    onClick={() => setSearchQuery("")}
+                    onClick={() => {
+                      setSearchQuery("")
+                      setShowResults(false)
+                    }}
                     className="p-2 mr-2 hover:text-gray-600 text-gray-400 transition-colors"
                     aria-label="Clear search"
                   >
                     <X className="h-5 w-5" />
                   </button>
                 )}
-                <button className="bg-[#ff5d5d] text-white px-6 py-3 hover:bg-[#ff4040] transition-colors">
-                  Search
-                </button>
               </div>
 
+              {/* Search Results Popup */}
               {showResults && searchQuery && (
                 <div
                   className={cn(
                     "absolute top-full left-0 right-0 mt-2 rounded-lg shadow-lg border z-50",
-                    "animate-in fade-in-50 slide-in-from-top-5 duration-200",
+                    "max-h-[400px] overflow-y-auto",
                     theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
                   )}
                 >
-                  {searchResults.length > 0 ? (
-                    <div className="p-2">{/* Search results would go here */}</div>
+                  {isLoading ? (
+                    <div className="p-4 text-center text-gray-500">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#ff5d5d] mx-auto"></div>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                      {searchResults.map((trek) => (
+                        <div
+                          key={trek.id}
+                          onClick={() => handleResultClick(trek.id)}
+                          className={cn(
+                            "flex items-center gap-4 p-4 cursor-pointer transition-colors",
+                            theme === "dark"
+                              ? "hover:bg-gray-700"
+                              : "hover:bg-gray-50"
+                          )}
+                        >
+                          <img
+                            src={trek.primaryImageUrl || "/placeholder.svg"}
+                            alt={trek.title}
+                            className="h-12 w-12 object-cover rounded-md"
+                            onError={(e) => {
+                              e.target.onerror = null
+                              e.target.src = "/placeholder.svg"
+                            }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className={cn(
+                              "text-sm font-medium truncate",
+                              theme === "dark" ? "text-white" : "text-gray-900"
+                            )}>
+                              {trek.title}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                              {trek.description}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   ) : (
-                    <div className="p-4 text-center text-gray-500">No results found for "{searchQuery}"</div>
+                    <div className="p-4 text-center text-gray-500">
+                      No results found for "{searchQuery}"
+                    </div>
                   )}
                 </div>
               )}
@@ -319,30 +405,32 @@ const Navbar = () => {
 
 // Navigation Icon Component
 const NavIcon = ({ to, icon, label, badge, isActive }) => {
-  const { theme } = useTheme()
-
+  const { theme } = useTheme();
   return (
-    <Link to={to} className="relative group flex flex-col items-center" aria-label={label}>
+    <Link
+      to={to}
+      className="flex flex-col items-center relative"
+      title={label}
+    >
       <div
         className={cn(
           "transition-colors",
           isActive
             ? "text-[#ff5d5d]"
             : theme === "dark"
-              ? "text-gray-300 group-hover:text-[#ff5d5d]"
-              : "text-gray-700 group-hover:text-[#ff5d5d]",
+            ? "text-gray-300 hover:text-[#ff5d5d]"
+            : "text-gray-700 hover:text-[#ff5d5d]"
         )}
       >
         {icon}
       </div>
-      <span className="text-xs mt-1 text-gray-600 dark:text-gray-400">{label}</span>
-      {badge !== undefined && (
-        <span className="absolute -top-2 -right-2 bg-[#ff5d5d] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+      {badge > 0 && (
+        <span className="absolute -top-1 -right-1 bg-[#ff5d5d] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
           {badge}
         </span>
       )}
     </Link>
-  )
+  );
 }
 
 // Mobile Navigation Link Component
