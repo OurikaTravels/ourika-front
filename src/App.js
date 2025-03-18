@@ -39,6 +39,7 @@ import GuidePosts from "./pages/Dashboard/Guide/Posts/GuidePosts";
 import EditProfile from "./pages/Dashboard/Guide/Profile/EditProfile";
 import AllTourists from "./pages/Dashboard/Admin/Tourist/AllTourists";
 import TouristProfile from "./pages/Dashboard/Tourist/Profile/EditProfile";
+import TrekDetails from "./pages/TrekDetails";
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth();
 
@@ -296,6 +297,7 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+          <Route path="/treks/:id" element={<TrekDetails />} />
         </Routes>
       </div>
       {!isLoginPage && !isDashboardPage && <Footer />}
