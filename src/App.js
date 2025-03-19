@@ -1,4 +1,3 @@
-"use client";
 
 import {
   BrowserRouter as Router,
@@ -17,6 +16,8 @@ import AboutSection from "./components/layout/About";
 import Footer from "./components/layout/Footer";
 import WishlistPage from "./pages/Wishlist/index";
 import Login from "./pages/Auth/Login";
+import RegisterGuide from "./pages/Auth/RegisterGuide";
+import EmailVerification from "./pages/Auth/EmailVerification";
 import AdminDashboard from "./pages/Dashboard/Admin/index";
 import GuideDashboard from "./pages/Dashboard/Guide/index";
 import AllCategories from "./pages/Dashboard/Admin/Categories/AllCategories";
@@ -62,7 +63,12 @@ function ProtectedRoute({ children, requiredRole }) {
 
 function AppContent() {
   const location = useLocation();
-  const isLoginPage = location.pathname === "/Auth/Login";
+  // Add EmailVerification to the array of paths where navbar and footer should be hidden
+  const isLoginPage = [
+    "/Auth/Login", 
+    "/Auth/RegisterGuide",
+    "/Auth/EmailVerification"  // Add this line
+  ].includes(location.pathname);
   const isDashboardPage =
     location.pathname.includes("/Dashboard") ||
     location.pathname.includes("/admin/categories") ||
@@ -120,7 +126,7 @@ function AppContent() {
             element={
               <>
                 <Hero />
-                <TrekCardsSection /> {/* Replace the existing Categories and TrekCardsSection components */}
+                <TrekCardsSection /> 
                 <AboutSection />
               </>
             }
@@ -128,6 +134,8 @@ function AppContent() {
 
           {/* Auth Routes */}
           <Route path="/Auth/Login" element={<Login />} />
+          <Route path="/Auth/RegisterGuide" element={<RegisterGuide />} />
+          <Route path="/Auth/EmailVerification" element={<EmailVerification />} />
 
           {/* Dashboard Routes */}
           <Route

@@ -1,6 +1,7 @@
 const API_BASE_URL = "http://localhost:8080/api";
 
 const touristApi = {
+  
   getAllTourists: async () => {
     try {
       const token = localStorage.getItem("token");

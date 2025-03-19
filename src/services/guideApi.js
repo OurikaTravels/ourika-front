@@ -1,5 +1,3 @@
-// Guide API Service
-
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080/api'
 
 const guideApi = {
@@ -65,8 +63,8 @@ const guideApi = {
   }
 },
 
-  // Validate a guide
-  validateGuide: async (guideId) => {
+  // toggleGuideValidation
+  toggleGuideValidation: async (guideId) => {
     try {
       const token = localStorage.getItem("token")
       const response = await fetch(`${API_BASE_URL}/auth/validate-guide/${guideId}`, {

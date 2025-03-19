@@ -1,19 +1,40 @@
 "use client"
 
 import { useState } from "react"
-import { X, Mail, Lock, Eye, EyeOff, User } from "lucide-react"
+import { X, Mail, Lock, Eye, EyeOff, User, Globe } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { toast } from "react-hot-toast"
+import { authApi } from "../../services/api" 
 
 const AuthModal = ({ isOpen, onClose, theme }) => {
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [name, setName] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [nationality, setNationality] = useState("") // Add this state
   const [isLoading, setIsLoading] = useState(false)
 
   const { login } = useAuth()
+
+  // Add nationality options
+  const nationalities = [
+    "Select Nationality",
+    "American",
+    "British",
+    "Canadian",
+    "Chinese",
+    "French",
+    "German",
+    "Indian",
+    "Italian",
+    "Japanese",
+    "Korean",
+    "Russian",
+    "Spanish",
+    "Other"
+  ]
 
   if (!isOpen) return null
 
@@ -22,15 +43,37 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
     setIsLoading(true)
 
     try {
-      const result = await login(email, password)
-      if (result.success) {
-        toast.success("Logged in successfully")
-        onClose()
+      if (isLogin) {
+        // Handle login
+        const result = await login(email, password)
+        if (result.success) {
+          toast.success("Logged in successfully")
+          onClose()
+        } else {
+          toast.error(result.error || "Login failed")
+        }
       } else {
-        toast.error(result.error || "Login failed")
+        // Handle tourist registration
+        const touristData = {
+          firstName,
+          lastName,
+          email,
+          password,
+          nationality // Add nationality to the request
+        }
+        
+        const result = await authApi.registerTourist(touristData)
+        toast.success("Tourist account created successfully")
+        // Automatically switch to login mode after successful registration
+        setIsLogin(true)
+        setEmail("")
+        setPassword("")
+        setFirstName("")
+        setLastName("")
+        setNationality("")
       }
     } catch (err) {
-      toast.error("An unexpected error occurred")
+      toast.error(err.message || "An unexpected error occurred")
       console.error(err)
     } finally {
       setIsLoading(false)
@@ -41,7 +84,9 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
     setIsLogin(!isLogin)
     setEmail("")
     setPassword("")
-    setName("")
+    setFirstName("")
+    setLastName("")
+    setNationality("")
   }
 
   return (
@@ -63,41 +108,117 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
 
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-6 text-center">
-            {isLogin ? "Log in to your account" : "Create an account"}
+            {isLogin ? "Log in to your account" : "Create a tourist account"}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
-              <div>
-                <label
-                  htmlFor="name"
-                  className={`block text-sm font-medium mb-1 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
-                >
-                  Full Name
-                </label>
-                <div
-                  className={`relative rounded-md shadow-sm border ${
-                    theme === "dark" ? "border-gray-600" : "border-gray-300"
-                  }`}
-                >
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className={`h-5 w-5 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`} />
-                  </div>
-                  <input
-                    type="text"
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-[#ff5d5d] focus:border-[#ff5d5d] ${
-                      theme === "dark"
-                        ? "bg-gray-700 text-white placeholder-gray-400"
-                        : "bg-white text-gray-900 placeholder-gray-400"
+              <>
+                <div>
+                  <label
+                    htmlFor="firstName"
+                    className={`block text-sm font-medium mb-1 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
+                  >
+                    First Name
+                  </label>
+                  <div
+                    className={`relative rounded-md shadow-sm border ${
+                      theme === "dark" ? "border-gray-600" : "border-gray-300"
                     }`}
-                    placeholder="John Doe"
-                    required={!isLogin}
-                  />
+                  >
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className={`h-5 w-5 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`} />
+                    </div>
+                    <input
+                      type="text"
+                      id="firstName"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-[#ff5d5d] focus:border-[#ff5d5d] ${
+                        theme === "dark"
+                          ? "bg-gray-700 text-white placeholder-gray-400"
+                          : "bg-white text-gray-900 placeholder-gray-400"
+                      }`}
+                      placeholder="John"
+                      required={!isLogin}
+                    />
+                  </div>
                 </div>
-              </div>
+                
+                <div>
+                  <label
+                    htmlFor="lastName"
+                    className={`block text-sm font-medium mb-1 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
+                  >
+                    Last Name
+                  </label>
+                  <div
+                    className={`relative rounded-md shadow-sm border ${
+                      theme === "dark" ? "border-gray-600" : "border-gray-300"
+                    }`}
+                  >
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <User className={`h-5 w-5 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`} />
+                    </div>
+                    <input
+                      type="text"
+                      id="lastName"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-[#ff5d5d] focus:border-[#ff5d5d] ${
+                        theme === "dark"
+                          ? "bg-gray-700 text-white placeholder-gray-400"
+                          : "bg-white text-gray-900 placeholder-gray-400"
+                      }`}
+                      placeholder="Doe"
+                      required={!isLogin}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="nationality"
+                    className={`block text-sm font-medium mb-1 ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Nationality
+                  </label>
+                  <div
+                    className={`relative rounded-md shadow-sm border ${
+                      theme === "dark" ? "border-gray-600" : "border-gray-300"
+                    }`}
+                  >
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Globe className={`h-5 w-5 ${
+                        theme === "dark" ? "text-gray-400" : "text-gray-500"
+                      }`} />
+                    </div>
+                    <select
+                      id="nationality"
+                      value={nationality}
+                      onChange={(e) => setNationality(e.target.value)}
+                      required
+                      className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-[#ff5d5d] focus:border-[#ff5d5d] ${
+                        theme === "dark"
+                          ? "bg-gray-700 text-white placeholder-gray-400"
+                          : "bg-white text-gray-900 placeholder-gray-400"
+                      }`}
+                    >
+                      {nationalities.map((nat) => (
+                        <option 
+                          key={nat} 
+                          value={nat === "Select Nationality" ? "" : nat}
+                          disabled={nat === "Select Nationality"}
+                        >
+                          {nat}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
             )}
 
             <div>
@@ -203,7 +324,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
               ) : isLogin ? (
                 "Log in"
               ) : (
-                "Sign up"
+                "Sign up as Tourist"
               )}
             </button>
           </form>
@@ -227,4 +348,3 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
 }
 
 export default AuthModal
-

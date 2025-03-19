@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "../../../../context/AuthContext"
 import { toast } from "react-hot-toast"
-import { Loader } from "lucide-react"
+import { Loader, AlertTriangle, CheckCircle, XCircle } from "lucide-react"
 import touristApi from "../../../../services/touristApi"
 
 export default function TouristProfile() {
@@ -13,6 +13,8 @@ export default function TouristProfile() {
     lastName: "",
     email: "",
     nationality: "",
+    verified: false,
+    role: ""
   })
   const [isLoading, setIsLoading] = useState(false)
 
@@ -32,6 +34,8 @@ export default function TouristProfile() {
           lastName: data.lastName || "",
           email: data.email || "",
           nationality: data.nationality || "",
+          verified: data.verified || false,
+          role: data.role || ""
         })
       } else {
         toast.error(response.message || "Failed to fetch profile")
@@ -74,8 +78,40 @@ export default function TouristProfile() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
-      
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Edit Profile</h1>
+        <div className="flex items-center gap-2">
+          {formData.verified ? (
+            <div className="flex items-center text-green-600 bg-green-50 px-3 py-1 rounded-full">
+              <CheckCircle className="w-4 h-4 mr-1" />
+              <span className="text-sm font-medium">Verified</span>
+            </div>
+          ) : (
+            <div className="flex items-center text-red-600 bg-red-50 px-3 py-1 rounded-full">
+              <XCircle className="w-4 h-4 mr-1" />
+              <span className="text-sm font-medium">Not Verified</span>
+            </div>
+          )}
+          <div className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
+            <span className="text-sm font-medium">{formData.role}</span>
+          </div>
+        </div>
+      </div>
+
+      {!formData.verified && (
+        <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
+          <div className="flex items-center">
+            <AlertTriangle className="h-5 w-5 text-yellow-400 mr-2" />
+            <div>
+              <h3 className="text-sm font-medium text-yellow-800">Email Verification Required</h3>
+              <p className="text-sm text-yellow-700 mt-1">
+                Please verify your email address to access all features. Check your inbox for the verification link.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-2">First Name</label>
@@ -114,7 +150,7 @@ export default function TouristProfile() {
           <input
             type="text"
             name="nationality"
-            value={formData.nationality}
+            value={formData.nationality || ''}
             onChange={handleChange}
             className="w-full p-2 border rounded-md"
           />
