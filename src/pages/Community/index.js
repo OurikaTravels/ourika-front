@@ -25,6 +25,7 @@ export default function CommunityPage() {
       const response = await postApi.getAllPosts()
       if (response.success) {
         setPosts(response.data)
+        console.log("Fetched Posts:", response.data)
       } else {
         toast.error(response.message)
       }
@@ -52,6 +53,19 @@ export default function CommunityPage() {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
+
+  // Debug: Log posts and guides when the component renders
+  useEffect(() => {
+    if (!isLoading) {
+      console.log("Posts:", posts)
+      const uniqueGuides = posts
+        .map(post => post.guide)
+        .filter((guide, index, self) => 
+          index === self.findIndex(g => g.id === guide.id)
+        )
+      console.log("Unique Guides:", uniqueGuides)
+    }
+  }, [isLoading, posts])
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -82,28 +96,30 @@ export default function CommunityPage() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {posts.map((post) => (
-                    <Post 
-                      key={post.id} 
-                      post={{
-                        id: post.id,
-                        content: post.description,
-                        images: post.images,
-                        date: post.createdAt,
-                        likes: post.likeCount,
-                        comments: post.commentCount,
-                        commentsList: post.comments,
-                        author: {
-                          id: post.guide.id,
-                          name: `${post.guide.firstName} ${post.guide.lastName}`,
-                          username: post.guide.email.split('@')[0],
-                          avatar: post.guide.profileImage,
-                          verified: post.guide.isValidateGuide,
-                          speciality: post.guide.speciality
-                        }
-                      }} 
-                    />
-                  ))}
+                  {posts.map((post) => {
+                    return (
+                      <Post 
+                        key={post.id} 
+                        post={{
+                          id: post.id,
+                          content: post.description,
+                          images: post.images,
+                          date: post.createdAt,
+                          likes: post.likeCount,
+                          comments: post.commentCount,
+                          commentsList: post.comments,
+                          author: {
+                            id: post.guide.id,
+                            name: `${post.guide.firstName} ${post.guide.lastName}`,
+                            username: post.guide.email.split('@')[0],
+                            avatar: post.guide.profileImage,
+                            verified: post.guide.isValidateGuide,
+                            speciality: post.guide.speciality
+                          }
+                        }} 
+                      />
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -116,16 +132,18 @@ export default function CommunityPage() {
                 .filter((guide, index, self) => 
                   index === self.findIndex(g => g.id === guide.id)
                 )
-                .map(guide => ({
-                  id: guide.id,
-                  name: `${guide.firstName} ${guide.lastName}`,
-                  username: guide.email.split('@')[0],
-                  avatar: guide.profileImage,
-                  verified: guide.isValidateGuide,
-                  rating: 4.5, // This could be added to the API response later
-                  location: guide.location || "Morocco",
-                  speciality: guide.speciality
-                }))}
+                .map(guide => {
+                  return {
+                    id: guide.id,
+                    name: `${guide.firstName} ${guide.lastName}`,
+                    username: guide.email.split('@')[0],
+                    avatar: guide.profileImage,
+                    verified: guide.isValidateGuide,
+                    rating: 4.5, 
+                    location: guide.location || "Morocco",
+                    speciality: guide.speciality
+                  }
+                })}
               topics={["morocco", "hiking", "adventure", "desert", "mountains"]}
               externalIsSidebarOpen={isSidebarOpen}
               externalToggleSidebar={toggleSidebar}
@@ -136,4 +154,3 @@ export default function CommunityPage() {
     </div>
   )
 }
-

@@ -1,174 +1,138 @@
-const API_BASE_URL = "http://localhost:8080/api"
-const IMAGES_BASE_URL = "http://localhost:8080/api/uploads/images"
+import axios from "axios";
+
+const API_BASE_URL = "http://localhost:8080/api";
+const IMAGES_BASE_URL = "http://localhost:8080/api/uploads/images";
 
 const trekApi = {
-  // Create a new trek (Step 1: Basic Info)
+  // Create a new trek 
   createTrek: async (trekData) => {
     try {
-      const token = localStorage.getItem("token")
-      
-      const response = await fetch(`${API_BASE_URL}/treks`, {
-        method: "POST",
+      const token = localStorage.getItem("token");
+      const response = await axios.post(`${API_BASE_URL}/treks`, trekData, {
         headers: {
           "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-        body: JSON.stringify(trekData),
-      })
-  
-      if (!response.ok) {
-        let errorMessage = "Failed to create trek"
-        try {
-          const errorData = await response.json()
-          errorMessage = errorData.message || errorMessage
-        } catch (e) {
-          console.error("Error parsing error response:", e)
-        }
-        return { success: false, message: errorMessage }
-      }
-  
-      const data = await response.json()
-      console.log("Trek API response:", data)
-      
+      });
+
       return {
         success: true,
-        data: data.data,
-        message: data.message || "Trek created successfully"
-      }
+        data: response.data.data,
+        message: response.data.message || "Trek created successfully",
+      };
     } catch (error) {
-      console.error("Error in createTrek:", error)
-      return { 
-        success: false, 
-        message: error.message || "Failed to create trek",
-        error
-      }
+      console.error("Error in createTrek:", error);
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to create trek",
+        error,
+      };
     }
   },
 
   // Get all treks
   getAllTreks: async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/treks`, {
-        method: "GET",
+      const response = await axios.get(`${API_BASE_URL}/treks`, {
         headers: {
           "Content-Type": "application/json",
         },
-      })
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw { success: false, message: errorData.message || "Failed to fetch treks" }
-      }
-
-      const data = await response.json()
       // Check if data is an array, otherwise look for data in a nested property
-      const treksArray = Array.isArray(data) ? data : data.data || []
-      return { success: true, data: treksArray }
+      const treksArray = Array.isArray(response.data)
+        ? response.data
+        : response.data.data || [];
+      return { success: true, data: treksArray };
     } catch (error) {
-      return { success: false, message: error.message || "Failed to fetch treks" }
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to fetch treks",
+      };
     }
   },
 
   // Get a trek by ID
   getTrekById: async (id) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/treks/${id}`, {
-        method: "GET",
+      const response = await axios.get(`${API_BASE_URL}/treks/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
-      })
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw { success: false, message: errorData.message || "Failed to fetch trek" }
-      }
-
-      const data = await response.json()
-      return { success: true, data }
+      return { success: true, data: response.data };
     } catch (error) {
-      return { success: false, message: error.message || "Failed to fetch trek" }
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to fetch trek",
+      };
     }
   },
 
   // Update a trek
   updateTrek: async (id, trekData) => {
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`${API_BASE_URL}/treks/${id}`, {
-        method: "PUT",
+      const token = localStorage.getItem("token");
+      const response = await axios.put(`${API_BASE_URL}/treks/${id}`, trekData, {
         headers: {
           "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-        body: JSON.stringify(trekData),
-      })
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw { success: false, message: errorData.message || "Failed to update trek" }
-      }
-
-      const data = await response.json()
-      return { success: true, data, message: "Trek updated successfully" }
+      return {
+        success: true,
+        data: response.data,
+        message: "Trek updated successfully",
+      };
     } catch (error) {
-      return { success: false, message: error.message || "Failed to update trek" }
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to update trek",
+      };
     }
   },
 
   // Delete a trek
   deleteTrek: async (id) => {
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`${API_BASE_URL}/treks/${id}`, {
-        method: "DELETE",
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(`${API_BASE_URL}/treks/${id}`, {
         headers: {
           "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-      })
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw { success: false, message: errorData.message || "Failed to delete trek" }
-      }
-
-      return { success: true, message: "Trek deleted successfully" }
+      return { success: true, message: "Trek deleted successfully" };
     } catch (error) {
-      return { success: false, message: error.message || "Failed to delete trek" }
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to delete trek",
+      };
     }
   },
 
   // Get treks by category ID
   getTreksByCategory: async (categoryId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/treks/category/${categoryId}`, {
-        method: "GET",
+      const response = await axios.get(`${API_BASE_URL}/treks/category/${categoryId}`, {
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        return { 
-          success: false, 
-          message: errorData.message || "Failed to fetch treks by category",
-          data: [] 
-        };
-      }
-
-      const data = await response.json();
-      return { 
-        success: true, 
-        data: Array.isArray(data) ? data : (data.data || [])
+      return {
+        success: true,
+        data: Array.isArray(response.data) ? response.data : response.data.data || [],
       };
     } catch (error) {
       console.error("Error in getTreksByCategory:", error);
-      return { 
-        success: false, 
-        message: error.message || "Failed to fetch treks by category",
-        data: [] 
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to fetch treks by category",
+        data: [],
       };
     }
   },
@@ -176,35 +140,29 @@ const trekApi = {
   // Search treks
   searchTreks: async (query) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/treks/search?title=${encodeURIComponent(query)}`, {
-        method: "GET",
+      const response = await axios.get(`${API_BASE_URL}/treks/search?title=${encodeURIComponent(query)}`, {
         headers: {
           "Content-Type": "application/json",
         },
-      })
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw { success: false, message: errorData.message || "Failed to search treks" }
-      }
-
-      const data = await response.json()
-      return { 
-        success: true, 
-        data: data.map(trek => ({
+      return {
+        success: true,
+        data: response.data.map((trek) => ({
           ...trek,
-          primaryImageUrl: trek.primaryImageUrl ? `${IMAGES_BASE_URL}/${trek.primaryImageUrl.split('/').pop()}` : null
-        }))
-      }
+          primaryImageUrl: trek.primaryImageUrl
+            ? `${IMAGES_BASE_URL}/${trek.primaryImageUrl.split("/").pop()}`
+            : null,
+        })),
+      };
     } catch (error) {
-      return { 
-        success: false, 
-        message: error.message || "Failed to search treks",
-        data: [] 
-      }
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to search treks",
+        data: [],
+      };
     }
   },
-}
+};
 
-export default trekApi
-
+export default trekApi;

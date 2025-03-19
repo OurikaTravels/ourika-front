@@ -1,31 +1,50 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, X, ChevronLeft, ChevronRight, MapPin } from "lucide-react"
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  Bookmark,
+  MoreHorizontal,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+} from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import PostComments from "./PostComments"
 import { Link } from "react-router-dom"
+import postApi from "../../services/postApi"
 
 export default function Post({ post }) {
-  const [liked, setLiked] = useState(false)
+  const [liked, setLiked] = useState(post.likedByCurrentUser || false)
   const [saved, setSaved] = useState(false)
-  const [likeCount, setLikeCount] = useState(post.likes)
+  const [likeCount, setLikeCount] = useState(post.likes || 0)
   const [showComments, setShowComments] = useState(false)
   const [showImageModal, setShowImageModal] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [comments, setComments] = useState(post.commentsList || [])
 
   useEffect(() => {
     const handleEscKey = (e) => {
-      if (e.key === 'Escape' && showImageModal) setShowImageModal(false)
+      if (e.key === "Escape" && showImageModal) setShowImageModal(false)
     }
-    
-    window.addEventListener('keydown', handleEscKey)
-    return () => window.removeEventListener('keydown', handleEscKey)
+
+    window.addEventListener("keydown", handleEscKey)
+    return () => window.removeEventListener("keydown", handleEscKey)
   }, [showImageModal])
 
-  const handleLike = () => {
-    setLikeCount(liked ? likeCount - 1 : likeCount + 1)
-    setLiked(!liked)
+  const handleLike = async () => {
+    try {
+      const response = await postApi.toggleLike(post.id)
+      if (response.success) {
+        setLikeCount(liked ? likeCount - 1 : likeCount + 1)
+        setLiked(!liked)
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error)
+    }
   }
 
   const handleSave = () => {
@@ -55,6 +74,10 @@ export default function Post({ post }) {
     setCurrentImageIndex((prev) => (prev === post.images.length - 1 ? 0 : prev + 1))
   }
 
+  const handleAddComment = (newComment) => {
+    setComments([...comments, newComment])
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1">
       {/* Post Header */}
@@ -63,7 +86,11 @@ export default function Post({ post }) {
           <Link to={`/guide/${post.author.username}`} className="flex-shrink-0">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden ring-2 ring-gray-100 dark:ring-gray-700">
               <img
-                src={post.author.avatar ? `${process.env.REACT_APP_API_BASE_URL}/uploads/images/${post.author.avatar}` : "/placeholder.svg"}
+                src={
+                  post.author.avatar
+                    ? `${process.env.REACT_APP_API_BASE_URL}/uploads/images/${post.author.avatar}`
+                    : "/placeholder.svg"
+                }
                 alt={post.author.name}
                 className="w-full h-full object-cover transition-transform hover:scale-110"
               />
@@ -95,13 +122,17 @@ export default function Post({ post }) {
 
       {/* Post Content */}
       <div className="px-4 sm:px-5 pb-3">
+        {post.title && <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{post.title}</h3>}
         <p className="text-gray-800 dark:text-gray-200 mb-3 whitespace-pre-line leading-relaxed">{post.content}</p>
 
         {/* Post Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             {post.tags.map((tag, index) => (
-              <span key={index} className="text-[#ff5c5c] text-xs sm:text-sm font-medium hover:underline cursor-pointer bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full transition-colors hover:bg-red-100 dark:hover:bg-red-900/30">
+              <span
+                key={index}
+                className="text-[#ff5c5c] text-xs sm:text-sm font-medium hover:underline cursor-pointer bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full transition-colors hover:bg-red-100 dark:hover:bg-red-900/30"
+              >
                 #{tag}
               </span>
             ))}
@@ -112,19 +143,26 @@ export default function Post({ post }) {
       {/* Post Image */}
       {post.images && post.images.length > 0 && (
         <div className="mb-3">
-          <div className={`grid gap-1 ${
-            post.images.length === 1 ? 'grid-cols-1' : 
-            post.images.length === 2 ? 'grid-cols-2' : 
-            post.images.length === 3 ? 'grid-cols-3 grid-rows-2' : 
-            'grid-cols-2 grid-rows-2'
-          }`}>
+          <div
+            className={`grid gap-1 ${
+              post.images.length === 1
+                ? "grid-cols-1"
+                : post.images.length === 2
+                  ? "grid-cols-2"
+                  : post.images.length === 3
+                    ? "grid-cols-3 grid-rows-2"
+                    : "grid-cols-2 grid-rows-2"
+            }`}
+          >
             {post.images.slice(0, 4).map((image, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`relative cursor-pointer overflow-hidden ${
-                  post.images.length === 3 && index === 0 ? 'col-span-3 row-span-1' : 
-                  post.images.length === 3 && index > 0 ? 'col-span-1.5 row-span-1' :
-                  ''
+                  post.images.length === 3 && index === 0
+                    ? "col-span-3 row-span-1"
+                    : post.images.length === 3 && index > 0
+                      ? "col-span-1.5 row-span-1"
+                      : ""
                 }`}
                 onClick={() => handleImageClick(index)}
               >
@@ -132,9 +170,9 @@ export default function Post({ post }) {
                   src={`${process.env.REACT_APP_API_BASE_URL}/uploads/images/${image}`}
                   alt={`Post content ${index + 1}`}
                   className="w-full h-full object-cover transition-transform hover:scale-105"
-                  style={{ 
-                    aspectRatio: post.images.length === 1 ? '16/9' : 
-                               (post.images.length === 3 && index === 0) ? '3/1' : '1/1' 
+                  style={{
+                    aspectRatio:
+                      post.images.length === 1 ? "16/9" : post.images.length === 3 && index === 0 ? "3/1" : "1/1",
                   }}
                 />
                 {index === 3 && post.images.length > 4 && (
@@ -148,32 +186,32 @@ export default function Post({ post }) {
 
           {/* Image Modal/Carousel */}
           {showImageModal && (
-            <div 
+            <div
               className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center"
               onClick={() => setShowImageModal(false)}
             >
-              <button 
+              <button
                 className="absolute top-4 right-4 text-white p-2 hover:bg-white/10 rounded-full transition-colors"
                 onClick={() => setShowImageModal(false)}
               >
                 <X size={24} />
               </button>
-              
-              <button 
+
+              <button
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-white p-2 hover:bg-white/20 rounded-full transition-colors"
                 onClick={handlePrevImage}
               >
                 <ChevronLeft size={32} />
               </button>
-              
-              <button 
+
+              <button
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-white p-2 hover:bg-white/20 rounded-full transition-colors"
                 onClick={handleNextImage}
               >
                 <ChevronRight size={32} />
               </button>
 
-              <div className="relative max-w-5xl max-h-[85vh] w-full mx-4" onClick={e => e.stopPropagation()}>
+              <div className="relative max-w-5xl max-h-[85vh] w-full mx-4" onClick={(e) => e.stopPropagation()}>
                 <img
                   src={`${process.env.REACT_APP_API_BASE_URL}/uploads/images/${post.images[currentImageIndex]}`}
                   alt={`Post content ${currentImageIndex + 1}`}
@@ -213,28 +251,17 @@ export default function Post({ post }) {
           onClick={toggleComments}
         >
           <MessageCircle size={18} className="transition-transform hover:scale-110" />
-          <span className="text-sm font-medium">{post.comments}</span>
-        </button>
-
-        <button className="flex items-center space-x-1.5 text-gray-500 dark:text-gray-400 hover:text-green-500 transition-colors">
-          <Share2 size={18} className="transition-transform hover:scale-110" />
-          <span className="text-sm font-medium">0</span>
-        </button>
-
-        <button
-          className={`flex items-center space-x-1.5 ${saved ? "text-yellow-500" : "text-gray-500 dark:text-gray-400"} hover:text-yellow-500 transition-colors`}
-          onClick={handleSave}
-        >
-          <Bookmark size={18} className={`transition-transform ${saved ? "fill-current scale-110" : "hover:scale-110"}`} />
+          <span className="text-sm font-medium">{comments.length}</span>
         </button>
       </div>
 
       {/* Comments Section */}
       {showComments && (
         <div className="px-4 sm:px-5 pb-4 border-t border-gray-200 dark:border-gray-700 pt-3">
-          <PostComments postId={post.id} initialComments={post.commentsList || []} />
+          <PostComments postId={post.id} initialComments={comments} onCommentAdded={handleAddComment} />
         </div>
       )}
     </div>
   )
 }
+
