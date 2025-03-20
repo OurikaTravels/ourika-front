@@ -1,9 +1,26 @@
 "use client"
 
 import { Link } from "react-router-dom"
-import { FileText, Calendar, ChevronDown, ChevronRight, Menu, Map, User, MessageSquare } from "lucide-react"
+import { FileText, ChevronDown, ChevronRight, Menu, Map, User, X } from "lucide-react"
+import { useState, useEffect } from "react"
 
 export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSection, setActiveSection }) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    checkIfMobile()
+    window.addEventListener("resize", checkIfMobile)
+
+    return () => {
+      window.removeEventListener("resize", checkIfMobile)
+    }
+  }, [])
+
   const sidebarSections = [
     {
       id: "dashboard",
@@ -27,30 +44,32 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
   return (
     <aside
       className={`${
-        isSidebarOpen ? "w-64" : "w-20"
-      } bg-[#111926] text-white transition-all duration-300 ease-in-out fixed h-full z-10`}
+        isSidebarOpen ? "translate-x-0" : isMobile ? "-translate-x-full" : "w-20 -translate-x-0"
+      } bg-[#191b20] text-white transition-all duration-300 ease-in-out fixed h-full z-30 shadow-lg
+      ${isMobile ? "w-[85%] max-w-[300px]" : "w-64"}`}
     >
-      <div className="p-4 flex items-center justify-between">
-        <h2 className={`font-bold text-xl ${!isSidebarOpen && "hidden"}`}>Guide Portal</h2>
+      <div className="p-4 flex items-center justify-between border-b border-gray-700">
+        <h2 className={`font-bold text-xl ${!isSidebarOpen && !isMobile && "hidden"}`}>Guide Portal</h2>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+          className="p-2 rounded-lg hover:bg-[#fe5532]/20 text-[#fe5532] transition-colors"
+          aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
         >
-          <Menu className="w-5 h-5" />
+          {isMobile && isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
-      <nav className="mt-4">
+      <nav className="mt-2 overflow-y-auto h-[calc(100%-64px)]">
         {sidebarSections.map((section) => (
           <div key={section.id}>
             <button
               onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
-              className={`w-full flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors ${
-                activeSection === section.id ? "bg-gray-700 text-white" : ""
+              className={`w-full flex items-center px-4 py-3 hover:bg-[#fe5532]/10 hover:text-white transition-colors ${
+                activeSection === section.id ? "bg-[#fe5532]/20 text-[#fe5532]" : "text-gray-300"
               }`}
             >
-              <span className="mr-3">{section.icon}</span>
-              {isSidebarOpen && (
+              <span className="mr-3 text-[#fe5532]">{section.icon}</span>
+              {(isSidebarOpen || isMobile) && (
                 <>
                   <span className="flex-1 text-left">{section.name}</span>
                   {section.subsections && (
@@ -64,8 +83,8 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
               )}
             </button>
 
-            {isSidebarOpen && section.subsections && activeSection === section.id && (
-              <div className="bg-gray-800 py-2">
+            {(isSidebarOpen || isMobile) && section.subsections && activeSection === section.id && (
+              <div className="bg-[#232630] py-1">
                 {section.subsections.map((subsection) => {
                   let route = `/guide/${section.id}/${subsection.toLowerCase().replace(/\s+/g, "-")}`
 
@@ -77,9 +96,9 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
                     <Link
                       key={subsection}
                       to={route}
-                      className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+                      className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-[#fe5532] hover:bg-[#fe5532]/10 transition-colors"
                     >
-                      <ChevronRight className="w-4 h-4 mr-2" />
+                      <ChevronRight className="w-4 h-4 mr-2 text-[#fe5532]" />
                       {subsection}
                     </Link>
                   )
