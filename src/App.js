@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
-import { useEffect, useState } from "react"; // Import useEffect and useState
+import { useEffect, useState } from "react";
 import "./App.css";
 import Navbar from "./components/layout/Navbar";
 import Hero from "./components/layout/Hero";
@@ -41,6 +41,10 @@ import AllTourists from "./pages/Dashboard/Admin/Tourist/AllTourists";
 import TouristProfile from "./pages/Dashboard/Tourist/Profile/EditProfile";
 import TrekDetails from "./pages/TrekDetails";
 import BookingsPage from "./pages/Bookings";
+import Support from "./pages/Support";
+import PrivacyPolicy from "./pages/Legal/PrivacyPolicy";
+import TermsOfService from "./pages/Legal/TermsOfService";
+import About from "./pages/About";
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth();
 
@@ -251,9 +255,7 @@ function AppContent() {
           <Route
             path="/community"
             element={
-              <ProtectedRoute>
                 <CommunityPage />
-              </ProtectedRoute>
             }
           />
 
@@ -310,6 +312,12 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+          <Route path="/support" element={<Support />} />
+          <Route path="/about" element={<About />} />
+
+          {/* Legal Routes */}
+          <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/legal/terms-of-service" element={<TermsOfService />} />
         </Routes>
       </div>
       {!isLoginPage && !isDashboardPage && <Footer />}
@@ -321,11 +329,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <ThemeProvider>
-          <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
-            <AppContent />
-          </div>
-        </ThemeProvider>
+        <div className="min-h-screen flex flex-col bg-white">
+          <AppContent />
+        </div>
       </AuthProvider>
     </Router>
   );

@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { useAuth } from "../../context/AuthContext"
+import { Navigate } from "react-router-dom"
 import Post from "../../components/community/Post"
-import CreatePostCard from "../../components/community/CreatePostCard"
 import CommunitySidebar from "../../components/community/CommunitySidebar"
-import CommunityHeader from "../../components/community/CommunityHeader"
 import postApi from "../../services/postApi"
 import { toast } from "react-hot-toast"
 
@@ -36,7 +35,7 @@ export default function CommunityPage() {
     }
   }
 
-  // Check if we're on mobile
+ 
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 1024)
@@ -45,14 +44,6 @@ export default function CommunityPage() {
     window.addEventListener("resize", checkIfMobile)
     return () => window.removeEventListener("resize", checkIfMobile)
   }, [])
-
-  const handlePostCreated = (newPost) => {
-    setPosts([newPost, ...posts])
-  }
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
-  }
 
   // Debug: Log posts and guides when the component renders
   useEffect(() => {
@@ -67,10 +58,17 @@ export default function CommunityPage() {
     }
   }, [isLoading, posts])
 
+  const handlePostCreated = (newPost) => {
+    setPosts([newPost, ...posts])
+  }
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <CommunityHeader toggleSidebar={toggleSidebar} />
-
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Community</h1>
@@ -81,8 +79,6 @@ export default function CommunityPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {isAuthenticated && <CreatePostCard onPostCreated={handlePostCreated} />}
-
             <div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Latest Posts</h2>
 
@@ -109,9 +105,8 @@ export default function CommunityPage() {
                           comments: post.commentCount,
                           commentsList: post.comments,
                           author: {
-                            id: post.guide.id,
+                            id: post.guide.id, 
                             name: `${post.guide.firstName} ${post.guide.lastName}`,
-                            username: post.guide.email.split('@')[0],
                             avatar: post.guide.profileImage,
                             verified: post.guide.isValidateGuide,
                             speciality: post.guide.speciality

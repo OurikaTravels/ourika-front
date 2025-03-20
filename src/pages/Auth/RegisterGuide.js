@@ -63,7 +63,7 @@ export default function RegisterGuide() {
 
   return (
     <AuthLayout isLoginForm={false}>
-      <div className="w-full max-w-md">
+      <div className="w-full">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-[#111926]">Guide Registration</h2>
           <p className="text-gray-500 mt-2">Join our community of expert guides.</p>

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import TrekCard from "./TrekCard" // Adjust the import path as necessary
-import trekApi from "../../services/trekApi" // Adjust the import path as necessary
+import TrekCard from "./TrekCard"
+import trekApi from "../../services/trekApi"
 
 const TreksList = () => {
   const [treks, setTreks] = useState([])
@@ -38,22 +38,28 @@ const TreksList = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {treks.map((trek) => (
-        <TrekCard
-          key={trek.id}
-          imageUrl={trek.imageUrl}
-          type={trek.type}
-          title={trek.title}
-          duration={trek.duration}
-          pickup={trek.pickup}
-          rating={trek.rating}
-          reviews={trek.reviews}
-          price={trek.price}
-          currency={trek.currency}
-          isFavorite={trek.isFavorite}
-        />
-      ))}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-white">
+      {loading ? (
+        <div className="text-gray-600">Loading...</div>
+      ) : error ? (
+        <div className="text-gray-600">Error: {error}</div>
+      ) : (
+        treks.map((trek) => (
+          <TrekCard
+            key={trek.id}
+            trekId={trek.id}
+            images={trek.images || []}
+            title={trek.title}
+            type={trek.type}
+            duration={trek.duration}
+            pickup={trek.pickup}
+            rating={trek.rating || 0}
+            reviews={trek.reviews || 0}
+            price={trek.price || 0}
+            currency={trek.currency || 'MAD'}
+          />
+        ))
+      )}
     </div>
   )
 }

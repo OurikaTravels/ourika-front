@@ -18,7 +18,7 @@ const WishlistCard = ({ item, onRemove, theme }) => {
           className="w-full h-full object-cover rounded-lg"
           onError={(e) => {
             e.target.src = '/placeholder.svg';
-            e.target.onerror = null; // Prevent infinite loop
+            e.target.onerror = null;
           }}
         />
       </div>

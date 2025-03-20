@@ -1,12 +1,38 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Heart, Star } from "lucide-react"
-import { useTheme } from "../../context/ThemeContext"
+import { Heart, Clock, MapPin } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import wishlistApi from "../../services/wishlistApi"
 import { toast } from "react-hot-toast"
 import { Link } from "react-router-dom"
+
+// Helper function to format duration
+const formatDuration = (duration) => {
+  if (!duration) return "Duration not specified"
+
+  // If duration is already formatted, return it
+  if (typeof duration === "string" && (duration.includes("hour") || duration.includes("day"))) {
+    return duration
+  }
+
+  // Try to parse duration as a number of hours
+  const hours = Number.parseInt(duration)
+  if (isNaN(hours)) return duration
+
+  if (hours < 24) {
+    return hours === 1 ? "1 hour" : `${hours} hours`
+  } else {
+    const days = Math.floor(hours / 24)
+    const remainingHours = hours % 24
+
+    if (remainingHours === 0) {
+      return days === 1 ? "1 day" : `${days} days`
+    } else {
+      return days === 1 ? `1 day ${remainingHours} hr` : `${days} days ${remainingHours} hr`
+    }
+  }
+}
 
 const TrekCard = ({
   trekId,
@@ -15,8 +41,6 @@ const TrekCard = ({
   type = "DAY TRIP",
   duration = "10 hours",
   pickup = "Pickup available",
-  rating = 4.6,
-  reviews = 8951,
   price = 176,
   currency = "MAD",
   isFavorite = false,
@@ -24,7 +48,6 @@ const TrekCard = ({
 }) => {
   const [isLiked, setIsLiked] = useState(isFavorite)
   const [isLoading, setIsLoading] = useState(false)
-  const { theme } = useTheme()
   const { user, isAuthenticated } = useAuth()
 
   const handleWishlistClick = async () => {
@@ -76,9 +99,7 @@ const TrekCard = ({
       try {
         const response = await wishlistApi.getTouristWishlist(user.id)
         if (response.success && Array.isArray(response.data.wishlistItems)) {
-          const isInWishlist = response.data.wishlistItems.some(
-            item => item.trek.id === trekId
-          )
+          const isInWishlist = response.data.wishlistItems.some((item) => item.trek.id === trekId)
           setIsLiked(isInWishlist)
         }
       } catch (error) {
@@ -89,27 +110,23 @@ const TrekCard = ({
     checkWishlistStatus()
   }, [user?.id, trekId])
 
-  const primaryImage = images?.find(img => img.isPrimary) || images?.[0]
-  const imageUrl = primaryImage 
-    ? `http://localhost:8080/api/treks/${trekId}/images/${primaryImage.path}`
-    : ''    
-  const fullStars = Math.floor(rating)
-  const decimal = rating % 1
-  const percentage = Math.round(decimal * 100)
+  const primaryImage = images?.find((img) => img.isPrimary) || images?.[0]
+  const imageUrl = primaryImage ? `http://localhost:8080/api/uploads/images/${primaryImage.path}` : ""
+
+  const formattedDuration = formatDuration(duration)
 
   return (
-    <Link to={`/treks/${trekId}`} className="block">
-      <div className={`flex flex-col rounded-lg overflow-hidden transition-all duration-300 
-        ${theme === "dark" 
-          ? "bg-gray-800 border border-gray-700 hover:border-gray-600" 
-          : "bg-white border border-gray-200 hover:border-gray-300"
-        } hover:shadow-lg transform hover:-translate-y-1`}>
+    <Link to={`/treks/${trekId}`} className="block group">
+      <div
+        className="flex flex-col rounded-xl overflow-hidden transition-all duration-300 
+        bg-white border border-gray-100 group-hover:border-[#ff5c5c] group-hover:shadow-xl transform group-hover:-translate-y-2"
+      >
         {/* Image container */}
-        <div className="relative aspect-[4/3] overflow-hidden group">
-          <img 
-            src={imageUrl} 
-            alt={title} 
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <img
+            src={imageUrl || "/placeholder.svg"}
+            alt={title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             onError={(e) => {
               e.target.onerror = null
               e.target.src = "/placeholder.svg"
@@ -117,17 +134,16 @@ const TrekCard = ({
           />
 
           {/* Type badge */}
-          <div className="absolute top-3 left-3">
-            <span className={`px-2 py-1 text-[11px] font-medium rounded-md 
-              ${theme === "dark" 
-                ? "bg-gray-900/90 text-gray-100" 
-                : "bg-white/90 text-gray-700"
-              } backdrop-blur-sm`}>
+          <div className="absolute top-4 left-4">
+            <span
+              className="px-3 py-1.5 text-xs font-semibold rounded-full 
+              bg-[#ff5c5c]/90 text-white backdrop-blur-sm shadow-lg"
+            >
               {type}
             </span>
           </div>
 
-          {/* Heart button - Add stopPropagation to prevent navigation when clicking the heart */}
+          {/* Heart button */}
           <button
             onClick={(e) => {
               e.preventDefault()
@@ -135,79 +151,47 @@ const TrekCard = ({
               handleWishlistClick()
             }}
             disabled={isLoading}
-            className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300
-              ${theme === "dark"
-                ? "bg-gray-900/20 hover:bg-gray-900/40"
-                : "bg-gray-50/20 hover:bg-gray-50/40"
-              } backdrop-blur-sm ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`absolute top-4 right-4 p-2.5 rounded-full transition-all duration-300
+              ${
+                isLiked ? "bg-[#ff5c5c] text-white" : "bg-white/90 text-gray-700 hover:bg-[#ff5c5c]/90 hover:text-white"
+              } 
+              backdrop-blur-sm shadow-lg transform group-hover:scale-110
+              ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
             aria-label={isLiked ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart
               className={`w-5 h-5 transition-colors duration-300
-                ${isLiked 
-                  ? "fill-[#ff4040] text-[#ff4040]" 
-                  : theme === "dark" 
-                    ? "text-gray-200 hover:text-[#ff4040]" 
-                    : "text-gray-700 hover:text-[#ff4040]"
-                }`}
+                ${isLiked ? "fill-white" : "group-hover:fill-white"}`}
               strokeWidth={2}
             />
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex flex-col p-4 gap-2.5">
-          <h3 className={`font-medium text-[15px] leading-5 
-              ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}>
-              {type}
-          </h3>
-          <h3 className={`font-medium text-xl leading-5 
-            ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}>
-            {title}
-          </h3>
+        <div className="flex flex-col p-5 gap-3">
+          <div className="space-y-2">
+            <h3 className="font-bold text-lg leading-tight text-gray-900 group-hover:text-[#ff5c5c] transition-colors duration-300">
+              {title}
+            </h3>
 
-          <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-            {duration} • {pickup}
-          </p>
+            <div className="flex flex-col gap-2 mt-2">
+              <div className="flex items-center gap-2 text-gray-600">
+                <Clock className="w-4 h-4 text-[#ff5c5c]" />
+                <span className="text-sm">{formattedDuration}</span>
+              </div>
 
-          {/* Rating */}
-          <div className="flex items-center gap-1.5">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-[14px] h-[14px] ${
-                    i < fullStars
-                      ? "fill-[#FFB800] text-[#FFB800]"
-                      : i === fullStars && decimal > 0
-                        ? `fill-[#FFB800] text-[#FFB800]`
-                        : theme === "dark"
-                          ? "fill-gray-700 text-gray-700"
-                          : "fill-gray-200 text-gray-200"
-                  }`}
-                  style={
-                    i === fullStars && decimal > 0
-                      ? {
-                          clipPath: `inset(0 ${100 - percentage}% 0 0)`,
-                        }
-                      : undefined
-                  }
-                />
-              ))}
+              <div className="flex items-center gap-2 text-gray-600">
+                <MapPin className="w-4 h-4 text-[#ff5c5c]" />
+                <span className="text-sm">{pickup}</span>
+              </div>
             </div>
-            <span className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-              {rating} ({reviews.toLocaleString()})
-            </span>
           </div>
 
           {/* Price */}
-          <div className="flex items-baseline gap-1.5 mt-1">
-            <span className={`text-base font-medium 
-              ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}>
-              From {price.toLocaleString()}
-            </span>
-            <span className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
-              {currency} per person
+          <div className="flex items-baseline gap-1.5 mt-2 pt-3 border-t border-gray-100">
+            <span className="text-xl font-bold text-[#ff5c5c]">{price.toLocaleString()}</span>
+            <span className="text-sm text-gray-600">
+              {currency} <span className="text-xs">per person</span>
             </span>
           </div>
         </div>

@@ -74,37 +74,63 @@ export default function GuidePosts() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    console.log("Submit button clicked");
+  
     if (!newPost.title.trim() || !newPost.description.trim()) {
-      toast.error("Please fill in all fields")
-      return
+      toast.error("Please fill in all fields");
+      return;
     }
-
-    setIsSubmitting(true)
+  
+    setIsSubmitting(true);
+    console.log("Submitting post...");
+  
     try {
-      const userData = localStorage.getItem("user")
-      let guideId = userData ? JSON.parse(userData).id : user?.id
-
+      const userData = localStorage.getItem("user");
+      let guideId = userData ? JSON.parse(userData).id : user?.id;
+  
       if (!guideId) {
-        toast.error("User ID not found. Please log in again.")
-        return
+        toast.error("User ID not found. Please log in again.");
+        return;
       }
-
-      const response = await postApi.createGuidePost(guideId, newPost, selectedImages)
+  
+      console.log("Guide ID:", guideId);
+      console.log("Post Data:", newPost);
+      console.log("Selected Images:", selectedImages);
+  
+      // Create FormData
+      const formData = new FormData();
+  
+      // Append the post data as a JSON string with the correct Content-Type
+      const postBlob = new Blob([JSON.stringify(newPost)], { type: "application/json" });
+      formData.append("post", postBlob);
+  
+      // Append images
+      if (selectedImages && selectedImages.length > 0) {
+        selectedImages.forEach((image) => {
+          formData.append("images", image);
+        });
+      }
+  
+      // Send the request
+      const response = await postApi.createGuidePost(guideId, formData);
+      console.log("API Response:", response);
+  
       if (response.success) {
-        toast.success("Post created successfully")
-        setShowCreateModal(false)
-        resetForm()
-        fetchPosts()
+        toast.success("Post created successfully");
+        setShowCreateModal(false);
+        resetForm();
+        fetchPosts();
       } else {
-        throw new Error(response.message || "Failed to create post")
+        throw new Error(response.message || "Failed to create post");
       }
     } catch (err) {
-      toast.error(err.message || "An error occurred while creating the post")
+      console.error("Error in handleSubmit:", err);
+      toast.error(err.message || "An error occurred while creating the post");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleDeletePost = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return

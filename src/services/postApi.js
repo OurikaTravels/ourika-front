@@ -108,37 +108,48 @@ const postApi = {
   },
 
 
-  createPost: async (postData) => {
+  createGuidePost: async (guideId, formData) => {
     try {
-      const formData = new FormData()
-
-      formData.append("title", postData.title)
-      formData.append("description", postData.description)
-
-      if (postData.images && postData.images.length > 0) {
-        postData.images.forEach((image) => {
-          formData.append("images", image)
-        })
-      }
-
-      const response = await axios.post(`${API_BASE_URL}/posts`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/posts/guides/${guideId}`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "multipart/form-data",
         },
-      })
+      });
 
       return {
         success: true,
         data: response.data,
         message: "Post created successfully",
-      }
+      };
     } catch (error) {
-      console.error("Error creating post:", error)
+      console.error("Error creating post:", error);
       return {
         success: false,
         message: error.response?.data?.message || "Failed to create post",
-      }
+      };
+    }
+  },
+  getGuidePosts: async (guideId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/posts/guides/${guideId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      return {
+        success: true,
+        data: response.data,
+        message: "Guide posts fetched successfully",
+      };
+    } catch (error) {
+      console.error(`Error fetching posts for guide ${guideId}:`, error);
+      return {
+        success: false,
+        data: [],
+        message: error.response?.data?.message || "Failed to fetch guide posts",
+      };
     }
   },
 }

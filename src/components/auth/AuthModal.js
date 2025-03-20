@@ -91,17 +91,10 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div
-        className={`relative w-full max-w-md rounded-lg shadow-lg ${
-          theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-        }`}
-      >
-
+      <div className="relative w-full max-w-md rounded-lg shadow-lg bg-white text-gray-900">
         <button
           onClick={onClose}
-          className={`absolute top-4 right-4 p-1 rounded-full ${
-            theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
-          }`}
+          className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100"
         >
           <X className="h-6 w-6" />
         </button>
@@ -330,7 +323,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className={theme === "dark" ? "text-gray-300" : "text-gray-600"}>
+            <p className="text-gray-600">
               {isLogin ? "Don't have an account?" : "Already have an account?"}
               <button
                 type="button"
