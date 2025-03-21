@@ -1,25 +1,31 @@
 "use client"
 
 import { Link } from "react-router-dom"
-import { FileText, Users, Calendar, Settings, ChevronDown, ChevronRight, Menu, Map, User, Tag } from "lucide-react"
+import {
+  Users,
+  Calendar,
+  Settings,
+  ChevronDown,
+  ChevronRight,
+  Menu,
+  Map,
+  User,
+  Tag,
+  LayoutDashboard,
+} from "lucide-react"
 
 export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, activeSection, setActiveSection }) {
   const sidebarSections = [
     {
       id: "dashboard",
       name: "Dashboard",
-      icon: <Map className="w-5 h-5" />,
+      icon: <LayoutDashboard className="w-5 h-5" />,
     },
     {
       id: "treks",
       name: "Trek Management",
       icon: <Map className="w-5 h-5" />,
-      subsections: [
-        "All Treks",
-        "Add Trek",
-        "Service Management",
-        "Highlights Management",
-      ],
+      subsections: ["All Treks", "Add Trek", "Service Management", "Highlights Management"],
     },
     {
       id: "guides",
@@ -44,35 +50,41 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       name: "Categories",
       icon: <Tag className="w-5 h-5" />,
       subsections: ["All Categories", "Add Category"],
-    }
+    },
   ]
 
   return (
     <aside
       className={`${
         isSidebarOpen ? "w-64" : "w-20"
-      } bg-[#111926] text-white transition-all duration-300 ease-in-out fixed h-full z-10`}
+      } bg-[#191b20] text-white transition-all duration-300 ease-in-out fixed h-full z-10 border-r border-gray-800`}
     >
-      <div className="p-4 flex items-center justify-between">
-        <h2 className={`font-bold text-xl ${!isSidebarOpen && "hidden"}`}>Admin Panel</h2>
+      <div className="p-4 flex items-center justify-between border-b border-gray-800">
+        <div className="flex items-center">
+          <div className="h-8 w-8 rounded-md bg-[#fe5532] flex items-center justify-center mr-3">
+            <Settings className="w-5 h-5 text-white" />
+          </div>
+          <h2 className={`font-bold text-xl ${!isSidebarOpen && "hidden"}`}>Admin Panel</h2>
+        </div>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+          className="p-2 rounded-lg hover:bg-[#fe5532]/20 text-[#fe5532] transition-colors"
+          aria-label={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
           <Menu className="w-5 h-5" />
         </button>
       </div>
 
-      <nav className="mt-4">
+      <nav className="mt-4 overflow-y-auto h-[calc(100%-64px)]">
         {sidebarSections.map((section) => (
-          <div key={section.id}>
+          <div key={section.id} className="mb-1">
             <button
               onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
-              className={`w-full flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors ${
-                activeSection === section.id ? "bg-gray-700 text-white" : ""
+              className={`w-full flex items-center px-4 py-3 hover:bg-[#fe5532]/10 hover:text-white transition-colors ${
+                activeSection === section.id ? "bg-[#fe5532]/20 text-[#fe5532]" : "text-gray-300"
               }`}
             >
-              <span className="mr-3">{section.icon}</span>
+              <span className={`mr-3 ${activeSection === section.id ? "text-[#fe5532]" : ""}`}>{section.icon}</span>
               {isSidebarOpen && (
                 <>
                   <span className="flex-1 text-left">{section.name}</span>
@@ -88,7 +100,7 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
             </button>
 
             {isSidebarOpen && section.subsections && activeSection === section.id && (
-              <div className="bg-gray-800 py-2">
+              <div className="bg-[#232630] py-1">
                 {section.subsections.map((subsection) => {
                   // Determine the correct route for each subsection
                   let route = `/admin/${section.id}/${subsection.toLowerCase().replace(/\s+/g, "-")}`
@@ -138,9 +150,9 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
                     <Link
                       key={subsection}
                       to={route}
-                      className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+                      className="flex items-center px-11 py-2 text-sm text-gray-400 hover:text-[#fe5532] hover:bg-[#fe5532]/10 transition-colors"
                     >
-                      <ChevronRight className="w-4 h-4 mr-2" />
+                      <ChevronRight className="w-4 h-4 mr-2 text-[#fe5532]" />
                       {subsection}
                     </Link>
                   )
