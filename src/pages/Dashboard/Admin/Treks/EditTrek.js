@@ -24,7 +24,7 @@ import highlightApi from "../../../../services/highlightApi"
 import serviceApi from "../../../../services/serviceApi"
 import activityApi from "../../../../services/activityApi"
 
-// Steps configuration
+
 const STEPS = [
   { id: 1, name: "Basic Information", description: "Trek details and category" },
   { id: 2, name: "Services", description: "Included services" },
@@ -45,7 +45,6 @@ export default function EditTrek() {
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Trek Data States
   const [basicInfo, setBasicInfo] = useState({
     title: "",
     description: "",
@@ -57,32 +56,25 @@ export default function EditTrek() {
     categoryId: "",
   })
 
-  // Categories State
   const [categories, setCategories] = useState([])
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
 
-  // Services State
   const [availableServices, setAvailableServices] = useState([])
   const [selectedServices, setSelectedServices] = useState([])
   const [isLoadingServices, setIsLoadingServices] = useState(false)
 
-  // Highlights State
   const [availableHighlights, setAvailableHighlights] = useState([])
   const [selectedHighlights, setSelectedHighlights] = useState([])
   const [isLoadingHighlights, setIsLoadingHighlights] = useState(false)
 
-  // Activities State
   const [activities, setActivities] = useState([])
   const [isLoadingActivities, setIsLoadingActivities] = useState(false)
 
-  // Add state for images
   const [trekImages, setTrekImages] = useState([])
   const [isLoadingImages, setIsLoadingImages] = useState(false)
 
-  // Form validation errors
   const [errors, setErrors] = useState({})
 
-  // Add these new state variables
   const [hours, setHours] = useState("")
   const [minutes, setMinutes] = useState("")
 
@@ -98,7 +90,7 @@ export default function EditTrek() {
     }
   }
 
-  // Effects
+
   useEffect(() => {
     fetchCategories()
     fetchTrekData()
@@ -111,10 +103,10 @@ export default function EditTrek() {
       if (response.success) {
         const trek = response.data
         
-        // Parse the duration
+
         const { hours, minutes } = parseDuration(trek.formattedDuration)
 
-        // Set basic info with parsed duration
+
         setBasicInfo({
           title: trek.title || "",
           description: trek.description || "",
@@ -125,15 +117,14 @@ export default function EditTrek() {
           endLocation: trek.endLocation || "",
           fullDescription: trek.fullDescription || "",
           price: trek.price || "",
-          categoryId: trek.categoryId?.toString() || "", // Convert to string for select element
+          categoryId: trek.categoryId?.toString() || "", 
         })
 
-        // Set selected services if they exist
+ 
         if (trek.services && trek.services.length > 0) {
           setSelectedServices(trek.services)
         }
 
-        // Set selected highlights if they exist
         if (trek.highlights && trek.highlights.length > 0) {
           setSelectedHighlights(trek.highlights)
         }
@@ -243,15 +234,14 @@ export default function EditTrek() {
     }
   }
 
-  // Event Handlers
   const handleBasicInfoChange = (e) => {
     const { name, value, formattedValue, hours, minutes } = e.target;
     
     if (name === 'duration') {
       setBasicInfo(prev => ({
         ...prev,
-        duration: value, // This will be "PT240H" format
-        formattedDuration: formattedValue, // This will be "240H0M" format
+        duration: value, 
+        formattedDuration: formattedValue, 
         hours: hours,
         minutes: minutes
       }));
@@ -402,7 +392,7 @@ export default function EditTrek() {
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
 
         <main className="p-6">
-          {/* Header */}
+
           <div className="mb-8">
             <div className="flex items-center mb-4">
               <Link to="/admin/treks/all-treks" className="mr-4 p-2 rounded-full hover:bg-[#232630] transition-colors">
@@ -413,10 +403,10 @@ export default function EditTrek() {
             <p className="text-gray-400">Update trek information</p>
           </div>
 
-          {/* Progress Steps */}
+ 
           <TrekProgressSteps steps={STEPS} currentStep={currentStep} />
 
-          {/* Error Message */}
+    
           {error && (
             <div className="mb-6 p-4 bg-[#fe5532]/10 border-l-4 border-[#fe5532] text-[#fe5532] rounded">
               <div className="flex items-center">
@@ -426,7 +416,6 @@ export default function EditTrek() {
             </div>
           )}
 
-          {/* Step Content */}
           {currentStep === 1 && (
             <div className="bg-[#232630] rounded-lg shadow-md p-6 border border-gray-800">
               <BasicTrekForm

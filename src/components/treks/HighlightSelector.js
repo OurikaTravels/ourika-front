@@ -25,7 +25,6 @@ export default function HighlightSelector({ trekId, availableHighlights, selecte
     try {
       const response = await highlightApi.getAllHighlights()
       if (response.success) {
-        // We'll get all highlights here, but we'll filter the selected ones in the UI
         setIsLoading(false)
       } else {
         throw new Error(response.message || "Failed to fetch trek highlights")
@@ -41,7 +40,6 @@ export default function HighlightSelector({ trekId, availableHighlights, selecte
 
     try {
       if (isSelected) {
-        // Remove highlight
         const response = await highlightApi.removeHighlightFromTrek(trekId, highlight.id)
         if (response.success) {
           setSelectedHighlights(selectedHighlights.filter((h) => h.id !== highlight.id))
@@ -50,7 +48,6 @@ export default function HighlightSelector({ trekId, availableHighlights, selecte
           throw new Error(response.message || "Failed to remove highlight")
         }
       } else {
-        // Add highlight
         const response = await highlightApi.addHighlightToTrek(trekId, highlight.id)
         if (response.success) {
           setSelectedHighlights([...selectedHighlights, highlight])
@@ -78,16 +75,13 @@ export default function HighlightSelector({ trekId, availableHighlights, selecte
     try {
       const response = await highlightApi.createHighlight({ content: newHighlightContent.trim() })
       if (response.success) {
-        // Add the new highlight to the available highlights
         const newHighlight = response.data
 
-        // Also add it to the trek
         const addToTrekResponse = await highlightApi.addHighlightToTrek(trekId, newHighlight.id)
         if (addToTrekResponse.success) {
           setSelectedHighlights([...selectedHighlights, newHighlight])
         }
 
-        // Update available highlights
         availableHighlights.push(newHighlight)
 
         toast.success("Highlight created and added to trek")
@@ -103,7 +97,6 @@ export default function HighlightSelector({ trekId, availableHighlights, selecte
     }
   }
 
-  // Filter highlights based on search term
   const filteredHighlights = availableHighlights.filter((highlight) =>
     highlight.content.toLowerCase().includes(searchTerm.toLowerCase()),
   )
@@ -121,7 +114,6 @@ export default function HighlightSelector({ trekId, availableHighlights, selecte
         </button>
       </div>
 
-      {/* Search input */}
       <div className="relative mb-4">
         <input
           type="text"
@@ -175,7 +167,6 @@ export default function HighlightSelector({ trekId, availableHighlights, selecte
         </div>
       )}
 
-      {/* Add New Highlight Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#232630] rounded-lg max-w-md w-full p-6 shadow-xl border border-gray-700">
@@ -242,7 +233,6 @@ export default function HighlightSelector({ trekId, availableHighlights, selecte
         </div>
       )}
 
-      {/* Selected Highlights Summary */}
       <div className="mt-6 bg-[#232630] rounded-lg p-4 border border-gray-700">
         <div className="flex justify-between items-center mb-3">
           <h4 className="font-medium text-white">Selected Highlights ({selectedHighlights.length})</h4>

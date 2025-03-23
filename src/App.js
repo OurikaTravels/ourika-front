@@ -1,4 +1,3 @@
-
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,10 +5,9 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
-import { WishlistProvider } from './context/WishlistContext';
-import { ReservationProvider } from './context/ReservationContext';
+import { WishlistProvider } from "./context/WishlistContext";
+import { ReservationProvider } from "./context/ReservationContext";
 import { useEffect, useState } from "react";
 import "./App.css";
 import Navbar from "./components/layout/Navbar";
@@ -29,7 +27,6 @@ import HighlightsManagement from "./pages/Dashboard/Admin/Treks/HighlightsManage
 import TrekCardsSection from "./components/layout/TrekCardsSection";
 import AddTrek from "./pages/Dashboard/Admin/Treks/AddTrek";
 import AllTreks from "./pages/Dashboard/Admin/Treks/AllTreks";
-import TrekPreview from "./pages/Dashboard/Admin/Treks/TrekPreview";
 import trekApi from "./services/trekApi";
 import EditTrek from "./pages/Dashboard/Admin/Treks/EditTrek";
 import CommunityPage from "./pages/Community/index";
@@ -46,7 +43,9 @@ import Support from "./pages/Support";
 import PrivacyPolicy from "./pages/Legal/PrivacyPolicy";
 import TermsOfService from "./pages/Legal/TermsOfService";
 import About from "./pages/About";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
+import LoadingSpinner from "./components/common/LoadingSpinner";
+
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth();
 
@@ -69,34 +68,17 @@ function ProtectedRoute({ children, requiredRole }) {
 
 function AppContent() {
   const location = useLocation();
-  // Add EmailVerification to the array of paths where navbar and footer should be hidden
   const isLoginPage = [
-    "/Auth/Login", 
+    "/Auth/Login",
     "/Auth/RegisterGuide",
-    "/Auth/EmailVerification"  // Add this line
+    "/Auth/EmailVerification",
   ].includes(location.pathname);
-  const isDashboardPage =
-    location.pathname.includes("/Dashboard") ||
-    location.pathname.includes("/admin/categories") ||
-    location.pathname.includes("/admin/treks/service-management") ||
-    location.pathname.includes("/admin/treks/highlights-management") ||
-    location.pathname.includes("/admin/treks/add-trek") ||
-    location.pathname.includes("/admin/treks/all-treks") ||
-    location.pathname.includes("/guide/posts/my-posts") ||
-    location.pathname.includes("/admin/users/all-tourist") ||
-    location.pathname.includes("/admin/reservations/all-reservations") ||
-    location.pathname.includes("/admin/guides/all-guides") ||
-    location.pathname.includes("/guide/profile/edit-profile") ||
-    (location.pathname.includes("/admin/treks/") &&
-      location.pathname.includes("/edit")) ||
-    (location.pathname.includes("/admin/treks/") &&
-      location.pathname.includes("/preview"));
+  const isDashboardPage = location.pathname.includes("/Dashboard");
 
   const [treks, setTreks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch treks from the API
   useEffect(() => {
     const fetchTreks = async () => {
       try {
@@ -117,11 +99,11 @@ function AppContent() {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-8">Loading treks...</div>;
+    return <LoadingSpinner />;
   }
 
   if (error) {
-    return <div className="text-center py-8 text-red-500">Error: {error}</div>; // Show error message
+    return <div className="text-center py-8 text-red-500">Error: {error}</div>;
   }
 
   return (
@@ -129,24 +111,19 @@ function AppContent() {
       {!isLoginPage && !isDashboardPage && <Navbar />}
       <div className="flex-grow">
         <Routes>
-          {/* Home Route */}
           <Route
             path="/"
             element={
               <>
                 <Hero />
-                <TrekCardsSection /> 
+                <TrekCardsSection />
                 <AboutSection />
               </>
             }
           />
-
-          {/* Auth Routes */}
           <Route path="/Auth/Login" element={<Login />} />
           <Route path="/Auth/RegisterGuide" element={<RegisterGuide />} />
           <Route path="/Auth/EmailVerification" element={<EmailVerification />} />
-
-          {/* Dashboard Routes */}
           <Route
             path="Dashboard/Admin"
             element={
@@ -163,8 +140,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
-          {/* Category Management Routes */}
           <Route
             path="admin/categories/all-categories"
             element={
@@ -173,9 +148,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
-
-          {/* Service Management Route */}
           <Route
             path="admin/treks/service-management"
             element={
@@ -184,8 +156,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
-          {/* Highlights Management Route */}
           <Route
             path="admin/treks/highlights-management"
             element={
@@ -194,8 +164,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
-          {/* Trek Management Routes */}
           <Route
             path="admin/treks/add-trek"
             element={
@@ -204,8 +172,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
-          {/* All Treks Route */}
           <Route
             path="admin/treks/all-treks"
             element={
@@ -214,23 +180,11 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
-          {/* Guide Management Routes */}
           <Route
             path="admin/guides/all-guides"
             element={
               <ProtectedRoute requiredRole="admin">
                 <AllGuides />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Trek Preview Route */}
-          <Route
-            path="admin/treks/:id/preview"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <TrekPreview />
               </ProtectedRoute>
             }
           />
@@ -242,21 +196,9 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
-          {/* Wishlist Route */}
           <Route path="/wishlist" element={<WishlistPage />} />
-
-          {/* Guide Profile Routes */}
           <Route path="/guide/:id" element={<GuideProfilePage />} />
-
-          {/* Community Route */}
-          <Route
-            path="/community"
-            element={
-                <CommunityPage />
-            }
-          />
-
+          <Route path="/community" element={<CommunityPage />} />
           <Route
             path="admin/reservations/all-reservations"
             element={
@@ -265,7 +207,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/guide/posts/my-posts"
             element={
@@ -274,7 +215,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/guide/profile/edit-profile"
             element={
@@ -283,7 +223,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="admin/users/all-tourist"
             element={
@@ -292,7 +231,6 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/tourist/profile"
             element={
@@ -312,8 +250,6 @@ function AppContent() {
           />
           <Route path="/support" element={<Support />} />
           <Route path="/about" element={<About />} />
-
-          {/* Legal Routes */}
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/legal/terms-of-service" element={<TermsOfService />} />
         </Routes>

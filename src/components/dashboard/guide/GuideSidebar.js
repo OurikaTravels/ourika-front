@@ -9,11 +9,11 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
   const [isMobile, setIsMobile] = useState(false)
 
   const handleLogout = () => {
-    localStorage.clear() // This will remove all items from localStorage
-    navigate("/") // Redirect to home page
+    localStorage.clear()
+    navigate("/") 
   }
 
-  // Check if device is mobile
+
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -116,7 +116,7 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
         ))}
       </nav>
 
-      {/* Add Logout button at the bottom */}
+  
       <div className="absolute bottom-0 w-full p-4 border-t border-gray-700">
         <button
           onClick={handleLogout}

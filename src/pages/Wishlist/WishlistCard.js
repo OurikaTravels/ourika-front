@@ -4,9 +4,9 @@ import { Trash2, Clock, MapPin, Star } from 'lucide-react'
 import { Link } from "react-router-dom"
 
 const WishlistCard = ({ item, onRemove, theme }) => {
-  console.log('WishlistCard Item:', item); // Debug log
+  console.log('WishlistCard Item:', item);
 
-  // Early return if no item or trek data
+
   if (!item || !item.trek) {
     console.error('Invalid item data:', item);
     return null;
@@ -23,7 +23,7 @@ const WishlistCard = ({ item, onRemove, theme }) => {
         theme === "dark" ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"
       } hover:border-[#049769]/30 transition-all duration-300`}
     >
-      {/* Image */}
+
       <div className="w-full md:w-64 h-48 flex-shrink-0">
         <img
           src={imageUrl}
@@ -36,7 +36,7 @@ const WishlistCard = ({ item, onRemove, theme }) => {
         />
       </div>
 
-      {/* Details */}
+
       <div className="flex-1 flex flex-col">
         <div className="flex justify-between items-start">
           <div>
@@ -60,7 +60,7 @@ const WishlistCard = ({ item, onRemove, theme }) => {
           </button>
         </div>
 
-        {/* Info */}
+
         <div className="mt-4 space-y-2">
           <div className="flex items-center gap-4">
             <div className="flex items-center text-gray-500">
@@ -84,12 +84,12 @@ const WishlistCard = ({ item, onRemove, theme }) => {
           </div>
         </div>
 
-        {/* Description */}
+
         <p className={`text-sm mt-3 line-clamp-2 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
           {trek.description || 'No description available'}
         </p>
 
-        {/* Price and Action */}
+ 
         <div className="mt-auto pt-4 flex items-center justify-between">
           <div className="flex items-baseline gap-2">
             <span className={`text-2xl font-bold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>

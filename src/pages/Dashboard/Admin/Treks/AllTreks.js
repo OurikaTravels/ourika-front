@@ -81,7 +81,7 @@ export default function AllTreks() {
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
 
         <main className="p-6">
-          {/* Header */}
+
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold text-white">All Treks</h1>
@@ -96,7 +96,7 @@ export default function AllTreks() {
             <p className="text-gray-400">Manage your trek experiences</p>
           </div>
 
-          {/* Search and Filters */}
+
           <div className="bg-[#232630] rounded-lg shadow-md p-4 mb-6 border border-gray-800">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -110,7 +110,6 @@ export default function AllTreks() {
             </div>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-[#fe5532]/10 border-l-4 border-[#fe5532] text-[#fe5532] rounded">
               <div className="flex items-center">
@@ -120,7 +119,7 @@ export default function AllTreks() {
             </div>
           )}
 
-          {/* Treks Table */}
+
           <div className="bg-[#232630] rounded-lg shadow-md overflow-hidden border border-gray-800">
             {isLoading ? (
               <div className="flex justify-center items-center p-12">

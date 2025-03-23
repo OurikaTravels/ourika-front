@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import { useWishlist } from "../../context/WishlistContext";
 import wishlistApi from "../../services/wishlistApi";
@@ -12,7 +11,6 @@ import WishlistHeader from "./WishlistHeader";
 import WishlistCard from "./WishlistCard";
 
 const WishlistPage = () => {
-  const { theme } = useTheme();
   const { user } = useAuth();
   const { updateWishlistCount } = useWishlist();
   const [wishlist, setWishlist] = useState([]);
@@ -138,7 +136,7 @@ const WishlistPage = () => {
       const response = await wishlistApi.removeFromWishlist(user.id, trekId);
       if (response.success) {
         setWishlist(wishlist.filter((item) => item.id !== trekId));
-        updateWishlistCount(response.count); // Update the global count
+        updateWishlistCount(response.count); 
         toast.success("Removed from wishlist");
       } else {
         toast.error(response.message);
@@ -148,7 +146,7 @@ const WishlistPage = () => {
     }
   };
 
-  // Filter and sort the wishlist
+  
   const filteredAndSortedWishlist = wishlist
     .filter((item) => {
       if (filters.type !== "all" && item.type !== filters.type) return false;
@@ -177,7 +175,7 @@ const WishlistPage = () => {
 
   return (
     <div className="min-h-screen">
-      <WishlistHeader theme={theme} />
+      <WishlistHeader />
 
       <div className="container mx-auto px-4 py-8">
         {isLoading ? (
@@ -189,7 +187,6 @@ const WishlistPage = () => {
                 key={item.id}
                 item={item}
                 onRemove={removeFromWishlist}
-                theme={theme}
               />
             ))}
           </div>

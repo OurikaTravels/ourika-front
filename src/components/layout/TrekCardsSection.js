@@ -13,11 +13,9 @@ export default function TrekCardsSection() {
   const [activeCategory, setActiveCategory] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1)
   const [cardsPerPage] = useState(8)
 
-  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -35,11 +33,10 @@ export default function TrekCardsSection() {
     fetchCategories()
   }, [])
 
-  // Fetch treks based on active category
   useEffect(() => {
     const fetchTreks = async () => {
       setIsLoading(true)
-      setCurrentPage(1) // Reset to first page when category changes
+      setCurrentPage(1) 
       try {
         let response
         if (activeCategory) {
@@ -66,61 +63,49 @@ export default function TrekCardsSection() {
     fetchTreks()
   }, [activeCategory])
 
-  // Pagination logic
   const indexOfLastCard = currentPage * cardsPerPage
   const indexOfFirstCard = indexOfLastCard - cardsPerPage
   const currentCards = treks.slice(indexOfFirstCard, indexOfLastCard)
   const totalPages = Math.ceil(treks.length / cardsPerPage)
 
-  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
   const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages))
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1))
 
-  // Generate page numbers array
   const getPageNumbers = () => {
     const pageNumbers = []
     const maxVisiblePages = 5
 
     if (totalPages <= maxVisiblePages) {
-      // Show all pages if total pages are less than max visible
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i)
       }
     } else {
-      // Always show first page
       pageNumbers.push(1)
 
-      // Calculate start and end of middle pages
       let startPage = Math.max(2, currentPage - 1)
       let endPage = Math.min(totalPages - 1, currentPage + 1)
 
-      // Adjust if we're near the beginning
       if (currentPage <= 3) {
         endPage = 4
       }
 
-      // Adjust if we're near the end
       if (currentPage >= totalPages - 2) {
         startPage = totalPages - 3
       }
 
-      // Add ellipsis after first page if needed
       if (startPage > 2) {
         pageNumbers.push("...")
       }
 
-      // Add middle pages
       for (let i = startPage; i <= endPage; i++) {
         pageNumbers.push(i)
       }
 
-      // Add ellipsis before last page if needed
       if (endPage < totalPages - 1) {
         pageNumbers.push("...")
       }
 
-      // Always show last page
       pageNumbers.push(totalPages)
     }
 
@@ -129,15 +114,11 @@ export default function TrekCardsSection() {
 
   return (
     <section className="pb-20 pt-0 bg-gradient-to-b from-white to-emerald-50/30">
-      {/* Categories Section with distinct background */}
       <div className="bg-gradient-to-b from-emerald-50 to-white relative overflow-hidden py-16 mb-12">
-        {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute -top-24 -left-24 w-48 h-48 rounded-full bg-emerald-500/5"></div>
           <div className="absolute top-1/2 -right-24 w-64 h-64 rounded-full bg-amber-500/5"></div>
           <div className="absolute bottom-0 left-1/4 w-32 h-32 rounded-full bg-teal-500/5"></div>
-
-          {/* Decorative mountain silhouettes */}
           <div className="absolute bottom-0 left-0 w-full h-24 opacity-5">
             <div className="absolute bottom-0 left-[10%] w-32 h-24 bg-emerald-900 rounded-t-[100%]"></div>
             <div className="absolute bottom-0 left-[25%] w-48 h-32 bg-emerald-900 rounded-t-[100%]"></div>
@@ -188,13 +169,11 @@ export default function TrekCardsSection() {
               ))}
             </div>
 
-            {/* Decorative line */}
             <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-24 h-1 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500"></div>
           </div>
         </div>
       </div>
 
-      {/* Treks Grid Section */}
       <div className="container mx-auto px-4">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
@@ -251,11 +230,9 @@ export default function TrekCardsSection() {
               ))}
             </div>
 
-            {/* Pagination Controls */}
             {treks.length > cardsPerPage && (
               <div className="mt-12 flex flex-col items-center">
                 <div className="flex items-center justify-center space-x-2">
-                  {/* Previous page button */}
                   <button
                     onClick={prevPage}
                     disabled={currentPage === 1}
@@ -269,7 +246,6 @@ export default function TrekCardsSection() {
                     <ChevronLeft className="h-5 w-5" />
                   </button>
 
-                  {/* Page numbers */}
                   <div className="flex items-center space-x-1">
                     {getPageNumbers().map((number, index) => (
                       <button
@@ -291,7 +267,6 @@ export default function TrekCardsSection() {
                     ))}
                   </div>
 
-                  {/* Next page button */}
                   <button
                     onClick={nextPage}
                     disabled={currentPage === totalPages}
@@ -306,7 +281,6 @@ export default function TrekCardsSection() {
                   </button>
                 </div>
 
-                {/* Page indicator */}
                 <div className="mt-4 text-sm text-gray-500">
                   Page {currentPage} of {totalPages}
                 </div>

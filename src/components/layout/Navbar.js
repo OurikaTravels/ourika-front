@@ -48,7 +48,7 @@ const Navbar = () => {
   const { wishlistCount, updateWishlistCount } = useWishlist() // Get both count and update function
   const { reservationCount, updateReservationCount } = useReservation()
 
-  // Role checks
+
   const isTourist = isAuthenticated && user?.role.toLowerCase() === "tourist";
   const isGuideOrAdmin = isAuthenticated && (user?.role.toLowerCase() === "guide" || user?.role.toLowerCase() === "admin");
 
@@ -120,7 +120,7 @@ const Navbar = () => {
         try {
           const response = await wishlistApi.getWishlistCount(user.id)
           if (response.success) {
-            updateWishlistCount(response.count) // Use updateWishlistCount instead
+            updateWishlistCount(response.count) 
           }
         } catch (error) {
           console.error("Failed to fetch wishlist count:", error)
@@ -129,7 +129,7 @@ const Navbar = () => {
     }
 
     fetchWishlistCount()
-  }, [isAuthenticated, user?.id, isTourist, updateWishlistCount]) // Add updateWishlistCount to dependencies
+  }, [isAuthenticated, user?.id, isTourist, updateWishlistCount]) 
 
   useEffect(() => {
     const fetchReservationCount = async () => {
@@ -167,7 +167,6 @@ const Navbar = () => {
             <span className="text-xl font-bold text-gray-800 ml-1">TRAVELS</span>
           </Link>
 
-          {/* Mobile menu button - only visible on small screens */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 focus:outline-none transition-colors duration-200"
@@ -176,7 +175,6 @@ const Navbar = () => {
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
 
-          {/* Search bar - hidden on small screens */}
           <div className="hidden md:block flex-1 max-w-2xl mx-6" ref={searchRef}>
             <div className="relative">
               <div className="flex items-center rounded-full overflow-hidden border border-gray-200 bg-white shadow-sm transition-all duration-200 focus-within:border-emerald-300 focus-within:ring-2 focus-within:ring-emerald-100">
@@ -251,9 +249,7 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Navigation links - hidden on small screens */}
           <div className="hidden md:flex items-center space-x-8">
-            {/* Only show "Become a Supplier" if not logged in or not a tourist */}
             {(!isAuthenticated || !isTourist) && (
               <Link
                 to="/Auth/Login"
@@ -281,7 +277,6 @@ const Navbar = () => {
             </Link>
 
             <div className="flex items-center space-x-6 pl-2">
-              {/* Only show Wishlist and Bookings for tourists */}
               {isTourist && (
                 <>
                   <NavIcon
@@ -316,10 +311,8 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu - expanded when menu button is clicked */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white pb-6 px-4 border-t border-gray-100 shadow-lg">
-          {/* Mobile search */}
           <div className="pt-4 pb-3">
             <div className="flex items-center rounded-full overflow-hidden border border-gray-200 bg-white shadow-sm">
               <Search className="h-5 w-5 ml-4 text-gray-400" />
@@ -394,9 +387,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile navigation links */}
           <div className="space-y-1 pt-2">
-            {/* Only show "Become a Supplier" if not logged in or not a tourist */}
             {(!isAuthenticated || !isTourist) && (
               <Link
                 to="/Auth/Login"
@@ -426,7 +417,6 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Only show Wishlist and Bookings for tourists */}
             {isTourist && (
               <>
                 <Link

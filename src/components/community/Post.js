@@ -41,7 +41,7 @@ export default function Post({ post }) {
       const response = await postApi.getLikedPosts(user.id);
       if (response.success) {
         setLikedPosts(response.data);
-        // Check if current post is in liked posts
+
         setLiked(response.data.includes(post.id));
       }
     } catch (error) {
@@ -69,7 +69,7 @@ export default function Post({ post }) {
       if (response.success) {
         setLikeCount(liked ? likeCount - 1 : likeCount + 1);
         setLiked(!liked);
-        // Refresh liked posts after toggling
+
         fetchLikedPosts();
       }
     } catch (error) {
@@ -109,7 +109,7 @@ export default function Post({ post }) {
     setComments([...comments, newComment])
   }
 
-  // Determine grid layout based on number of images
+
   const getGridClass = () => {
     if (!post.images || post.images.length === 0) return ""
 
@@ -129,7 +129,7 @@ export default function Post({ post }) {
 
   return (
     <div className="bg-white rounded-2xl shadow-md border border-emerald-100 overflow-hidden max-w-2xl mx-auto">
-      {/* Post Header */}
+
       <div className="flex items-center justify-between p-3 sm:p-4 border-b border-emerald-50">
         <div className="flex items-center space-x-3">
           <Link to={`/guide/${post.author.id}`} className="flex-shrink-0">
@@ -162,12 +162,12 @@ export default function Post({ post }) {
         </div>
       </div>
 
-      {/* Post Content */}
+
       <div className="px-3 sm:px-4 pb-2 pt-3">
         {post.title && <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>}
         <p className="text-gray-800 mb-3 whitespace-pre-line leading-relaxed">{post.content}</p>
 
-        {/* Post Tags */}
+
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             {post.tags.map((tag, index) => (
@@ -182,7 +182,7 @@ export default function Post({ post }) {
         )}
       </div>
 
-      {/* Image Grid */}
+
       {post.images && post.images.length > 0 && (
         <div className="mb-3 px-3">
           <div
@@ -217,7 +217,7 @@ export default function Post({ post }) {
             ))}
           </div>
 
-          {/* Image Modal/Carousel */}
+
           {showImageModal && (
             <div
               className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center"
@@ -259,7 +259,7 @@ export default function Post({ post }) {
         </div>
       )}
 
-      {/* Post Location */}
+
       {post.location && (
         <div className="px-4 sm:px-5 pb-3">
           <div className="flex items-center text-xs sm:text-sm text-gray-500">
@@ -269,7 +269,7 @@ export default function Post({ post }) {
         </div>
       )}
 
-      {/* Post Actions */}
+
       <div className="flex items-center justify-between px-3 sm:px-4 py-2 border-t border-emerald-100 bg-gradient-to-r from-white to-emerald-50">
         <button
           className={`flex items-center space-x-1.5 ${
@@ -292,7 +292,7 @@ export default function Post({ post }) {
         </button>
       </div>
 
-      {/* Comments Section */}
+
       {showComments && (
         <div className="px-3 sm:px-4 pb-3 border-t border-emerald-100 pt-2 bg-white">
           <PostComments postId={post.id} initialComments={comments} onCommentAdded={handleAddComment} />

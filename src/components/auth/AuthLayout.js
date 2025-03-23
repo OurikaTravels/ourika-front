@@ -5,9 +5,8 @@ import LogoImage from "../../assets/images/logo.png"
 export default function AuthLayout({ children, isLoginForm = true }) {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left panel - Green gradient background */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-emerald-900 to-emerald-700 text-white p-8 flex-col justify-between relative overflow-hidden">
-        {/* Decorative background elements */}
+        
         <div className="absolute top-0 left-0 w-full h-full opacity-20">
           <div className="absolute top-10 left-20 w-80 h-80 rounded-full bg-emerald-400 blur-[100px] animate-pulse"></div>
           <div
@@ -20,7 +19,7 @@ export default function AuthLayout({ children, isLoginForm = true }) {
           ></div>
         </div>
 
-        {/* Logo and brand */}
+        
         <div className="relative mb-8 flex items-center">
           <div className="mr-5">
             <img
@@ -37,7 +36,7 @@ export default function AuthLayout({ children, isLoginForm = true }) {
           </div>
         </div>
 
-        {/* Main content */}
+       
         <div className="flex-grow flex items-center justify-center relative z-10">
           <div className="w-full">
             <h2 className="text-5xl font-bold mb-8 leading-tight">
@@ -80,16 +79,16 @@ export default function AuthLayout({ children, isLoginForm = true }) {
           </div>
         </div>
 
-        {/* Footer */}
+      
         <div className="mt-8 text-sm text-emerald-200 relative z-10">
           © {new Date().getFullYear()} Ourika Travels. All rights reserved.
         </div>
       </div>
 
-      {/* Right panel - White background with form */}
+
       <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-gradient-to-b from-white to-emerald-50">
         <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 md:p-8 border border-emerald-100">
-          {/* Mobile logo */}
+
           <div className="md:hidden flex justify-center mb-8">
             <div className="flex flex-col items-center">
               <img
@@ -103,13 +102,13 @@ export default function AuthLayout({ children, isLoginForm = true }) {
             </div>
           </div>
           
-          {/* Form content */}
+
           <div className="relative">
-            {/* Decorative elements */}
+
             <div className="absolute -top-10 -right-10 w-20 h-20 rounded-full bg-emerald-100 opacity-50 -z-10"></div>
             <div className="absolute -bottom-8 -left-8 w-16 h-16 rounded-full bg-emerald-200 opacity-40 -z-10"></div>
             
-            {/* Actual form content */}
+
             {children}
           </div>
         </div>

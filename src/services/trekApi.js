@@ -1,27 +1,17 @@
-import axios from "axios";
+import api from "./axiosConfig";
 
-const API_BASE_URL = "http://localhost:8080/api";
 const IMAGES_BASE_URL = "http://localhost:8080/api/uploads/images";
 
 const trekApi = {
-  // Create a new trek 
   createTrek: async (trekData) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(`${API_BASE_URL}/treks`, trekData, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      });
-
+      const response = await api.post("/treks", trekData);
       return {
         success: true,
         data: response.data.data,
         message: response.data.message || "Trek created successfully",
       };
     } catch (error) {
-      console.error("Error in createTrek:", error);
       return {
         success: false,
         message: error.response?.data?.message || "Failed to create trek",
@@ -30,50 +20,32 @@ const trekApi = {
     }
   },
 
-  // Get all treks
   getAllTreks: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/treks`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await api.get("/treks");
 
-      console.log('Raw API response:', response); // Debug the entire response
-
-      // Check if data is an array, otherwise look for data in a nested property
       const treksArray = Array.isArray(response.data)
         ? response.data
         : response.data.data || [];
 
-      // Map the response to ensure duration is present
-      const processedTreks = treksArray.map(trek => ({
+      const processedTreks = treksArray.map((trek) => ({
         ...trek,
-        duration: trek.duration || trek.formattedDuration || 'PT8H' // Provide default duration
+        duration: trek.duration || trek.formattedDuration || "PT8H",
       }));
-
-      console.log('Processed treks:', processedTreks); // Debug processed data
 
       return { success: true, data: processedTreks };
     } catch (error) {
-      console.error('API error:', error);
       return {
         success: false,
         message: error.response?.data?.message || "Failed to fetch treks",
-        data: []
+        data: [],
       };
     }
   },
 
-  // Get a trek by ID
   getTrekById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/treks/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const response = await api.get(`/treks/${id}`);
       return { success: true, data: response.data };
     } catch (error) {
       return {
@@ -83,17 +55,9 @@ const trekApi = {
     }
   },
 
-  // Update a trek
   updateTrek: async (id, trekData) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.put(`${API_BASE_URL}/treks/${id}`, trekData, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      });
-
+      const response = await api.put(`/treks/${id}`, trekData);
       return {
         success: true,
         data: response.data,
@@ -107,17 +71,9 @@ const trekApi = {
     }
   },
 
-  // Delete a trek
   deleteTrek: async (id) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.delete(`${API_BASE_URL}/treks/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      });
-
+      await api.delete(`/treks/${id}`);
       return { success: true, message: "Trek deleted successfully" };
     } catch (error) {
       return {
@@ -127,21 +83,14 @@ const trekApi = {
     }
   },
 
-  // Get treks by category ID
   getTreksByCategory: async (categoryId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/treks/category/${categoryId}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const response = await api.get(`/treks/category/${categoryId}`);
       return {
         success: true,
         data: Array.isArray(response.data) ? response.data : response.data.data || [],
       };
     } catch (error) {
-      console.error("Error in getTreksByCategory:", error);
       return {
         success: false,
         message: error.response?.data?.message || "Failed to fetch treks by category",
@@ -150,15 +99,9 @@ const trekApi = {
     }
   },
 
-  // Search treks
   searchTreks: async (query) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/treks/search?title=${encodeURIComponent(query)}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const response = await api.get(`/treks/search?title=${encodeURIComponent(query)}`);
       return {
         success: true,
         data: response.data.map((trek) => ({

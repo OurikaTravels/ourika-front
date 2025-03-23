@@ -5,7 +5,7 @@ import { MapPin, Star, MessageSquare, Award } from "lucide-react"
 export default function GuideProfile({ user, stats }) {
   return (
     <div className="space-y-6">
-      {/* Profile Header */}
+
       <div className="flex items-center">
         <img
           src={user?.avatar || "/placeholder.svg?height=64&width=64"}
@@ -21,7 +21,7 @@ export default function GuideProfile({ user, stats }) {
         </div>
       </div>
 
-      {/* Quick Stats */}
+
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
           <div className="flex items-center text-[#ff5c5c]">
@@ -40,7 +40,7 @@ export default function GuideProfile({ user, stats }) {
         </div>
       </div>
 
-      {/* Certifications */}
+
       <div>
         <h4 className="font-medium text-gray-900 dark:text-white mb-3">Certifications</h4>
         <div className="space-y-2">
@@ -59,7 +59,7 @@ export default function GuideProfile({ user, stats }) {
         </div>
       </div>
 
-      {/* Quick Actions */}
+
       <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
         <button className="w-full px-4 py-2 text-sm font-medium text-white bg-[#ff5c5c] rounded-lg hover:bg-[#ff4040] transition-colors">
           Edit Profile

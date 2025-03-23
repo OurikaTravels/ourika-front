@@ -21,7 +21,6 @@ export default function EmailVerification() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-[#ff5c5c]">OURIKA TRAVELS</h1>
           <p className="text-gray-500 mt-2">Guide Registration</p>

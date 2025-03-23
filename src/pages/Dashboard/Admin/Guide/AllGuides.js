@@ -13,19 +13,17 @@ export default function AllGuides() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeSection, setActiveSection] = useState("guides");
   const [notifications] = useState(3);
-  const [guides, setGuides] = useState([]); // Initialize as empty array
+  const [guides, setGuides] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [sortByReservation, setSortByReservation] = useState(false);
 
-  // Fetch guides on component mount or when sortByReservation changes
   useEffect(() => {
     fetchGuides();
   }, [sortByReservation]);
 
-  // Fetch guides from the API
   const fetchGuides = async () => {
     setIsLoading(true);
     setError(null);
@@ -35,11 +33,11 @@ export default function AllGuides() {
         ? await guideApi.getGuidesOrderedByReservationDate()
         : await guideApi.getAllGuides();
 
-      console.log('API Response:', response); // Add this debug log
+      console.log('API Response:', response); 
 
       if (response.success) {
         setGuides(response.data || []);
-        console.log('Guides set:', response.data); // Add this debug log
+        console.log('Guides set:', response.data); 
       } else {
         const errorMessage = response.message || "Failed to fetch guides";
         setError(errorMessage);
@@ -55,8 +53,6 @@ export default function AllGuides() {
       setIsLoading(false);
     }
   };
-
-  // Handle guide validation
   const handleToggleValidation = async (guideId, guideName, currentStatus) => {
     const action = currentStatus ? "invalidate" : "validate";
     if (window.confirm(`Are you sure you want to ${action} ${guideName}?`)) {
@@ -81,7 +77,6 @@ export default function AllGuides() {
     }
   };
 
-  // Toggle sorting by reservation date
   const toggleSortByReservation = () => {
     setSortByReservation(!sortByReservation);
   };
@@ -111,7 +106,6 @@ export default function AllGuides() {
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
     
         <main className="p-6">
-          {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">All Guides</h1>
@@ -130,7 +124,6 @@ export default function AllGuides() {
             <p className="text-gray-600 dark:text-gray-400">Manage and validate tour guides</p>
           </div>
 
-          {/* Search and Filters */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -144,7 +137,6 @@ export default function AllGuides() {
             </div>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-400 rounded">
               <div className="flex items-center">
@@ -154,7 +146,6 @@ export default function AllGuides() {
             </div>
           )}
 
-          {/* Guides Table */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
             {isLoading ? (
               <div className="flex justify-center items-center p-12">

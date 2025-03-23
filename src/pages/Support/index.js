@@ -15,7 +15,7 @@ const Support = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {/* Contact Us Card */}
+
           <div className="bg-white shadow-md hover:shadow-lg transition-shadow duration-300 rounded-2xl p-8 border border-gray-100 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#049769]/5 rounded-full -mr-16 -mt-16"></div>
 

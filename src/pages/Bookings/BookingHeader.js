@@ -18,7 +18,6 @@ const BookingHeader = ({ theme }) => {
 
   return (
     <>
-      {/* Spacer div when header is fixed */}
       {isScrolled && <div className="h-16 md:h-20" />}
 
       <div

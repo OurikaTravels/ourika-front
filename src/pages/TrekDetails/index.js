@@ -24,7 +24,6 @@ import {
   CheckCircle,
   ArrowRight
 } from "lucide-react";
-import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import { useWishlist } from "../../context/WishlistContext";
 import trekApi from "../../services/trekApi";
@@ -34,7 +33,6 @@ import { toast } from "react-hot-toast";
 
 const TrekDetails = () => {
   const { id } = useParams();
-  const { theme } = useTheme();
   const { user } = useAuth();
   const { updateWishlistCount } = useWishlist();
   const [trek, setTrek] = useState(null);
@@ -232,11 +230,8 @@ const TrekDetails = () => {
   return (
     <>
       <div
-        className={`min-h-screen ${
-          theme === "dark" ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-        }`}
+        className="min-h-screen "
       >
-        {/* Hero Section with Title */}
         <div className="relative bg-gradient-to-r from-emerald-900 to-teal-800 text-white">
           <div className="absolute inset-0 opacity-20 bg-pattern"></div>
           <div className="max-w-7xl mx-auto px-4 py-12 sm:py-16 relative z-10">
@@ -377,12 +372,12 @@ const TrekDetails = () => {
           </div>
         </div>
 
-        {/* Main content and booking section */}
+
         <div className="max-w-7xl mx-auto px-4 pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left column - Trek details */}
+     
             <div className="lg:col-span-2">
-              {/* Description Card */}
+          
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
                 <h2 className="text-xl font-bold mb-4 text-gray-900">Overview</h2>
                 <p className="text-gray-700 leading-relaxed">
@@ -390,7 +385,7 @@ const TrekDetails = () => {
                 </p>
               </div>
 
-              {/* About this activity */}
+          
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
                 <h2 className="text-xl font-bold mb-6 text-gray-900 flex items-center">
                   <Info className="w-5 h-5 mr-2 text-emerald-600" />
@@ -398,7 +393,7 @@ const TrekDetails = () => {
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                  {/* Free cancellation */}
+     
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                       <Calendar className="w-5 h-5 text-emerald-600" />
@@ -413,7 +408,7 @@ const TrekDetails = () => {
                     </div>
                   </div>
 
-                  {/* Reserve now & pay later */}
+      
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                       <Calendar className="w-5 h-5 text-emerald-600" />
@@ -429,7 +424,6 @@ const TrekDetails = () => {
                     </div>
                   </div>
 
-                  {/* Duration */}
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                       <Clock className="w-5 h-5 text-emerald-600" />
@@ -444,7 +438,7 @@ const TrekDetails = () => {
                     </div>
                   </div>
 
-                  {/* Live tour guide */}
+
                   <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                       <Users className="w-5 h-5 text-emerald-600" />
@@ -459,7 +453,7 @@ const TrekDetails = () => {
                     </div>
                   </div>
 
-                  {/* Pickup included */}
+   
                   <div className="flex items-start gap-3 md:col-span-2">
                     <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                       <Bus className="w-5 h-5 text-emerald-600" />
@@ -478,7 +472,7 @@ const TrekDetails = () => {
                 </div>
               </div>
 
-              {/* Itinerary */}
+ 
               <div
                 ref={itineraryRef}
                 className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8"
@@ -489,7 +483,7 @@ const TrekDetails = () => {
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                  {/* Map */}
+      
                   <div className="rounded-xl overflow-hidden shadow-md h-[350px] md:h-auto">
                     <iframe
                       src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3411.814884045622!2d-7.680870361721009!3d31.225857645509954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xdbaaf678f9d1039%3A0xd968147e4179658d!2sSetti-Fatma!5e0!3m2!1sfr!2sma!4v1742309184312!5m2!1sfr!2sma"
@@ -502,14 +496,14 @@ const TrekDetails = () => {
                     ></iframe>
                   </div>
 
-                  {/* Timeline */}
+                 
                   <div className="relative pl-8">
-                    {/* Timeline line */}
+                    
                     <div className="absolute left-3 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full"></div>
 
-                    {/* Itinerary items */}
+             
                     <div className="space-y-8">
-                      {/* Pickup location */}
+       
                       <div className="relative">
                         <div className="absolute -left-8 mt-1">
                           <div className="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-white">
@@ -526,7 +520,7 @@ const TrekDetails = () => {
                         </div>
                       </div>
 
-                      {/* Activities from API */}
+               
                       {trek.activities
                         .sort((a, b) => a.activityOrder - b.activityOrder)
                         .map((activity) => (
@@ -569,7 +563,7 @@ const TrekDetails = () => {
                           </div>
                         ))}
 
-                      {/* Arrive back */}
+                    
                       <div className="relative">
                         <div className="absolute -left-8 mt-1">
                           <div className="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-white">
@@ -592,7 +586,7 @@ const TrekDetails = () => {
                 </div>
               </div>
 
-              {/* Highlights */}
+           
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
                 <h2 className="text-xl font-bold mb-6 text-gray-900 flex items-center">
                   <Star className="w-5 h-5 mr-2 text-emerald-600" />
@@ -611,7 +605,7 @@ const TrekDetails = () => {
                 </div>
               </div>
 
-              {/* Full description */}
+          
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
                 <h2 className="text-xl font-bold mb-4 text-gray-900">
                   Full description
@@ -621,9 +615,9 @@ const TrekDetails = () => {
                 </div>
               </div>
 
-              {/* Includes & Not Suitable */}
+       
               <div className="grid md:grid-cols-2 gap-6 mb-8">
-                {/* Includes */}
+         
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                   <h2 className="text-xl font-bold mb-4 text-gray-900 flex items-center">
                     <Check className="w-5 h-5 mr-2 text-emerald-600" />
@@ -642,7 +636,7 @@ const TrekDetails = () => {
                   </ul>
                 </div>
 
-                {/* Not suitable for */}
+  
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                   <h2 className="text-xl font-bold mb-4 text-gray-900 flex items-center">
                     <AlertCircle className="w-5 h-5 mr-2 text-amber-500" />
@@ -674,7 +668,7 @@ const TrekDetails = () => {
                 </div>
               </div>
 
-              {/* Important information */}
+
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-xl font-bold mb-6 text-gray-900 flex items-center">
                   <Info className="w-5 h-5 mr-2 text-emerald-600" />
@@ -760,11 +754,11 @@ const TrekDetails = () => {
               </div>
             </div>
 
-            {/* Right column - Booking section */}
+
             <div className="lg:col-span-1">
               <div className="sticky top-4">
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                  {/* Price header */}
+
                   <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-2xl font-bold">{trek.price} MAD</span>
@@ -778,14 +772,13 @@ const TrekDetails = () => {
                     <div className="text-sm text-white/80">per person</div>
                   </div>
 
-                  {/* Booking form */}
                   <div className="p-6">
                     <h3 className="text-lg font-bold mb-4 text-gray-900">
                       Book Your Adventure
                     </h3>
 
                     <div className="space-y-4">
-                      {/* Date inputs */}
+    
                       <div>
                         <label
                           htmlFor="startDate"
@@ -908,7 +901,7 @@ const TrekDetails = () => {
                         </div>
                       </div>
 
-                      {/* Total price calculation */}
+                 
                       <div className="bg-gray-50 p-4 rounded-lg mt-4">
                         <div className="flex justify-between mb-2">
                           <span className="text-gray-700">
@@ -941,7 +934,6 @@ const TrekDetails = () => {
                         </div>
                       </div>
 
-                      {/* Reserve button */}
                       <button
                         onClick={handleReservation}
                         disabled={isReserving || !user}
@@ -964,7 +956,7 @@ const TrekDetails = () => {
                       )}
                     </div>
 
-                    {/* Reserve now & pay later */}
+                  
                     <div className="mt-4 flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 p-3 rounded-lg">
                       <Calendar className="w-4 h-4" />
                       <div className="font-medium">Reserve now & pay later</div>
@@ -976,7 +968,6 @@ const TrekDetails = () => {
           </div>
         </div>
 
-        {/* Image Gallery Modal */}
         {showGalleryModal && (
           <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
             <div className="relative w-full max-w-4xl p-4">
@@ -1041,7 +1032,7 @@ const TrekDetails = () => {
         )}
       </div>
 
-      {/* Success Modal */}
+
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 transform animate-fadeIn">

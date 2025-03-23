@@ -23,7 +23,7 @@ export default function AboutSection() {
 
   return (
     <section className="py-24 relative bg-gradient-to-b from-emerald-50 to-white overflow-hidden">
-      {/* Decorative elements */}
+
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-20 -left-20 w-80 h-80 rounded-full bg-emerald-500/5"></div>
         <div className="absolute bottom-40 -right-20 w-96 h-96 rounded-full bg-teal-500/5"></div>

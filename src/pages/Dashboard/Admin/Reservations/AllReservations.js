@@ -72,10 +72,9 @@ export default function AllReservations() {
     try {
       const response = await guideApi.getAllGuides()
       if (response.success) {
-        console.log("Guides response:", response.data) // Debug log
-        // Filter only validated guides - use isValidateGuide (not isValidatedGuide)
+        console.log("Guides response:", response.data) 
         const validatedGuides = response.data.filter((guide) => guide.isValidateGuide === true)
-        console.log("Filtered guides:", validatedGuides) // Debug log
+        console.log("Filtered guides:", validatedGuides) 
         setGuides(validatedGuides)
       } else {
         toast.error(response.message || "Failed to fetch guides")
@@ -93,14 +92,13 @@ export default function AllReservations() {
       try {
         const response = await reservationApi.approveReservation(reservationId)
         if (response.success) {
-          // Update the reservation in the state
           setReservations(
             reservations.map((reservation) =>
               reservation.id === reservationId ? { ...reservation, status: "APPROVED" } : reservation,
             ),
           )
           toast.success("Reservation approved successfully")
-          fetchStatistics() // Refresh statistics
+          fetchStatistics() 
         } else {
           throw new Error(response.message || "Failed to approve reservation")
         }
@@ -120,14 +118,14 @@ export default function AllReservations() {
       try {
         const response = await reservationApi.cancelReservation(reservationId)
         if (response.success) {
-          // Update the reservation in the state
+       
           setReservations(
             reservations.map((reservation) =>
               reservation.id === reservationId ? { ...reservation, status: "CANCELLED" } : reservation,
             ),
           )
           toast.success("Reservation cancelled successfully")
-          fetchStatistics() // Refresh statistics
+          fetchStatistics() 
         } else {
           throw new Error(response.message || "Failed to cancel reservation")
         }
@@ -158,10 +156,8 @@ export default function AllReservations() {
     try {
       const response = await reservationApi.assignGuideToReservation(selectedReservation.id, selectedGuide)
       if (response.success) {
-        // Find the guide details
         const assignedGuide = guides.find((guide) => guide.id === Number.parseInt(selectedGuide))
 
-        // Update the reservation in the state with the correct guide object structure
         setReservations(
           reservations.map((reservation) =>
             reservation.id === selectedReservation.id
@@ -193,12 +189,10 @@ export default function AllReservations() {
   }
 
   const filteredReservations = reservations.filter((reservation) => {
-    // Apply status filter
     if (statusFilter !== "ALL" && reservation.status !== statusFilter) {
       return false
     }
 
-    // Apply search filter
     const searchLower = searchTerm.toLowerCase()
     return (
       reservation.tourist?.firstName?.toLowerCase().includes(searchLower) ||
@@ -210,7 +204,6 @@ export default function AllReservations() {
     )
   })
 
-  // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return "N/A"
     const date = new Date(dateString)
@@ -235,7 +228,6 @@ export default function AllReservations() {
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
 
         <main className="p-6">
-          {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reservations</h1>
@@ -243,7 +235,6 @@ export default function AllReservations() {
             <p className="text-gray-600 dark:text-gray-400">Manage trek reservations and assign guides</p>
           </div>
 
-          {/* Statistics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <div className="flex items-center">
@@ -278,7 +269,6 @@ export default function AllReservations() {
             </div>
           </div>
 
-          {/* Search and Filters */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="relative flex-1">
@@ -306,7 +296,6 @@ export default function AllReservations() {
             </div>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-400 rounded">
               <div className="flex items-center">
@@ -316,7 +305,6 @@ export default function AllReservations() {
             </div>
           )}
 
-          {/* Reservations Table */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
             {isLoading ? (
               <div className="flex justify-center items-center p-12">
@@ -488,7 +476,6 @@ export default function AllReservations() {
         </main>
       </div>
 
-      {/* Assign Guide Modal */}
       {showAssignGuideModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">

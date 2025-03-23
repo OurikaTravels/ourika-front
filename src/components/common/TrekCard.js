@@ -14,7 +14,6 @@ const formatDuration = (duration) => {
   }
 
   try {
-    // Handle ISO duration format (e.g., "PT8H30M")
     const hoursMatch = duration.match(/(\d+)H/)
     const minutesMatch = duration.match(/(\d+)M/)
 

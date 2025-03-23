@@ -324,7 +324,7 @@ export default function AddTrek() {
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
 
         <main className="p-6">
-          {/* Header */}
+
           <div className="mb-8">
             <div className="flex items-center mb-4">
               <Link to="/admin/treks/all-treks" className="mr-4 p-2 rounded-full hover:bg-[#232630] transition-colors">
@@ -335,10 +335,10 @@ export default function AddTrek() {
             <p className="text-gray-400">Create a new trek experience for your customers</p>
           </div>
 
-          {/* Progress Steps */}
+     
           <TrekProgressSteps steps={STEPS} currentStep={currentStep} />
 
-          {/* Error Message */}
+      
           {error && (
             <div className="mb-6 p-4 bg-[#fe5532]/10 border-l-4 border-[#fe5532] text-[#fe5532] rounded">
               <div className="flex items-center">
@@ -348,7 +348,7 @@ export default function AddTrek() {
             </div>
           )}
 
-          {/* Step Content */}
+  
           {currentStep === 1 && (
             <div className="bg-[#232630] rounded-lg shadow-md p-6 border border-gray-800">
               <BasicTrekForm
@@ -416,7 +416,7 @@ export default function AddTrek() {
             </div>
           )}
 
-          {/* Add the Images step */}
+
           {currentStep === 5 && (
             <div className="bg-[#232630] rounded-lg shadow-md p-6 border border-gray-800">
               <StepContainer title="Trek Images" isLoading={isLoadingImages} loadingText="Loading images...">

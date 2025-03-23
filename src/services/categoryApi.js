@@ -1,84 +1,41 @@
-const API_BASE_URL = "http://localhost:8080/api"
+import api from "./axiosConfig";
 
 const categoryApi = {
-  // Get all categories
   getAllCategories: async () => {
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`${API_BASE_URL}/categories`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      })
-
-      const data = await response.json()
-      return data
+      const response = await api.get("/categories");
+      return response.data;
     } catch (error) {
-      throw { success: false, message: "Failed to fetch categories" }
+      throw { success: false, message: "Failed to fetch categories" };
     }
   },
 
-  // Create a new category
   createCategory: async (categoryData) => {
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`${API_BASE_URL}/categories`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify(categoryData),
-      })
-
-      const data = await response.json()
-      return data
+      const response = await api.post("/categories", categoryData);
+      return response.data;
     } catch (error) {
-      throw { success: false, message: "Failed to create category" }
+      throw { success: false, message: "Failed to create category" };
     }
   },
 
-  // Update a category
   updateCategory: async (id, categoryData) => {
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify(categoryData),
-      })
-
-      const data = await response.json()
-      return data
+      const response = await api.put(`/categories/${id}`, categoryData);
+      return response.data;
     } catch (error) {
-      throw { success: false, message: "Failed to update category" }
+      throw { success: false, message: "Failed to update category" };
     }
   },
 
-  // Delete a category
   deleteCategory: async (id) => {
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      })
-
-      const data = await response.json()
-      return data
+      const response = await api.delete(`/categories/${id}`);
+      return response.data;
     } catch (error) {
-      throw { success: false, message: "Failed to delete category" }
+      throw { success: false, message: "Failed to delete category" };
     }
   },
-}
+};
 
-export default categoryApi
-
+export default categoryApi;

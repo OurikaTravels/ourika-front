@@ -23,19 +23,18 @@ export default function EditProfile() {
   const [isLoading, setIsLoading] = useState(false)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [profileImage, setProfileImage] = useState(null)
-  const [imageKey, setImageKey] = useState(Date.now()) // Add key for image refresh
+  const [imageKey, setImageKey] = useState(Date.now()) 
   const [showPopup, setShowPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState("")
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [activeSection, setActiveSection] = useState("profile")
   const [isMobile, setIsMobile] = useState(false)
 
-  // Check if device is mobile
   useEffect(() => {
     const checkIfMobile = () => {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
-      setIsSidebarOpen(!mobile) // Open sidebar by default on desktop
+      setIsSidebarOpen(!mobile)
     }
 
     checkIfMobile()
@@ -84,13 +83,13 @@ export default function EditProfile() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Validate file type
+
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image file")
       return
     }
 
-    // Validate file size (5MB max)
+
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Image size should be less than 5MB")
       return
@@ -102,17 +101,16 @@ export default function EditProfile() {
       const response = await guideApi.uploadProfileImage(user.id, file)
 
       if (response.success) {
-        // Force refresh the image by updating the key
         setProfileImage(response.data.profileImage)
         setImageKey(Date.now())
 
-        // Show popup
+      
         setPopupMessage("Profile image updated successfully")
         setShowPopup(true)
 
         toast.success("Profile image updated successfully")
 
-        // Hide popup after 3 seconds
+    
         setTimeout(() => {
           setShowPopup(false)
         }, 3000)
@@ -152,13 +150,13 @@ export default function EditProfile() {
       const response = await guideApi.updateGuideProfile(user.id, profileData)
 
       if (response.success) {
-        // Show popup notification
+ 
         setPopupMessage("Profile updated successfully")
         setShowPopup(true)
 
         toast.success("Profile updated successfully")
 
-        // Hide popup after 3 seconds
+
         setTimeout(() => {
           setShowPopup(false)
         }, 3000)
@@ -181,13 +179,13 @@ export default function EditProfile() {
         setActiveSection={setActiveSection}
       />
 
-      {/* Mobile overlay when sidebar is open */}
+
       {isMobile && isSidebarOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-20" onClick={() => setIsSidebarOpen(false)} />
       )}
 
       <div className={`flex-1 transition-all duration-300 ${isMobile ? "ml-0" : isSidebarOpen ? "ml-64" : "ml-20"}`}>
-        {/* Success Popup */}
+
         {showPopup && (
           <div className="fixed top-4 right-4 bg-[#56acfe] text-white p-4 rounded-lg shadow-lg flex items-center z-50 animate-fadeIn">
             <CheckCircle className="w-5 h-5 mr-2" />
@@ -217,7 +215,7 @@ export default function EditProfile() {
 
         <main className="p-4 md:p-6 overflow-y-auto">
           <div className="max-w-4xl mx-auto">
-            {/* Profile Image Section */}
+
             <div className="mb-8 flex flex-col items-center bg-[#232630] p-6 rounded-lg shadow-md">
               <div className="relative mb-4">
                 <div
@@ -226,7 +224,7 @@ export default function EditProfile() {
                 >
                   {profileImage ? (
                     <img
-                      key={imageKey} // Force re-render when key changes
+                      key={imageKey} 
                       src={`http://localhost:8080/api/uploads/images/${profileImage}?v=${imageKey}`} // Add cache-busting query param
                       alt="Profile"
                       className="w-full h-full object-cover group-hover:opacity-80 transition-all duration-300"
@@ -237,12 +235,12 @@ export default function EditProfile() {
                     </div>
                   )}
 
-                  {/* Overlay */}
+ 
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <Camera className="w-8 h-8 text-white" />
                   </div>
 
-                  {/* Loading Overlay */}
+
                   {isUploadingImage && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60">
                       <Loader className="w-8 h-8 text-white animate-spin" />
@@ -409,7 +407,7 @@ export default function EditProfile() {
           </div>
         </main>
 
-        {/* Add some CSS for the popup animation */}
+
         <style jsx global>{`
           @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }

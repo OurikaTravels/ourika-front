@@ -121,7 +121,7 @@ export default function AdminDashboard() {
             <p className="mt-1 text-gray-400">Welcome back! Here's what's happening with your platform today.</p>
           </div>
 
-          {/* Key Metrics Section */}
+
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
               <Users className="w-5 h-5 mr-2 text-[#56acfe]" />
@@ -159,7 +159,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Guide Metrics Section */}
+
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
               <UserCog className="w-5 h-5 mr-2 text-[#fe5532]" />
@@ -183,7 +183,6 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Reservation Metrics Section */}
           <div className="mb-8">
             <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
               <Calendar className="w-5 h-5 mr-2 text-[#56acfe]" />

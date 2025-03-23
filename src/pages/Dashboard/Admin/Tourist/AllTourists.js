@@ -26,10 +26,9 @@ export default function AllTourists() {
     setError(null);
     try {
       const response = await touristApi.getAllTourists();
-      console.log('API Response:', response); // For debugging
+      console.log('API Response:', response); 
       
       if (response.success) {
-        // Correctly access the data array from the response
         setTourists(response.data || []);
         if (response.message) {
           toast.success(response.message);

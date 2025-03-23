@@ -25,7 +25,6 @@ export default function ServiceSelector({ trekId, availableServices, selectedSer
     try {
       const response = await serviceApi.getAllServices()
       if (response.success) {
-        // We'll get all services here, but we'll filter the selected ones in the UI
         setIsLoading(false)
       } else {
         throw new Error(response.message || "Failed to fetch trek services")
@@ -41,7 +40,6 @@ export default function ServiceSelector({ trekId, availableServices, selectedSer
 
     try {
       if (isSelected) {
-        // Remove service
         const response = await serviceApi.removeServiceFromTrek(trekId, service.id)
         if (response.success) {
           setSelectedServices(selectedServices.filter((s) => s.id !== service.id))
@@ -50,7 +48,6 @@ export default function ServiceSelector({ trekId, availableServices, selectedSer
           throw new Error(response.message || "Failed to remove service")
         }
       } else {
-        // Add service
         const response = await serviceApi.addServiceToTrek(trekId, service.id)
         if (response.success) {
           setSelectedServices([...selectedServices, service])
@@ -78,16 +75,13 @@ export default function ServiceSelector({ trekId, availableServices, selectedSer
     try {
       const response = await serviceApi.createService({ name: newServiceName.trim() })
       if (response.success) {
-        // Add the new service to the available services
         const newService = response.data
 
-        // Also add it to the trek
         const addToTrekResponse = await serviceApi.addServiceToTrek(trekId, newService.id)
         if (addToTrekResponse.success) {
           setSelectedServices([...selectedServices, newService])
         }
 
-        // Update available services
         availableServices.push(newService)
 
         toast.success(`${newService.name} created and added to trek`)
@@ -103,7 +97,6 @@ export default function ServiceSelector({ trekId, availableServices, selectedSer
     }
   }
 
-  // Filter services based on search term
   const filteredServices = availableServices.filter((service) =>
     service.name.toLowerCase().includes(searchTerm.toLowerCase()),
   )
@@ -121,7 +114,6 @@ export default function ServiceSelector({ trekId, availableServices, selectedSer
         </button>
       </div>
 
-      {/* Search input */}
       <div className="relative mb-4">
         <input
           type="text"
@@ -173,7 +165,6 @@ export default function ServiceSelector({ trekId, availableServices, selectedSer
         </div>
       )}
 
-      {/* Add New Service Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#232630] rounded-lg max-w-md w-full p-6 shadow-xl border border-gray-700">
@@ -240,7 +231,6 @@ export default function ServiceSelector({ trekId, availableServices, selectedSer
         </div>
       )}
 
-      {/* Selected Services Summary */}
       <div className="mt-6 bg-[#232630] rounded-lg p-4 border border-gray-700">
         <div className="flex justify-between items-center mb-3">
           <h4 className="font-medium text-white">Selected Services ({selectedServices.length})</h4>

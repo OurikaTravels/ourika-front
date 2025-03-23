@@ -24,7 +24,7 @@ export default function GuideDashboard() {
     experience: "",
   })
 
-  // Check if device is mobile
+
   useEffect(() => {
     const checkIfMobile = () => {
       const mobile = window.innerWidth < 768
@@ -40,7 +40,6 @@ export default function GuideDashboard() {
     }
   }, [])
 
-  // Fetch guide data
   useEffect(() => {
     const fetchGuideData = async () => {
       try {
@@ -95,7 +94,6 @@ export default function GuideDashboard() {
       const response = await guideApi.uploadProfileImage(formData)
       if (response.success) {
         toast.success("Profile image updated successfully")
-        // Update user context or reload profile data
       } else {
         toast.error(response.message || "Failed to upload image")
       }

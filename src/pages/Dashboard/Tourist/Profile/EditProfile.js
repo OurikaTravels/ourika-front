@@ -82,7 +82,7 @@ export default function TouristProfile() {
   return (
     <div className="max-w-3xl mx-auto p-6 md:p-8">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {/* Header */}
+
         <div className="bg-gradient-to-r from-[#049769]/10 to-[#049769]/10 px-6 py-8 border-b border-gray-100">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
@@ -108,7 +108,6 @@ export default function TouristProfile() {
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-6 md:p-8">
           {!formData.verified && (
             <div className="mb-8 bg-amber-50 border border-amber-200 p-4 rounded-xl">

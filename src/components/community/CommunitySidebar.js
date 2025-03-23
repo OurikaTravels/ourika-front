@@ -47,7 +47,7 @@ export default function CommunitySidebar({ guides, externalIsSidebarOpen, extern
 
   return (
     <>
-      {/* Mobile Sidebar Toggle Button */}
+
       <button
         id="sidebar-toggle"
         onClick={toggleSidebar}
@@ -59,7 +59,7 @@ export default function CommunitySidebar({ guides, externalIsSidebarOpen, extern
         {isSidebarOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
       </button>
 
-      {/* Overlay for mobile */}
+
       {isMobile && isSidebarOpen && (
         <div
           className="fixed inset-0  bg-opacity-50 z-20 transition-opacity duration-300"
@@ -67,7 +67,7 @@ export default function CommunitySidebar({ guides, externalIsSidebarOpen, extern
         />
       )}
 
-      {/* Sidebar Container */}
+
       <div
         id="community-sidebar"
         className={`lg:block fixed lg:relative z-30 lg:z-10 top-0 lg:top-auto right-0 lg:right-auto h-full lg:h-auto w-[270px] lg:w-auto bg-gray-100  lg:bg-transparent lg:dark:bg-transparent transition-transform duration-300 ease-in-out transform ${
@@ -76,7 +76,7 @@ export default function CommunitySidebar({ guides, externalIsSidebarOpen, extern
       >
         <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-120px)] pb-6">
      
-          {/* Top Guides */}
+   
           <TopGuides guides={guides} />
         </div>
       </div>

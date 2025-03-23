@@ -41,7 +41,7 @@ export default function PostComments({ postId, initialComments = [], onCommentAd
 
   return (
     <div className="space-y-3">
-      {/* Comment List */}
+
       <div className="space-y-2 max-h-72 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-emerald-200 scrollbar-track-transparent">
         {comments.length === 0 ? (
           <p className="text-gray-500 text-center py-4 italic bg-emerald-50/50 rounded-lg">
@@ -73,7 +73,7 @@ export default function PostComments({ postId, initialComments = [], onCommentAd
         )}
       </div>
 
-      {/* Comment Form */}
+
       {isAuthenticated ? (
         <form onSubmit={handleSubmitComment} className="flex items-center space-x-2 mt-2">
           <div className="flex-shrink-0">

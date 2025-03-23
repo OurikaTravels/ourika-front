@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react"
 import { User, HelpCircle, LogOut, ChevronDown, UserCircle, Shield } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import AuthModal from "../auth/AuthModal"
-import { useTheme } from "../../context/ThemeContext"
 import { useAuth } from "../../context/AuthContext"
 import { Link } from "react-router-dom"
 import { toast } from "react-hot-toast"
@@ -12,12 +11,10 @@ import { toast } from "react-hot-toast"
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  const { theme } = useTheme()
   const { user, isAuthenticated, logout } = useAuth()
   const navigate = useNavigate()
   const dropdownRef = useRef(null)
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -142,7 +139,7 @@ const ProfileDropdown = () => {
         </div>
       )}
 
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} theme={theme} />
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)}  />
     </div>
   )
 }

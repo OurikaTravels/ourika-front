@@ -45,7 +45,6 @@ export default function CommunityPage() {
     return () => window.removeEventListener("resize", checkIfMobile)
   }, [])
 
-  // Debug: Log posts and guides when the component renders
   useEffect(() => {
     if (!isLoading) {
       console.log("Posts:", posts)

@@ -37,7 +37,7 @@ export default function GuideProfilePage() {
     isValidateGuide: false,
     aboutYou: "",
     profileImage: "",
-    // Added mock data for additional stats
+
     touristsGuided: 1240,
     treksCompleted: 342,
     responseRate: 98,
@@ -53,7 +53,7 @@ export default function GuideProfilePage() {
       try {
         const response = await guideApi.getGuideProfile(id)
         if (response.success) {
-          // Enhance with mock data for visual purposes
+    
           setGuide({
             ...response.data,
             touristsGuided: 1240,
@@ -112,7 +112,7 @@ export default function GuideProfilePage() {
 
   return (
     <div className="min-h-screen bg-white text-gray-800">
-      {/* Hero Banner */}
+
       <div className="relative h-64 md:h-80 w-full overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
@@ -132,10 +132,10 @@ export default function GuideProfilePage() {
         </div>
       </div>
 
-      {/* Profile Section */}
+   
       <div className="max-w-5xl mx-auto px-4 relative">
         <div className="flex flex-col md:flex-row md:items-end -mt-16 md:-mt-20 mb-6">
-          {/* Profile Image */}
+  
           <div className="relative">
             <img
               src={
@@ -200,7 +200,7 @@ export default function GuideProfilePage() {
           </div>
         </div>
 
-        {/* Official Verification Badge */}
+
         <div className="bg-emerald-50 border-l-4 border-emerald-500 rounded-md p-4 mb-6 flex items-start">
           <Award className="w-6 h-6 text-emerald-600 mr-3 flex-shrink-0" />
           <div>
@@ -212,7 +212,7 @@ export default function GuideProfilePage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-xl p-4 shadow-sm border border-emerald-100 hover:shadow-md transition-shadow">
             <div className="flex items-center text-emerald-600 mb-1">
@@ -247,7 +247,7 @@ export default function GuideProfilePage() {
           </div>
         </div>
 
-        {/* About Section */}
+
         <div className="bg-white rounded-xl shadow-sm border border-emerald-100 p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-emerald-100">About</h2>
           <p className="text-gray-700 whitespace-pre-line leading-relaxed mb-6">
@@ -288,7 +288,7 @@ Born and raised in the foothills of the Atlas Mountains, I have an intimate know
           </div>
         </div>
 
-        {/* Certifications */}
+
         <div className="bg-white rounded-xl shadow-sm border border-emerald-100 p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-emerald-100 flex items-center">
             <Award className="w-5 h-5 mr-2 text-emerald-600" />
@@ -305,7 +305,6 @@ Born and raised in the foothills of the Atlas Mountains, I have an intimate know
           </ul>
         </div>
 
-        {/* Contact Section */}
         <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl shadow-lg p-6 mb-8 text-white">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
             <Phone className="w-5 h-5 mr-2" />
@@ -329,7 +328,7 @@ Born and raised in the foothills of the Atlas Mountains, I have an intimate know
           </div>
         </div>
 
-        {/* CTA Section */}
+
         <div className="bg-emerald-50 rounded-xl p-8 mb-10 text-center">
           <h2 className="text-2xl font-bold text-emerald-800 mb-3">Ready for an unforgettable adventure?</h2>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">

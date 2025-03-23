@@ -18,7 +18,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
 
   const { login } = useAuth()
 
-  // Add nationality options
+
   const nationalities = [
     "Select Nationality",
     "American",
@@ -44,7 +44,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
 
     try {
       if (isLogin) {
-        // Handle login
+
         const result = await login(email, password)
         if (result.success) {
           toast.success("Logged in successfully")
@@ -53,7 +53,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
           toast.error(result.error || "Login failed")
         }
       } else {
-        // Handle tourist registration
+
         const touristData = {
           firstName,
           lastName,
@@ -64,7 +64,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
 
         const result = await authApi.registerTourist(touristData)
         toast.success("Tourist account created successfully")
-        // Automatically switch to login mode after successful registration
+
         setIsLogin(true)
         setEmail("")
         setPassword("")

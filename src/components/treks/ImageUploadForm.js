@@ -33,7 +33,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
         const images = response.data
         setUploadedImages(images)
 
-        // Find primary image if any
         const primaryImage = images.find((img) => img.isPrimary)
         if (primaryImage) {
           setPrimaryImageId(primaryImage.id)
@@ -101,7 +100,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
   }
 
   const handleDeleteUploadedImage = async (imageId) => {
-    // Don't allow deleting the primary image
     const imageToDelete = uploadedImages.find((img) => img.id === imageId)
     if (imageToDelete?.isPrimary) {
       toast.error("Cannot delete the primary image. Please set another image as primary first.")
@@ -127,9 +125,7 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     }
   }
 
-  // Show confirmation dialog before setting an image as primary
   const confirmSetImageAsPrimary = (imageId) => {
-    // No need to check if image is already primary - the API will handle the toggle
     setImageToSetAsPrimary(imageId)
     setShowConfirmDialog(true)
   }
@@ -145,7 +141,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
       const response = await imageApi.toggleImagePrimaryStatus(trekId, imageToSetAsPrimary)
 
       if (response.success) {
-        // Refresh the images to get the updated primary status
         await fetchTrekImages()
         toast.success("Image primary status updated successfully")
       } else {
@@ -160,14 +155,12 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     }
   }
 
-  // Handle upload of images
   const handleUpload = async () => {
     if (selectedFiles.length === 0) {
       toast.error("Please select at least one image")
       return
     }
 
-    // Check minimum file requirement
     if (selectedFiles.length < 4) {
       toast.error("At least 4 images are required for upload")
       return
@@ -186,7 +179,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
       toast.success("Images uploaded successfully")
       setSelectedFiles([])
 
-      // Refresh the images list
       fetchTrekImages()
 
       if (onImagesUploaded) {
@@ -285,7 +277,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
 
   return (
     <div className="space-y-8">
-      {/* Confirmation Dialog for Setting Primary Image */}
       {showConfirmDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl">
@@ -317,7 +308,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
         </div>
       )}
 
-      {/* Instructions */}
       <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded-r-md">
         <div className="flex">
           <div className="flex-shrink-0">
@@ -338,7 +328,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
         </div>
       </div>
 
-      {/* Drop Zone */}
       <div
         onClick={() => fileInputRef.current?.click()}
         onDragOver={handleDragOver}
@@ -363,7 +352,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
         </p>
       </div>
 
-      {/* Selected Files Preview */}
       {selectedFiles.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -379,7 +367,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
             {selectedFiles.map((file, index) => renderPreview(file, index))}
           </div>
 
-          {/* Upload Progress */}
           {isUploading && (
             <div className="mt-4">
               <div className="flex items-center justify-between mb-1">
@@ -395,7 +382,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
             </div>
           )}
 
-          {/* Upload Button */}
           <button
             onClick={handleUpload}
             disabled={isUploading || selectedFiles.length < 4}
@@ -422,7 +408,6 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
         </div>
       )}
 
-      {/* Uploaded Images */}
       {isLoadingImages ? (
         <div className="flex justify-center items-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
           <Loader className="animate-spin h-8 w-8 text-[#ff5c5c]" />

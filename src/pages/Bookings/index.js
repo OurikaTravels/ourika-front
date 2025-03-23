@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useAuth } from "../../context/AuthContext"
-import { useTheme } from "../../context/ThemeContext"
 import reservationApi from "../../services/reservationApi"
 import {
   Clock,
@@ -46,7 +45,6 @@ const statusConfig = {
 }
 
 const BookingsPage = () => {
-  const { theme } = useTheme()
   const { user } = useAuth()
   const [reservations, setReservations] = useState([])
   const [loading, setLoading] = useState(true)
@@ -180,12 +178,9 @@ const BookingsPage = () => {
           return (
             <div
               key={reservation.id}
-              className={`border rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md ${
-                theme === "dark" ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-white"
-              } ${isPastTrip ? "opacity-80" : ""}`}
+              className="border rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md "
             >
               <div className="flex flex-col md:flex-row">
-                {/* Trek Image */}
                 <div className="md:w-1/3 lg:w-1/4 relative">
                   <div className="aspect-video md:aspect-square w-full h-full">
                     <img
@@ -205,7 +200,6 @@ const BookingsPage = () => {
                     />
                   </div>
 
-                  {/* Status Badge - Absolute positioned on mobile, relative on desktop */}
                   <div
                     className={`absolute top-4 left-4 md:hidden px-3 py-1.5 rounded-full flex items-center ${status.color}`}
                   >
@@ -213,14 +207,11 @@ const BookingsPage = () => {
                     <span className="ml-1.5 text-sm font-medium">{status.label}</span>
                   </div>
                 </div>
-
-                {/* Content */}
                 <div className="flex-1 p-5 md:p-6">
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                     <div className="flex-1">
                       <h2 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">{reservation.trek.title}</h2>
 
-                      {/* Status Badge - Hidden on mobile, shown on desktop */}
                       <div
                         className={`hidden md:flex items-center px-3 py-1.5 rounded-full w-fit mb-4 ${status.color}`}
                       >
@@ -247,7 +238,6 @@ const BookingsPage = () => {
                     </div>
                   </div>
 
-                  {/* Trek Details */}
                   <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="flex items-center">
                       <CalendarDays className="h-5 w-5 text-[#049769]" />
@@ -282,7 +272,6 @@ const BookingsPage = () => {
                     </div>
                   </div>
 
-                  {/* Guide Information */}
                   {reservation.guide && (
                     <div className="mt-5 pt-5 border-t border-gray-100">
                       <div className="flex items-center">
@@ -314,13 +303,11 @@ const BookingsPage = () => {
                     </div>
                   )}
 
-                  {/* Actions */}
                   <div className="mt-5 pt-5 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <span className="text-xs text-gray-500">
                       Booked on {format(new Date(reservation.reservationDate), "MMMM dd, yyyy")}
                     </span>
 
-                    {/* Cancel button only for PENDING or APPROVED status and not past trips */}
                     {(reservation.status === "PENDING" || reservation.status === "APPROVED") && !isPastTrip && (
                       <button
                         onClick={() => handleCancelReservation(reservation.id)}
@@ -346,7 +333,6 @@ const BookingsPage = () => {
                       </button>
                     )}
 
-                    {/* View Details button */}
                     <Link
                       to={`/treks/${reservation.trek.id}`}
                       className="px-4 py-2 bg-[#049769] text-white rounded-lg hover:bg-[#049769] transition-all duration-300 text-sm font-medium flex items-center"

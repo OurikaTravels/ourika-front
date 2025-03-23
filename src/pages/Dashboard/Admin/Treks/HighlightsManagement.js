@@ -53,12 +53,11 @@ export default function HighlightsManagement() {
     }
   }
 
-  // Filter highlights based on search term
+
   const filteredHighlights = Array.isArray(highlights)
     ? highlights.filter((highlight) => highlight.content.toLowerCase().includes(searchTerm.toLowerCase()))
     : []
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentHighlights = filteredHighlights.slice(indexOfFirstItem, indexOfLastItem)
@@ -120,7 +119,7 @@ export default function HighlightsManagement() {
       [name]: value,
     })
 
-    // Clear error when user types
+
     if (formErrors[name]) {
       setFormErrors({
         ...formErrors,
@@ -363,7 +362,6 @@ export default function HighlightsManagement() {
         </main>
       </div>
 
-      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#232630] rounded-lg max-w-md w-full p-6 shadow-xl border border-gray-700">
@@ -401,7 +399,7 @@ export default function HighlightsManagement() {
         </div>
       )}
 
-      {/* Add Highlight Modal */}
+
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#232630] rounded-lg max-w-md w-full p-6 shadow-xl border border-gray-700">
@@ -465,7 +463,7 @@ export default function HighlightsManagement() {
         </div>
       )}
 
-      {/* Edit Highlight Modal */}
+
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#232630] rounded-lg max-w-md w-full p-6 shadow-xl border border-gray-700">

@@ -41,12 +41,11 @@ export default function GuidePosts() {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const fileInputRef = useRef(null)
 
-  // Check if device is mobile
   useEffect(() => {
     const checkIfMobile = () => {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
-      setIsSidebarOpen(!mobile) // Open sidebar by default on desktop
+      setIsSidebarOpen(!mobile) 
     }
 
     checkIfMobile()
@@ -134,21 +133,18 @@ export default function GuidePosts() {
       console.log("Post Data:", newPost)
       console.log("Selected Images:", selectedImages)
 
-      // Create FormData
+   
       const formData = new FormData()
 
-      // Append the post data as a JSON string with the correct Content-Type
       const postBlob = new Blob([JSON.stringify(newPost)], { type: "application/json" })
       formData.append("post", postBlob)
 
-      // Append images
       if (selectedImages && selectedImages.length > 0) {
         selectedImages.forEach((image) => {
           formData.append("images", image)
         })
       }
 
-      // Send the request
       const response = await postApi.createGuidePost(guideId, formData)
       console.log("API Response:", response)
 
@@ -248,7 +244,6 @@ export default function GuidePosts() {
         setActiveSection={setActiveSection}
       />
 
-      {/* Mobile overlay when sidebar is open */}
       {isMobile && isSidebarOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-20" onClick={() => setIsSidebarOpen(false)} />
       )}
@@ -382,7 +377,6 @@ export default function GuidePosts() {
         </main>
       </div>
 
-      {/* Create Post Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="bg-[#232630] rounded-lg p-5 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -511,7 +505,7 @@ export default function GuidePosts() {
         </div>
       )}
 
-      {/* Post Preview Modal */}
+
       {showPreviewModal && previewPost && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="bg-[#232630] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -543,7 +537,7 @@ export default function GuidePosts() {
                       </>
                     )}
 
-                    {/* Image counter */}
+
                     {previewPost.images.length > 1 && (
                       <div className="absolute bottom-4 left-0 right-0 flex justify-center">
                         <div className="bg-black/60 text-white text-xs px-2 py-1 rounded-full">
@@ -558,7 +552,6 @@ export default function GuidePosts() {
                   </div>
                 )}
 
-                {/* Thumbnails */}
                 {previewPost.images && previewPost.images.length > 1 && (
                   <div className="flex overflow-x-auto p-2 gap-2 bg-[#191b20]">
                     {previewPost.images.map((image, index) => (
@@ -580,7 +573,7 @@ export default function GuidePosts() {
                 )}
               </div>
 
-              {/* Post Details */}
+
               <div className="md:w-1/2 p-6 flex flex-col">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -592,10 +585,10 @@ export default function GuidePosts() {
                   </button>
                 </div>
 
-                {/* Status Badge */}
+
                 <div className="mb-4">{getStatusBadge(previewPost.status)}</div>
 
-                {/* Stats Cards */}
+
                 <div className="grid grid-cols-3 gap-3 mb-6">
                   <div className="bg-[#191b20] p-3 rounded-lg">
                     <div className="flex items-center justify-between">
@@ -630,7 +623,6 @@ export default function GuidePosts() {
                   </div>
                 </div>
 
-                {/* Description */}
                 <div className="mb-6">
                   <h3 className="text-sm font-medium text-gray-300 mb-2">Description</h3>
                   <div className="bg-[#191b20] p-4 rounded-lg">
@@ -638,7 +630,6 @@ export default function GuidePosts() {
                   </div>
                 </div>
 
-                {/* Comments */}
                 {previewPost?.comments && previewPost.comments.length > 0 && (
                   <div>
                     <h3 className="text-sm font-medium text-gray-300 mb-2">

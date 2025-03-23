@@ -53,10 +53,8 @@ export default function ServiceManagement() {
     }
   }
 
-  // Filter services based on search term
   const filteredServices = services.filter((service) => service.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
-  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentServices = filteredServices.slice(indexOfFirstItem, indexOfLastItem)
@@ -118,7 +116,6 @@ export default function ServiceManagement() {
       [name]: value,
     })
 
-    // Clear error when user types
     if (formErrors[name]) {
       setFormErrors({
         ...formErrors,
@@ -359,7 +356,6 @@ export default function ServiceManagement() {
         </main>
       </div>
 
-      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#232630] rounded-lg max-w-md w-full p-6 shadow-xl border border-gray-700">
@@ -397,7 +393,6 @@ export default function ServiceManagement() {
         </div>
       )}
 
-      {/* Add Service Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#232630] rounded-lg max-w-md w-full p-6 shadow-xl border border-gray-700">
@@ -461,7 +456,7 @@ export default function ServiceManagement() {
         </div>
       )}
 
-      {/* Edit Service Modal */}
+
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
           <div className="bg-[#232630] rounded-lg max-w-md w-full p-6 shadow-xl border border-gray-700">

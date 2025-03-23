@@ -25,7 +25,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
     transportDuration: "",
   })
 
-  // Fetch existing activities when component mounts
   useEffect(() => {
     if (trekId) {
       fetchActivities()
@@ -60,7 +59,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
       [name]: inputValue,
     }))
 
-    // Clear error when field is edited
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -103,7 +101,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
     setIsSubmitting(true)
 
     try {
-      // Prepare the activity data based on type
       const activityData = {
         title: newActivity.title,
         type: newActivity.type,
@@ -112,26 +109,22 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
         activityOrder: activities.length + 1,
       }
 
-      // Add transportation-specific fields if needed
       if (newActivity.type === "TRANSPORTATION") {
         activityData.transportType = newActivity.transportType
         activityData.transportDuration = newActivity.transportDuration
       }
 
-      // Call the API to add the activity
       const response = await activityApi.addActivityToTrek(trekId, activityData)
 
       if (!response.success) {
         throw new Error(response.message || "Failed to add activity")
       }
 
-      // Add the new activity to the list
       setActivities([...activities, response.data])
 
-      // Reset the form
       setNewActivity({
         title: "",
-        type: activityType, // Keep the current activity type
+        type: activityType, 
         description: "",
         isOptional: false,
         activityOrder: activities.length + 2,
@@ -139,7 +132,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
         transportDuration: "",
       })
 
-      // Notify parent component
       if (onActivityAdded) {
         onActivityAdded(response.data)
       }
@@ -159,7 +151,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
     setEditActivityId(activity.id)
     setActivityType(activity.type)
 
-    // Set form values based on the activity being edited
     setNewActivity({
       title: activity.title,
       type: activity.type,
@@ -175,7 +166,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
     setEditMode(false)
     setEditActivityId(null)
 
-    // Reset the form
     setNewActivity({
       title: "",
       type: activityType,
@@ -197,7 +187,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
     setIsSubmitting(true)
 
     try {
-      // Prepare the activity data based on type
       const activityData = {
         title: newActivity.title,
         type: newActivity.type,
@@ -206,26 +195,21 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
         activityOrder: newActivity.activityOrder,
       }
 
-      // Add transportation-specific fields if needed
       if (newActivity.type === "TRANSPORTATION") {
         activityData.transportType = newActivity.transportType
         activityData.transportDuration = newActivity.transportDuration
       }
 
-      // Call the API to update the activity
       const response = await activityApi.updateActivity(editActivityId, activityData)
 
       if (!response.success) {
         throw new Error(response.message || "Failed to update activity")
       }
 
-      // Update the activity in the list
       setActivities(activities.map((activity) => (activity.id === editActivityId ? response.data : activity)))
 
-      // Reset the form and exit edit mode
       handleCancelEdit()
 
-      // Notify parent component if callback exists
       if (onActivityUpdated) {
         onActivityUpdated(response.data)
       }
@@ -251,7 +235,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
       const updatedActivities = [...activities]
       updatedActivities.splice(index, 1)
 
-      // Update activity order for remaining activities
       const reorderedActivities = updatedActivities.map((activity, idx) => ({
         ...activity,
         activityOrder: idx + 1,
@@ -260,7 +243,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
       setActivities(reorderedActivities)
       toast.success("Activity removed successfully")
 
-      // Update the order in the backend
       for (let i = 0; i < reorderedActivities.length; i++) {
         const activity = reorderedActivities[i]
         if (activity.activityOrder !== i + 1) {
@@ -275,7 +257,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
 
   return (
     <div className="space-y-6">
-      {/* Activity Type Selector */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Activity Type</label>
         <div className="flex space-x-4">
@@ -306,7 +287,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
         </div>
       </div>
 
-      {/* Activity Form */}
       <form
         onSubmit={editMode ? handleUpdateActivity : handleAddActivity}
         className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6"
@@ -317,9 +297,7 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
             : `Add ${activityType === "TRANSPORTATION" ? "Transportation" : "Activity"}`}
         </h3>
 
-        {/* Common Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Title */}
           <div className="col-span-2">
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Title <span className="text-red-500">*</span>
@@ -340,7 +318,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
             {errors.title && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>}
           </div>
 
-          {/* Description */}
           <div className="col-span-2">
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Description <span className="text-red-500">*</span>
@@ -359,7 +336,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
             {errors.description && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>}
           </div>
 
-          {/* Optional Checkbox */}
           <div className="col-span-2">
             <label className="inline-flex items-center">
               <input
@@ -373,10 +349,8 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
             </label>
           </div>
 
-          {/* Transportation-specific fields */}
           {activityType === "TRANSPORTATION" && (
             <>
-              {/* Transport Type */}
               <div>
                 <label
                   htmlFor="transportType"
@@ -413,7 +387,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
                 )}
               </div>
 
-              {/* Transport Duration */}
               <div>
                 <label
                   htmlFor="transportDuration"
@@ -450,7 +423,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
           )}
         </div>
 
-        {/* Form Actions */}
         <div className="flex justify-end space-x-3">
           {editMode && (
             <button
@@ -491,7 +463,6 @@ export function ActivityForm({ trekId, onActivityAdded, onActivityUpdated }) {
         </div>
       </form>
 
-      {/* Activities List */}
       {isLoading ? (
         <div className="flex justify-center items-center p-12">
           <Loader className="animate-spin h-8 w-8 text-[#ff5c5c]" />

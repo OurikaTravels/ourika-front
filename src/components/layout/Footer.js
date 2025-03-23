@@ -1,19 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Youtube, Phone, Mail, MapPin, ArrowRight, Mountain } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
 import LogoImage from '../../assets/images/logo.png';
 
 export default function Footer() {
-  const { theme } = useTheme();
+  
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-gradient-to-b from-emerald-900 to-emerald-950 text-white py-16">
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* Main Footer Content */}
+
         <div className="grid md:grid-cols-3 gap-12">
-          {/* About Section */}
           <div className="space-y-4">
             <div className="mb-6 flex items-center">
               {LogoImage ? (
@@ -45,7 +43,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
+
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-6 text-emerald-100">Quick Links</h3>
             <ul className="space-y-3">
@@ -71,7 +69,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-6 text-emerald-100">Contact Us</h3>
             <div className="space-y-4">
@@ -90,7 +87,7 @@ export default function Footer() {
         </div>
 
 
-        {/* Bottom Bar */}
+
         <div className="mt-12 pt-8 border-t border-emerald-800/50">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-emerald-400">
