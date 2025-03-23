@@ -152,6 +152,28 @@ const postApi = {
       };
     }
   },
+  getLikedPosts: async (userId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/posts/liked-posts/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      return {
+        success: true,
+        data: response.data,
+        message: "Liked posts fetched successfully",
+      };
+    } catch (error) {
+      console.error("Error fetching liked posts:", error);
+      return {
+        success: false,
+        data: [],
+        message: error.response?.data?.message || "Failed to fetch liked posts",
+      };
+    }
+  },
 }
 
 export default postApi

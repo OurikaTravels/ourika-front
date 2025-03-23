@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
+import { WishlistProvider } from './context/WishlistContext';
+import { ReservationProvider } from './context/ReservationContext';
 import { useEffect, useState } from "react";
 import "./App.css";
 import Navbar from "./components/layout/Navbar";
@@ -324,9 +326,13 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen flex flex-col bg-white">
-          <AppContent />
-        </div>
+        <WishlistProvider>
+          <ReservationProvider>
+            <div className="min-h-screen flex flex-col bg-white">
+              <AppContent />
+            </div>
+          </ReservationProvider>
+        </WishlistProvider>
       </AuthProvider>
     </Router>
   );

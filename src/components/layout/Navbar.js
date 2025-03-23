@@ -6,6 +6,10 @@ import { Search, Heart, X, Menu, User, Calendar, Users, MapPin, Mountain } from 
 import { useAuth } from "../../context/AuthContext"
 import ProfileDropdown from "../common/ProfileDropdown"
 import trekApi from "../../services/trekApi"
+import wishlistApi from "../../services/wishlistApi"
+import reservationApi from "../../services/reservationApi"
+import { useWishlist } from "../../context/WishlistContext"
+import { useReservation } from "../../context/ReservationContext"
 
 const cn = (...classes) => classes.filter(Boolean).join(" ")
 
@@ -41,6 +45,8 @@ const Navbar = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const searchRef = useRef(null)
+  const { wishlistCount, updateWishlistCount } = useWishlist() // Get both count and update function
+  const { reservationCount, updateReservationCount } = useReservation()
 
   // Role checks
   const isTourist = isAuthenticated && user?.role.toLowerCase() === "tourist";
@@ -107,6 +113,40 @@ const Navbar = () => {
   const isActive = (path) => {
     return location.pathname === path
   }
+
+  useEffect(() => {
+    const fetchWishlistCount = async () => {
+      if (isAuthenticated && user?.id && isTourist) {
+        try {
+          const response = await wishlistApi.getWishlistCount(user.id)
+          if (response.success) {
+            updateWishlistCount(response.count) // Use updateWishlistCount instead
+          }
+        } catch (error) {
+          console.error("Failed to fetch wishlist count:", error)
+        }
+      }
+    }
+
+    fetchWishlistCount()
+  }, [isAuthenticated, user?.id, isTourist, updateWishlistCount]) // Add updateWishlistCount to dependencies
+
+  useEffect(() => {
+    const fetchReservationCount = async () => {
+      if (isAuthenticated && user?.id && isTourist) {
+        try {
+          const response = await reservationApi.getReservationCount(user.id)
+          if (response.success) {
+            updateReservationCount(response.count)
+          }
+        } catch (error) {
+          console.error("Failed to fetch reservation count:", error)
+        }
+      }
+    }
+
+    fetchReservationCount()
+  }, [isAuthenticated, user?.id, isTourist, updateReservationCount])
 
   return (
     <nav
@@ -248,13 +288,14 @@ const Navbar = () => {
                     to="/wishlist"
                     icon={<Heart className="h-6 w-6" />}
                     label="Wishlist"
-                    badge={0}
+                    badge={wishlistCount}
                     isActive={isActive("/wishlist")}
                   />
                   <NavIcon
                     to="/bookings"
                     icon={<Calendar className="h-6 w-6" />}
                     label="Bookings"
+                    badge={reservationCount}
                     isActive={isActive("/bookings")}
                   />
                 </>
@@ -398,9 +439,16 @@ const Navbar = () => {
                   )}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <div className="flex items-center">
-                    <Heart className={cn("h-5 w-5 mr-3", isActive("/wishlist") ? "text-emerald-600" : "text-gray-500")} />
-                    <span className="font-medium">Wishlist</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Heart className={cn("h-5 w-5 mr-3", isActive("/wishlist") ? "text-emerald-600" : "text-gray-500")} />
+                      <span className="font-medium">Wishlist</span>
+                    </div>
+                    {wishlistCount > 0 && (
+                      <span className="bg-amber-500 text-white text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center">
+                        {wishlistCount}
+                      </span>
+                    )}
                   </div>
                 </Link>
 
@@ -414,11 +462,18 @@ const Navbar = () => {
                   )}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <div className="flex items-center">
-                    <Calendar
-                      className={cn("h-5 w-5 mr-3", isActive("/bookings") ? "text-emerald-600" : "text-gray-500")}
-                    />
-                    <span className="font-medium">Bookings</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Calendar
+                        className={cn("h-5 w-5 mr-3", isActive("/bookings") ? "text-emerald-600" : "text-gray-500")}
+                      />
+                      <span className="font-medium">Bookings</span>
+                    </div>
+                    {reservationCount > 0 && (
+                      <span className="bg-amber-500 text-white text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center">
+                        {reservationCount}
+                      </span>
+                    )}
                   </div>
                 </Link>
               </>

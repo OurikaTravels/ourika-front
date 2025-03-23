@@ -5,6 +5,7 @@ import { MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
+import { useWishlist } from "../../context/WishlistContext";
 import wishlistApi from "../../services/wishlistApi";
 import { toast } from "react-hot-toast";
 import WishlistHeader from "./WishlistHeader";
@@ -13,6 +14,7 @@ import WishlistCard from "./WishlistCard";
 const WishlistPage = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
+  const { updateWishlistCount } = useWishlist();
   const [wishlist, setWishlist] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortOption, setSortOption] = useState("dateAdded");
@@ -136,6 +138,7 @@ const WishlistPage = () => {
       const response = await wishlistApi.removeFromWishlist(user.id, trekId);
       if (response.success) {
         setWishlist(wishlist.filter((item) => item.id !== trekId));
+        updateWishlistCount(response.count); // Update the global count
         toast.success("Removed from wishlist");
       } else {
         toast.error(response.message);

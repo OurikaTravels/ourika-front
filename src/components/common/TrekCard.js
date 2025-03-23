@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Heart, Clock, MapPin } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
+import { useWishlist } from "../../context/WishlistContext"
 import wishlistApi from "../../services/wishlistApi"
 import { toast } from "react-hot-toast"
 import { Link } from "react-router-dom"
@@ -59,6 +60,27 @@ const TrekCard = ({
   const [isLiked, setIsLiked] = useState(isFavorite)
   const [isLoading, setIsLoading] = useState(false)
   const { user, isAuthenticated } = useAuth()
+  const { updateWishlistCount } = useWishlist()
+
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (!user?.id || !trekId) return;
+
+      try {
+        const response = await wishlistApi.getTouristWishlistTrekIds(user.id);
+        if (response.success) {
+          const isInWishlist = response.data.includes(Number(trekId));
+          setIsLiked(isInWishlist);
+        }
+      } catch (error) {
+        console.error("Error checking wishlist status:", error);
+      }
+    };
+
+    if (isAuthenticated && user?.role.toLowerCase() === "tourist") {
+      checkWishlistStatus();
+    }
+  }, [user?.id, trekId, isAuthenticated]);
 
   const handleWishlistClick = async () => {
     if (!isAuthenticated) {
@@ -73,24 +95,16 @@ const TrekCard = ({
 
     setIsLoading(true)
     try {
-      if (!isLiked) {
-        const response = await wishlistApi.addToWishlist(user.id, trekId)
-        if (response.success) {
-          setIsLiked(true)
-          toast.success("Added to wishlist")
-          if (onWishlistUpdate) onWishlistUpdate()
-        } else {
-          throw new Error(response.message)
+      const response = await wishlistApi[isLiked ? 'removeFromWishlist' : 'addToWishlist'](user.id, trekId)
+      
+      if (response.success) {
+        setIsLiked(!isLiked)
+        updateWishlistCount(response.count)
+        if (onWishlistUpdate) {
+          onWishlistUpdate(!isLiked)
         }
       } else {
-        const response = await wishlistApi.removeFromWishlist(user.id, trekId)
-        if (response.success) {
-          setIsLiked(false)
-          toast.success("Removed from wishlist")
-          if (onWishlistUpdate) onWishlistUpdate()
-        } else {
-          throw new Error(response.message)
-        }
+        throw new Error(response.message)
       }
     } catch (error) {
       toast.error(error.message || "Failed to update wishlist")
@@ -98,24 +112,6 @@ const TrekCard = ({
       setIsLoading(false)
     }
   }
-
-  useEffect(() => {
-    const checkWishlistStatus = async () => {
-      if (!user?.id || !trekId) return
-
-      try {
-        const response = await wishlistApi.getTouristWishlist(user.id)
-        if (response.success && Array.isArray(response.data.wishlistItems)) {
-          const isInWishlist = response.data.wishlistItems.some((item) => item.trek.id === trekId)
-          setIsLiked(isInWishlist)
-        }
-      } catch (error) {
-        console.error("Error checking wishlist status:", error)
-      }
-    }
-
-    checkWishlistStatus()
-  }, [user?.id, trekId])
 
   const primaryImage = images?.find((img) => img.isPrimary) || images?.[0]
   const imageUrl = primaryImage ? `http://localhost:8080/api/uploads/images/${primaryImage.path}` : ""

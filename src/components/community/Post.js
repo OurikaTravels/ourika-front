@@ -16,15 +16,38 @@ import { formatDistanceToNow } from "date-fns"
 import PostComments from "./PostComments"
 import { Link } from "react-router-dom"
 import postApi from "../../services/postApi"
+import { useAuth } from "../../context/AuthContext"
+import { toast } from "react-toastify"
 
 export default function Post({ post }) {
-  const [liked, setLiked] = useState(post.likedByCurrentUser || false)
+  const { user } = useAuth();
+  const [liked, setLiked] = useState(false);
+  const [likedPosts, setLikedPosts] = useState([]);
   const [saved, setSaved] = useState(false)
   const [likeCount, setLikeCount] = useState(post.likes || 0)
   const [showComments, setShowComments] = useState(false)
   const [showImageModal, setShowImageModal] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [comments, setComments] = useState(post.commentsList || [])
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchLikedPosts();
+    }
+  }, [user?.id]);
+
+  const fetchLikedPosts = async () => {
+    try {
+      const response = await postApi.getLikedPosts(user.id);
+      if (response.success) {
+        setLikedPosts(response.data);
+        // Check if current post is in liked posts
+        setLiked(response.data.includes(post.id));
+      }
+    } catch (error) {
+      console.error("Error fetching liked posts:", error);
+    }
+  };
 
   useEffect(() => {
     const handleEscKey = (e) => {
@@ -36,16 +59,24 @@ export default function Post({ post }) {
   }, [showImageModal])
 
   const handleLike = async () => {
+    if (!user) {
+      toast.error("Please login to like posts");
+      return;
+    }
+
     try {
-      const response = await postApi.toggleLike(post.id)
+      const response = await postApi.toggleLike(post.id);
       if (response.success) {
-        setLikeCount(liked ? likeCount - 1 : likeCount + 1)
-        setLiked(!liked)
+        setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+        setLiked(!liked);
+        // Refresh liked posts after toggling
+        fetchLikedPosts();
       }
     } catch (error) {
-      console.error("Error toggling like:", error)
+      console.error("Error toggling like:", error);
+      toast.error("Failed to update like");
     }
-  }
+  };
 
   const handleSave = () => {
     setSaved(!saved)

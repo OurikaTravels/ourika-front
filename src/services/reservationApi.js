@@ -279,6 +279,35 @@ console.log(response.data)
       };
     }
   },
+
+  getReservationCount: async (touristId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/reservations/count/${touristId}`, {
+        headers: {
+          "Accept": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const count = await response.json();
+      return {
+        success: true,
+        count
+      };
+    } catch (error) {
+      console.error("Error fetching reservation count:", error);
+      return {
+        success: false,
+        count: 0,
+        message: error.message || "Failed to fetch reservation count"
+      };
+    }
+  },
 };
 
 export default reservationApi;
