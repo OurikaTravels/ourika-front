@@ -99,25 +99,6 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-[#ff5c5c] focus:ring-[#ff5c5c] border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <a href="#" className="font-medium text-[#ff5c5c] hover:text-[#ff5c5c]/80 transition-colors">
-                Forgot password?
-              </a>
-            </div>
-          </div>
 
           <LoadingButton isLoading={isLoading}>Sign in</LoadingButton>
 
@@ -127,7 +108,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => navigate("/Auth/RegisterGuide")}
-                className="font-medium text-[#ff5c5c] hover:text-[#ff5c5c]/80 transition-colors"
+                className="font-medium text-[#049769]"
               >
                 Sign up
               </button>

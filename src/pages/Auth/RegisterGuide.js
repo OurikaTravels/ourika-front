@@ -49,6 +49,7 @@ export default function RegisterGuide() {
       const result = await authApi.registerGuide(guideData)
 
       if (result.success) {
+        console.log(result.data)
         navigate("/Auth/EmailVerification", { state: { email: formData.email } })
       } else {
         setError(result.message || "Registration failed")
@@ -152,7 +153,6 @@ export default function RegisterGuide() {
               />
             </div>
 
-            
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-1">
@@ -166,7 +166,7 @@ export default function RegisterGuide() {
                     id="language"
                     name="language"
                     required
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#ff5c5c] focus:border-[#ff5c5c]"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm "
                     value={formData.language}
                     onChange={handleChange}
                   >
@@ -195,7 +195,7 @@ export default function RegisterGuide() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="speciality" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="speciality" className="block text-sm font-medium text-black mb-1">
                   Speciality
                 </label>
                 <div className="relative">
@@ -240,7 +240,7 @@ export default function RegisterGuide() {
               <button
                 type="button"
                 onClick={() => navigate("/Auth/Login")}
-                className="font-medium text-[#ff5c5c] hover:text-[#ff5c5c]/80 transition-colors"
+                className="font-medium text-[#049769] "
               >
                 Sign in
               </button>

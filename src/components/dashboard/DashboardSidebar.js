@@ -20,12 +20,13 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       id: "dashboard",
       name: "Dashboard",
       icon: <LayoutDashboard className="w-5 h-5" />,
+      link: "/Dashboard/Admin"
     },
     {
       id: "treks",
       name: "Trek Management",
       icon: <Map className="w-5 h-5" />,
-      subsections: ["All Treks", "Add Trek", "Service Management", "Highlights Management"],
+      subsections: ["All Treks", "Service Management", "Highlights Management"],
     },
     {
       id: "guides",
@@ -49,7 +50,7 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       id: "categories",
       name: "Categories",
       icon: <Tag className="w-5 h-5" />,
-      subsections: ["All Categories", "Add Category"],
+      subsections: ["All Categories"],
     },
   ]
 
@@ -79,7 +80,13 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
         {sidebarSections.map((section) => (
           <div key={section.id} className="mb-1">
             <button
-              onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
+              onClick={() => {
+                if (section.link) {
+                  window.location.href = section.link;
+                } else {
+                  setActiveSection(activeSection === section.id ? null : section.id);
+                }
+              }}
               className={`w-full flex items-center px-4 py-3 hover:bg-[#fe5532]/10 hover:text-white transition-colors ${
                 activeSection === section.id ? "bg-[#fe5532]/20 text-[#fe5532]" : "text-gray-300"
               }`}

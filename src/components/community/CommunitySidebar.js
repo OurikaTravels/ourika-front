@@ -51,7 +51,7 @@ export default function CommunitySidebar({ guides, externalIsSidebarOpen, extern
       <button
         id="sidebar-toggle"
         onClick={toggleSidebar}
-        className={`lg:hidden fixed z-30 flex items-center justify-center w-10 h-10 rounded-full shadow-md bg-white dark:bg-gray-800 text-[#ff5c5c] border border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+        className={`lg:hidden fixed z-30 flex items-center justify-center w-10 h-10 rounded-full shadow-md bg-white text-[#049769] border border-gray-200 dark:border-gray-700 transition-all duration-300 ${
           isSidebarOpen ? "right-[270px]" : "right-4"
         }`}
         aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
@@ -62,7 +62,7 @@ export default function CommunitySidebar({ guides, externalIsSidebarOpen, extern
       {/* Overlay for mobile */}
       {isMobile && isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 transition-opacity duration-300"
+          className="fixed inset-0  bg-opacity-50 z-20 transition-opacity duration-300"
           onClick={() => toggleSidebar()}
         />
       )}
@@ -70,7 +70,7 @@ export default function CommunitySidebar({ guides, externalIsSidebarOpen, extern
       {/* Sidebar Container */}
       <div
         id="community-sidebar"
-        className={`lg:block fixed lg:relative z-30 lg:z-10 top-0 lg:top-auto right-0 lg:right-auto h-full lg:h-auto w-[270px] lg:w-auto bg-gray-50 dark:bg-gray-900 lg:bg-transparent lg:dark:bg-transparent transition-transform duration-300 ease-in-out transform ${
+        className={`lg:block fixed lg:relative z-30 lg:z-10 top-0 lg:top-auto right-0 lg:right-auto h-full lg:h-auto w-[270px] lg:w-auto bg-gray-100  lg:bg-transparent lg:dark:bg-transparent transition-transform duration-300 ease-in-out transform ${
           isMobile && !isSidebarOpen ? "translate-x-full" : "translate-x-0"
         } lg:translate-x-0 pt-20 lg:pt-0 px-4 lg:px-0`}
       >

@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useTheme } from "../../context/ThemeContext";
-import reservationApi from "../../services/reservationApi";
+import { useState, useEffect } from "react"
+import { useAuth } from "../../context/AuthContext"
+import { useTheme } from "../../context/ThemeContext"
+import reservationApi from "../../services/reservationApi"
 import {
   Clock,
   MapPin,
@@ -14,11 +14,13 @@ import {
   CalendarDays,
   ChevronRight,
   ArrowRight,
-} from "lucide-react";
-import { format } from "date-fns";
-import { toast } from "react-hot-toast";
-import { Link } from "react-router-dom";
-import BookingHeader from "./BookingHeader";
+  Users,
+  Baby,
+} from "lucide-react"
+import { format } from "date-fns"
+import { toast } from "react-hot-toast"
+import { Link } from "react-router-dom"
+import BookingHeader from "./BookingHeader"
 
 const statusConfig = {
   PENDING: {
@@ -41,75 +43,68 @@ const statusConfig = {
     icon: <XCircle className="w-5 h-5" />,
     label: "Cancelled",
   },
-};
+}
 
 const BookingsPage = () => {
-  const { theme } = useTheme();
-  const { user } = useAuth();
-  const [reservations, setReservations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processingId, setProcessingId] = useState(null);
+  const { theme } = useTheme()
+  const { user } = useAuth()
+  const [reservations, setReservations] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [processingId, setProcessingId] = useState(null)
 
   useEffect(() => {
     const fetchReservations = async () => {
-      if (!user?.id) return;
+      if (!user?.id) return
 
-      setLoading(true);
-      const response = await reservationApi.getTouristReservations(user.id);
-console.log(response)
+      setLoading(true)
+      const response = await reservationApi.getTouristReservations(user.id)
+      console.log(response)
       if (response.success) {
-        setReservations(response.data);
+        setReservations(response.data)
       } else {
-        setError(response.message);
+        setError(response.message)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    fetchReservations();
-  }, [user]);
+    fetchReservations()
+  }, [user])
 
   const handleCancelReservation = async (reservationId) => {
-    if (
-      window.confirm(
-        "Are you sure you want to cancel this reservation? This action cannot be undone."
-      )
-    ) {
-      setIsProcessing(true);
-      setProcessingId(reservationId);
+    if (window.confirm("Are you sure you want to cancel this reservation? This action cannot be undone.")) {
+      setIsProcessing(true)
+      setProcessingId(reservationId)
       try {
-        const response = await reservationApi.cancelReservation(reservationId);
+        const response = await reservationApi.cancelReservation(reservationId)
         if (response.success) {
           setReservations(
             reservations.map((reservation) =>
-              reservation.id === reservationId
-                ? { ...reservation, status: "CANCELLED" }
-                : reservation
-            )
-          );
-          toast.success("Reservation cancelled successfully");
+              reservation.id === reservationId ? { ...reservation, status: "CANCELLED" } : reservation,
+            ),
+          )
+          toast.success("Reservation cancelled successfully")
         } else {
-          throw new Error(response.message || "Failed to cancel reservation");
+          throw new Error(response.message || "Failed to cancel reservation")
         }
       } catch (err) {
-        const errorMessage =
-          err.message || "An error occurred while cancelling the reservation";
-        toast.error(errorMessage);
+        const errorMessage = err.message || "An error occurred while cancelling the reservation"
+        toast.error(errorMessage)
       } finally {
-        setIsProcessing(false);
-        setProcessingId(null);
+        setIsProcessing(false)
+        setProcessingId(null)
       }
     }
-  };
+  }
 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh]">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#ff5c5c] border-t-transparent mb-4"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#049769] border-t-transparent mb-4"></div>
         <p className="text-gray-600 animate-pulse">Loading your bookings...</p>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -118,22 +113,19 @@ console.log(response)
         <BookingHeader />
         <div className="bg-gradient-to-br from-[#0f172a]/5 to-[#1e293b]/10 rounded-2xl p-10 border border-gray-200 shadow-sm max-w-4xl mx-auto">
           <div className="flex flex-col items-center text-center">
-            <div className="w-28 h-28 bg-gradient-to-br from-[#ff5c5c]/20 to-[#ff7b7b]/20 rounded-full flex items-center justify-center mb-8 border-2 border-[#ff5c5c]/30">
-              <MapPin className="w-14 h-14 text-[#ff5c5c]" />
+            <div className="w-28 h-28 bg-gradient-to-br from-[#049769]/20 to-[#049769]/20 rounded-full flex items-center justify-center mb-8 border-2 border-[#049769]/30">
+              <MapPin className="w-14 h-14 text-[#049769]" />
             </div>
 
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Discover Ourika's Treasures
-            </h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">Discover Ourika's Treasures</h2>
             <p className="text-gray-600 max-w-lg mb-10 text-lg">
-              Embark on an unforgettable journey through Morocco's breathtaking
-              landscapes. Explore our handpicked treks and create memories that
-              will last a lifetime.
+              Embark on an unforgettable journey through Morocco's breathtaking landscapes. Explore our handpicked treks
+              and create memories that will last a lifetime.
             </p>
 
             <Link
               to="/"
-              className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#ff5c5c] to-[#ff7b7b] text-white font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#049769] to-[#049769] text-white font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
               <span className="text-lg">Explore Ourika Treks</span>
               <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -141,35 +133,30 @@ console.log(response)
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   if (reservations.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16">
         <h1 className="text-3xl font-bold mb-2">My Bookings</h1>
-        <p className="text-gray-600 mb-12">
-          View and manage your trek reservations
-        </p>
+        <p className="text-gray-600 mb-12">View and manage your trek reservations</p>
 
         <div className="bg-gradient-to-br from-[#0f172a]/5 to-[#1e293b]/10 rounded-2xl p-10 border border-gray-200 shadow-sm max-w-4xl mx-auto">
           <div className="flex flex-col items-center text-center">
-            <div className="w-28 h-28 bg-gradient-to-br from-[#ff5c5c]/20 to-[#ff7b7b]/20 rounded-full flex items-center justify-center mb-8 border-2 border-[#ff5c5c]/30">
-              <MapPin className="w-14 h-14 text-[#ff5c5c]" />
+            <div className="w-28 h-28 bg-gradient-to-br from-[#049769]/20 to-[#049769]/20 rounded-full flex items-center justify-center mb-8 border-2 border-[#049769]/30">
+              <MapPin className="w-14 h-14 text-[#049769]" />
             </div>
 
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Explore Ourika's Wonders
-            </h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">Explore Ourika's Wonders</h2>
             <p className="text-gray-600 max-w-lg mb-10 text-lg">
-              Begin your Moroccan adventure with our exceptional treks through
-              stunning landscapes, ancient villages, and majestic mountains.
-              Your journey awaits!
+              Begin your Moroccan adventure with our exceptional treks through stunning landscapes, ancient villages,
+              and majestic mountains. Your journey awaits!
             </p>
 
             <Link
               to="/treks"
-              className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#ff5c5c] to-[#ff7b7b] text-white font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#049769] to-[#049769] text-white font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
               <span className="text-lg">Explore Ourika Treks</span>
               <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -177,28 +164,24 @@ console.log(response)
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold mb-2">My Bookings</h1>
-      <p className="text-gray-600 mb-8">
-        View and manage your trek reservations
-      </p>
+      <p className="text-gray-600 mb-8">View and manage your trek reservations</p>
 
       <div className="space-y-6">
         {reservations.map((reservation) => {
-          const status = statusConfig[reservation.status];
-          const isPastTrip = new Date(reservation.endDate) < new Date();
+          const status = statusConfig[reservation.status]
+          const isPastTrip = new Date(reservation.endDate) < new Date()
 
           return (
             <div
               key={reservation.id}
               className={`border rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-md ${
-                theme === "dark"
-                  ? "border-gray-700 bg-gray-800"
-                  : "border-gray-200 bg-white"
+                theme === "dark" ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-white"
               } ${isPastTrip ? "opacity-80" : ""}`}
             >
               <div className="flex flex-col md:flex-row">
@@ -208,14 +191,16 @@ console.log(response)
                     <img
                       src={
                         reservation.trek.images.find((img) => img.isPrimary)?.path
-                          ? `http://localhost:8080/api/uploads/images/${reservation.trek.images.find((img) => img.isPrimary).path}`
+                          ? `http://localhost:8080/api/uploads/images/${
+                              reservation.trek.images.find((img) => img.isPrimary).path
+                            }`
                           : "/placeholder.svg?height=300&width=400"
                       }
                       alt={reservation.trek.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/placeholder.svg?height=300&width=400";
+                        e.target.onerror = null
+                        e.target.src = "/placeholder.svg?height=300&width=400"
                       }}
                     />
                   </div>
@@ -225,9 +210,7 @@ console.log(response)
                     className={`absolute top-4 left-4 md:hidden px-3 py-1.5 rounded-full flex items-center ${status.color}`}
                   >
                     {status.icon}
-                    <span className="ml-1.5 text-sm font-medium">
-                      {status.label}
-                    </span>
+                    <span className="ml-1.5 text-sm font-medium">{status.label}</span>
                   </div>
                 </div>
 
@@ -235,18 +218,14 @@ console.log(response)
                 <div className="flex-1 p-5 md:p-6">
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                     <div className="flex-1">
-                      <h2 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
-                        {reservation.trek.title}
-                      </h2>
+                      <h2 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">{reservation.trek.title}</h2>
 
                       {/* Status Badge - Hidden on mobile, shown on desktop */}
                       <div
                         className={`hidden md:flex items-center px-3 py-1.5 rounded-full w-fit mb-4 ${status.color}`}
                       >
                         {status.icon}
-                        <span className="ml-1.5 text-sm font-medium">
-                          {status.label}
-                        </span>
+                        <span className="ml-1.5 text-sm font-medium">{status.label}</span>
                       </div>
 
                       <p className="text-sm text-gray-600 line-clamp-2 mb-4">
@@ -255,40 +234,34 @@ console.log(response)
                       </p>
                     </div>
 
-                    <div className="flex flex-col items-end">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-bold text-[#ff5c5c]">
-                          {reservation.totalPrice.toLocaleString()}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {reservation.currency || "MAD"}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-500 mt-1">
-                        {reservation.numberOfPeople}{" "}
-                        {reservation.numberOfPeople === 1 ? "person" : "people"}
-                      </span>
+                    <div className="text-xs text-gray-500 mt-1 flex items-center">
+                      <Users size={14} className="mr-1" />
+                      <span>Adults: {reservation.adultCount}</span>
+                      {reservation.childCount > 0 && (
+                        <>
+                          <span className="mx-1">•</span>
+                          <Baby size={14} className="mr-1" />
+                          <span>Children: {reservation.childCount}</span>
+                        </>
+                      )}
                     </div>
                   </div>
 
                   {/* Trek Details */}
                   <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="flex items-center">
-                      <CalendarDays className="h-5 w-5 text-[#ff5c5c]" />
+                      <CalendarDays className="h-5 w-5 text-[#049769]" />
                       <div className="ml-3">
                         <p className="text-xs text-gray-500">Date</p>
                         <p className="text-sm font-medium">
                           {format(new Date(reservation.startDate), "MMM dd")} -{" "}
-                          {format(
-                            new Date(reservation.endDate),
-                            "MMM dd, yyyy"
-                          )}
+                          {format(new Date(reservation.endDate), "MMM dd, yyyy")}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center">
-                      <MapPin className="h-5 w-5 text-[#ff5c5c]" />
+                      <MapPin className="h-5 w-5 text-[#049769]" />
                       <div className="ml-3">
                         <p className="text-xs text-gray-500">Location</p>
                         <p className="text-sm font-medium line-clamp-1">
@@ -299,13 +272,11 @@ console.log(response)
                     </div>
 
                     <div className="flex items-center">
-                      <Clock className="h-5 w-5 text-[#ff5c5c]" />
+                      <Clock className="h-5 w-5 text-[#049769]" />
                       <div className="ml-3">
                         <p className="text-xs text-gray-500">Duration</p>
                         <p className="text-sm font-medium">
-                          {reservation.trek.duration
-                            ?.replace("PT", "")
-                            .replace("H", " hours") || "Full day"}
+                          {reservation.trek.duration?.replace("PT", "").replace("H", " hours") || "Full day"}
                         </p>
                       </div>
                     </div>
@@ -316,34 +287,27 @@ console.log(response)
                     <div className="mt-5 pt-5 border-t border-gray-100">
                       <div className="flex items-center">
                         <div className="flex-shrink-0">
-                            <img
-                              className="h-10 w-10 rounded-full object-cover border border-gray-200"
-                              src={
-                                `http://localhost:8080/api/uploads/images/${reservation.guide.profileImage}` ||
-                                "/placeholder.svg?height=40&width=40"
-                              }
-                              alt={`${reservation.guide.firstName} ${reservation.guide.lastName}`}
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src =
-                                  "/placeholder.svg?height=40&width=40";
-                              }}
-                            />
+                          <img
+                            className="h-10 w-10 rounded-full object-cover border border-gray-200"
+                            src={
+                              `http://localhost:8080/api/uploads/images/${reservation.guide.profileImage || "/placeholder.svg"}` ||
+                              "/placeholder.svg?height=40&width=40"
+                            }
+                            alt={`${reservation.guide.firstName} ${reservation.guide.lastName}`}
+                            onError={(e) => {
+                              e.target.onerror = null
+                              e.target.src = "/placeholder.svg?height=40&width=40"
+                            }}
+                          />
                         </div>
                         <div className="ml-3">
                           <p className="text-sm font-medium text-gray-900">
-                            Guide: {reservation.guide.firstName}{" "}
-                            {reservation.guide.lastName}
+                            Guide: {reservation.guide.firstName} {reservation.guide.lastName}
                           </p>
                           <div className="mt-1 flex items-center space-x-4 text-xs text-gray-500">
-                            <span>
-                              {reservation.guide.speciality || "Mountain Guide"}
-                            </span>
+                            <span>{reservation.guide.speciality || "Mountain Guide"}</span>
                             <span>•</span>
-                            <span>
-                              {reservation.guide.experience || "5"} years
-                              experience
-                            </span>
+                            <span>{reservation.guide.experience || "5"} years experience</span>
                           </div>
                         </div>
                       </div>
@@ -353,47 +317,39 @@ console.log(response)
                   {/* Actions */}
                   <div className="mt-5 pt-5 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <span className="text-xs text-gray-500">
-                      Booked on{" "}
-                      {format(
-                        new Date(reservation.reservationDate),
-                        "MMMM dd, yyyy"
-                      )}
+                      Booked on {format(new Date(reservation.reservationDate), "MMMM dd, yyyy")}
                     </span>
 
                     {/* Cancel button only for PENDING or APPROVED status and not past trips */}
-                    {(reservation.status === "PENDING" ||
-                      reservation.status === "APPROVED") &&
-                      !isPastTrip && (
-                        <button
-                          onClick={() =>
-                            handleCancelReservation(reservation.id)
-                          }
-                          disabled={isProcessing}
-                          className={`px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium
+                    {(reservation.status === "PENDING" || reservation.status === "APPROVED") && !isPastTrip && (
+                      <button
+                        onClick={() => handleCancelReservation(reservation.id)}
+                        disabled={isProcessing}
+                        className={`px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium
                           ${
                             isProcessing && processingId === reservation.id
                               ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                               : "bg-white text-red-600 border border-red-200 hover:bg-red-50"
                           }`}
-                        >
-                          {isProcessing && processingId === reservation.id ? (
-                            <div className="flex items-center">
-                              <Loader className="animate-spin w-4 h-4 mr-2" />
-                              <span>Cancelling...</span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center">
-                              <XCircle className="w-4 h-4 mr-2" />
-                              <span>Cancel Booking</span>
-                            </div>
-                          )}
-                        </button>
-                      )}
+                      >
+                        {isProcessing && processingId === reservation.id ? (
+                          <div className="flex items-center">
+                            <Loader className="animate-spin w-4 h-4 mr-2" />
+                            <span>Cancelling...</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center">
+                            <XCircle className="w-4 h-4 mr-2" />
+                            <span>Cancel Booking</span>
+                          </div>
+                        )}
+                      </button>
+                    )}
 
                     {/* View Details button */}
                     <Link
                       to={`/treks/${reservation.trek.id}`}
-                      className="px-4 py-2 bg-[#ff5c5c] text-white rounded-lg hover:bg-[#ff7b7b] transition-all duration-300 text-sm font-medium flex items-center"
+                      className="px-4 py-2 bg-[#049769] text-white rounded-lg hover:bg-[#049769] transition-all duration-300 text-sm font-medium flex items-center"
                     >
                       View Trek Details
                       <ChevronRight className="ml-1 w-4 h-4" />
@@ -402,11 +358,12 @@ console.log(response)
                 </div>
               </div>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default BookingsPage;
+export default BookingsPage
+

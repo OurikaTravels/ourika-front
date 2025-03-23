@@ -4,7 +4,7 @@ import { useState } from "react"
 import { X, Mail, Lock, Eye, EyeOff, User, Globe } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { toast } from "react-hot-toast"
-import { authApi } from "../../services/api" 
+import { authApi } from "../../services/api"
 
 const AuthModal = ({ isOpen, onClose, theme }) => {
   const [isLogin, setIsLogin] = useState(true)
@@ -13,7 +13,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
   const [password, setPassword] = useState("")
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
-  const [nationality, setNationality] = useState("") // Add this state
+  const [nationality, setNationality] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
   const { login } = useAuth()
@@ -33,7 +33,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
     "Korean",
     "Russian",
     "Spanish",
-    "Other"
+    "Other",
   ]
 
   if (!isOpen) return null
@@ -59,9 +59,9 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
           lastName,
           email,
           password,
-          nationality // Add nationality to the request
+          nationality,
         }
-        
+
         const result = await authApi.registerTourist(touristData)
         toast.success("Tourist account created successfully")
         // Automatically switch to login mode after successful registration
@@ -92,10 +92,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
       <div className="relative w-full max-w-md rounded-lg shadow-lg bg-white text-gray-900">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100"
-        >
+        <button onClick={onClose} className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100">
           <X className="h-6 w-6" />
         </button>
 
@@ -127,7 +124,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
                       id="firstName"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
-                      className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-[#ff5d5d] focus:border-[#ff5d5d] ${
+                      className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-emerald-600 focus:border-emerald-600 ${
                         theme === "dark"
                           ? "bg-gray-700 text-white placeholder-gray-400"
                           : "bg-white text-gray-900 placeholder-gray-400"
@@ -137,7 +134,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <label
                     htmlFor="lastName"
@@ -158,7 +155,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
                       id="lastName"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
-                      className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-[#ff5d5d] focus:border-[#ff5d5d] ${
+                      className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-emerald-600 focus:border-emerald-600 ${
                         theme === "dark"
                           ? "bg-gray-700 text-white placeholder-gray-400"
                           : "bg-white text-gray-900 placeholder-gray-400"
@@ -172,9 +169,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
                 <div>
                   <label
                     htmlFor="nationality"
-                    className={`block text-sm font-medium mb-1 ${
-                      theme === "dark" ? "text-gray-300" : "text-gray-700"
-                    }`}
+                    className={`block text-sm font-medium mb-1 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
                   >
                     Nationality
                   </label>
@@ -184,24 +179,22 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
                     }`}
                   >
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Globe className={`h-5 w-5 ${
-                        theme === "dark" ? "text-gray-400" : "text-gray-500"
-                      }`} />
+                      <Globe className={`h-5 w-5 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`} />
                     </div>
                     <select
                       id="nationality"
                       value={nationality}
                       onChange={(e) => setNationality(e.target.value)}
                       required
-                      className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-[#ff5d5d] focus:border-[#ff5d5d] ${
+                      className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-emerald-600 focus:border-emerald-600 ${
                         theme === "dark"
                           ? "bg-gray-700 text-white placeholder-gray-400"
                           : "bg-white text-gray-900 placeholder-gray-400"
                       }`}
                     >
                       {nationalities.map((nat) => (
-                        <option 
-                          key={nat} 
+                        <option
+                          key={nat}
                           value={nat === "Select Nationality" ? "" : nat}
                           disabled={nat === "Select Nationality"}
                         >
@@ -234,7 +227,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-[#ff5d5d] focus:border-[#ff5d5d] ${
+                  className={`block w-full pl-10 pr-3 py-2 rounded-md focus:ring-emerald-600 focus:border-emerald-600 ${
                     theme === "dark"
                       ? "bg-gray-700 text-white placeholder-gray-400"
                       : "bg-white text-gray-900 placeholder-gray-400"
@@ -265,7 +258,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`block w-full pl-10 pr-10 py-2 rounded-md focus:ring-[#ff5d5d] focus:border-[#ff5d5d] ${
+                  className={`block w-full pl-10 pr-10 py-2 rounded-md focus:ring-emerald-600 focus:border-emerald-600 ${
                     theme === "dark"
                       ? "bg-gray-700 text-white placeholder-gray-400"
                       : "bg-white text-gray-900 placeholder-gray-400"
@@ -288,7 +281,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2 px-4 rounded-md bg-[#ff5d5d] text-white hover:bg-[#ff4040] transition-colors duration-200 font-medium disabled:opacity-50 flex items-center justify-center"
+              className="w-full py-2 px-4 rounded-md bg-gradient-to-r from-emerald-600 to-teal-500 text-white hover:bg-emerald-700 transition-colors duration-200 font-medium disabled:opacity-50 flex items-center justify-center"
             >
               {isLoading ? (
                 <>
@@ -328,7 +321,7 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
               <button
                 type="button"
                 onClick={toggleAuthMode}
-                className="ml-1 text-[#ff5d5d] hover:text-[#ff4040] font-medium"
+                className="ml-1 text-emerald-600 hover:text-emerald-700 font-medium"
               >
                 {isLogin ? "Sign up" : "Log in"}
               </button>
@@ -341,3 +334,4 @@ const AuthModal = ({ isOpen, onClose, theme }) => {
 }
 
 export default AuthModal
+

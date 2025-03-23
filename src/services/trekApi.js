@@ -39,15 +39,28 @@ const trekApi = {
         },
       });
 
+      console.log('Raw API response:', response); // Debug the entire response
+
       // Check if data is an array, otherwise look for data in a nested property
       const treksArray = Array.isArray(response.data)
         ? response.data
         : response.data.data || [];
-      return { success: true, data: treksArray };
+
+      // Map the response to ensure duration is present
+      const processedTreks = treksArray.map(trek => ({
+        ...trek,
+        duration: trek.duration || trek.formattedDuration || 'PT8H' // Provide default duration
+      }));
+
+      console.log('Processed treks:', processedTreks); // Debug processed data
+
+      return { success: true, data: processedTreks };
     } catch (error) {
+      console.error('API error:', error);
       return {
         success: false,
         message: error.response?.data?.message || "Failed to fetch treks",
+        data: []
       };
     }
   },

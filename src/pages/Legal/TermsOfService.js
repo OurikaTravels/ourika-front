@@ -6,13 +6,13 @@ const TermsOfService = () => {
       <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-12 text-center relative">
           <span className="relative z-10">Terms of Service</span>
-          <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-[#FF5C5C]"></span>
+          <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-[#16bb40]"></span>
         </h1>
         
         <div className="space-y-12">
-          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#FF5C5C] hover:shadow-md transition-shadow duration-300">
+          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#16bb40] hover:shadow-md transition-shadow duration-300">
             <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <span className="text-[#FF5C5C] mr-2">1.</span> 
+              <span className="text-[#16bb40] mr-2">1.</span> 
               <span>Acceptance of Terms</span>
             </h2>
             <p className="text-gray-600 leading-relaxed">
@@ -20,9 +20,9 @@ const TermsOfService = () => {
             </p>
           </section>
 
-          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#FF5C5C] hover:shadow-md transition-shadow duration-300">
+          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#16bb40] hover:shadow-md transition-shadow duration-300">
             <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <span className="text-[#FF5C5C] mr-2">2.</span> 
+              <span className="text-[#16bb40] mr-2">2.</span> 
               <span>User Accounts</span>
             </h2>
             <p className="text-gray-600 leading-relaxed">
@@ -30,9 +30,9 @@ const TermsOfService = () => {
             </p>
           </section>
 
-          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#FF5C5C] hover:shadow-md transition-shadow duration-300">
+          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#16bb40] hover:shadow-md transition-shadow duration-300">
             <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <span className="text-[#FF5C5C] mr-2">3.</span> 
+              <span className="text-[#16bb40] mr-2">3.</span> 
               <span>Booking and Cancellation</span>
             </h2>
             <p className="text-gray-600 leading-relaxed">
@@ -45,16 +45,16 @@ const TermsOfService = () => {
                 'No refund for last-minute cancellations'
               ].map((item, index) => (
                 <li key={index} className="flex items-start">
-                  <span className="inline-block w-2 h-2 bg-[#FF5C5C] rounded-full mt-2 mr-3"></span>
+                  <span className="inline-block w-2 h-2 bg-[#16bb40] rounded-full mt-2 mr-3"></span>
                   <span className="text-gray-600">{item}</span>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#FF5C5C] hover:shadow-md transition-shadow duration-300">
+          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#16bb40] hover:shadow-md transition-shadow duration-300">
             <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <span className="text-[#FF5C5C] mr-2">4.</span> 
+              <span className="text-[#16bb40] mr-2">4.</span> 
               <span>User Conduct</span>
             </h2>
             <p className="text-gray-600 leading-relaxed">
@@ -68,16 +68,16 @@ const TermsOfService = () => {
                 'Submit false or misleading information'
               ].map((item, index) => (
                 <li key={index} className="flex items-start">
-                  <span className="inline-block w-2 h-2 bg-[#FF5C5C] rounded-full mt-2 mr-3"></span>
+                  <span className="inline-block w-2 h-2 bg-[#16bb40] rounded-full mt-2 mr-3"></span>
                   <span className="text-gray-600">{item}</span>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#FF5C5C] hover:shadow-md transition-shadow duration-300">
+          <section className="bg-white rounded-lg shadow-sm p-8 border-l-4 border-[#16bb40] hover:shadow-md transition-shadow duration-300">
             <h2 className="text-2xl font-semibold mb-4 flex items-center">
-              <span className="text-[#FF5C5C] mr-2">5.</span> 
+              <span className="text-[#16bb40] mr-2">5.</span> 
               <span>Limitation of Liability</span>
             </h2>
             <p className="text-gray-600 leading-relaxed">
@@ -87,7 +87,7 @@ const TermsOfService = () => {
         </div>
         
         <div className="mt-12 text-center">
-          <button className="bg-[#FF5C5C] text-white px-8 py-3 rounded-full hover:bg-[#ff4747] transition-colors duration-300 font-medium shadow-md hover:shadow-lg">
+          <button className="bg-[#16bb40] text-white px-8 py-3 rounded-full hover:bg-[#177035] transition-colors duration-300 font-medium shadow-md hover:shadow-lg">
             Accept Terms
           </button>
         </div>

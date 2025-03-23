@@ -71,7 +71,7 @@ export default function AllTreks() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <div className="min-h-screen bg-[#191b20] text-white flex">
       <DashboardSidebar
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
@@ -86,35 +86,35 @@ export default function AllTreks() {
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">All Treks</h1>
+              <h1 className="text-2xl font-bold text-white">All Treks</h1>
               <Link
                 to="/admin/treks/add-trek"
-                className="flex items-center px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors"
+                className="flex items-center px-4 py-2 bg-[#fe5532] text-white rounded-md hover:bg-[#fe5532]/90 transition-colors shadow-sm"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Add New Trek
               </Link>
             </div>
-            <p className="text-gray-600 dark:text-gray-400">Manage your trek experiences</p>
+            <p className="text-gray-400">Manage your trek experiences</p>
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
+          <div className="bg-[#232630] rounded-lg shadow-md p-4 mb-6 border border-gray-800">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search treks..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-700 rounded-lg bg-[#191b20] text-white focus:ring-2 focus:ring-[#fe5532] focus:border-transparent"
               />
             </div>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-400 rounded">
+            <div className="mb-6 p-4 bg-[#fe5532]/10 border-l-4 border-[#fe5532] text-[#fe5532] rounded">
               <div className="flex items-center">
                 <Info className="h-5 w-5 mr-2" />
                 <span>{error}</span>
@@ -123,21 +123,21 @@ export default function AllTreks() {
           )}
 
           {/* Treks Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-[#232630] rounded-lg shadow-md overflow-hidden border border-gray-800">
             {isLoading ? (
               <div className="flex justify-center items-center p-12">
-                <Loader className="w-8 h-8 text-[#ff5c5c] animate-spin" />
-                <span className="ml-2 text-gray-600 dark:text-gray-300">Loading treks...</span>
+                <Loader className="w-8 h-8 text-[#fe5532] animate-spin" />
+                <span className="ml-2 text-gray-400">Loading treks...</span>
               </div>
             ) : filteredTreks.length === 0 ? (
               <div className="text-center p-12">
-                <p className="text-gray-500 dark:text-gray-400">
+                <p className="text-gray-400">
                   {searchTerm ? "No treks match your search criteria" : "No treks found. Create your first trek!"}
                 </p>
                 {!searchTerm && (
                   <Link
                     to="/admin/treks/add-trek"
-                    className="inline-flex items-center mt-4 px-4 py-2 bg-[#ff5c5c] text-white rounded-md hover:bg-[#ff4040] transition-colors"
+                    className="inline-flex items-center mt-4 px-4 py-2 bg-[#fe5532] text-white rounded-md hover:bg-[#fe5532]/90 transition-colors shadow-sm"
                   >
                     <Plus className="w-5 h-5 mr-2" />
                     Add New Trek
@@ -147,46 +147,44 @@ export default function AllTreks() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-700">
+                  <thead className="bg-[#191b20]">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                         Trek
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                         Location
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                         Duration
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                         Price
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className="divide-y divide-gray-800">
                     {filteredTreks.map((trek) => (
-                      <tr key={trek.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
+                      <tr key={trek.id} className="hover:bg-[#191b20]/50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="h-10 w-10 flex-shrink-0 rounded-md bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                            <div className="h-10 w-10 flex-shrink-0 rounded-md bg-[#191b20] overflow-hidden">
                               {trek.images && trek.images.length > 0 ? (
                                 <img
-                                  src={`http://localhost:8080/api/images/${trek.images.find((img) => img.isPrimary)?.path || trek.images[0].path}`}
+                                  src={`http://localhost:8080/api/uploads/images/${trek.images.find((img) => img.isPrimary)?.path || trek.images[0].path}`}
                                   alt={trek.title}
                                   className="h-10 w-10 object-cover"
                                 />
                               ) : (
-                                <div className="h-10 w-10 flex items-center justify-center text-gray-500 dark:text-gray-400">
-                                  No img
-                                </div>
+                                <div className="h-10 w-10 flex items-center justify-center text-gray-500">No img</div>
                               )}
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900 dark:text-white">{trek.title}</div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                              <div className="text-sm font-medium text-white">{trek.title}</div>
+                              <div className="text-sm text-gray-400">
                                 {trek.description.length > 50
                                   ? `${trek.description.substring(0, 50)}...`
                                   : trek.description}
@@ -195,27 +193,27 @@ export default function AllTreks() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900 dark:text-white">{trek.startLocation}</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">to {trek.endLocation}</div>
+                          <div className="text-sm text-white">{trek.startLocation}</div>
+                          <div className="text-sm text-gray-400">to {trek.endLocation}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900 dark:text-white">{trek.duration}</div>
+                          <div className="text-sm text-white">{trek.duration}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900 dark:text-white">${trek.price}</div>
+                          <div className="text-sm text-white">${trek.price}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end space-x-2">
                             <Link
                               to={`/admin/treks/${trek.id}/preview`}
-                              className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                              className="text-[#56acfe] hover:text-[#56acfe]/80 p-1"
                               title="Preview"
                             >
                               <Eye className="w-5 h-5" />
                             </Link>
                             <Link
                               to={`/admin/treks/${trek.id}/edit`}
-                              className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                              className="text-[#56acfe] hover:text-[#56acfe]/80 p-1"
                               title="Edit"
                             >
                               <Edit className="w-5 h-5" />
@@ -223,7 +221,7 @@ export default function AllTreks() {
                             <button
                               onClick={() => handleDeleteTrek(trek.id, trek.title)}
                               disabled={isDeleting}
-                              className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50"
+                              className="text-[#fe5532] hover:text-[#fe5532]/80 p-1 disabled:opacity-50"
                               title="Delete"
                             >
                               <Trash className="w-5 h-5" />

@@ -58,7 +58,7 @@ export default function About() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              About <span className="text-[#ff5d5d]">Ourika</span> Travels
+              About <span className="text-[#049769]">Ourika</span> Travels
             </h1>
             <p className={`text-lg sm:text-xl leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'} max-w-2xl mx-auto`}>
               Your trusted partner for authentic Moroccan adventures, connecting travelers with the heart and soul of the Atlas Mountains.
@@ -72,8 +72,8 @@ export default function About() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="relative">
-              <div className="absolute -top-4 -left-4 w-24 h-24 rounded-full bg-[#ff5d5d]/10 z-0"></div>
-              <div className="absolute -bottom-4 -right-4 w-32 h-32 rounded-full bg-[#ff5d5d]/10 z-0"></div>
+              <div className="absolute -top-4 -left-4 w-24 h-24 rounded-full bg-[#049769]/10 z-0"></div>
+              <div className="absolute -bottom-4 -right-4 w-32 h-32 rounded-full bg-[#049769]/10 z-0"></div>
               <img
                 src={AboutImage}
                 alt="Ourika Valley"
@@ -113,10 +113,10 @@ export default function About() {
                     : 'bg-white hover:shadow-xl border border-gray-100'
                 }`}
               >
-                <div className="w-12 h-12 rounded-full bg-[#ff5d5d]/10 flex items-center justify-center mb-6">
-                  <feature.icon className="w-6 h-6 text-[#ff5d5d]" />
+                <div className="w-12 h-12 rounded-full bg-[#049769]/10 flex items-center justify-center mb-6">
+                  <feature.icon className="h-6 w-6 text-[#049769]" />
                 </div>
-                <h3 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`font-bold text-lg mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   {feature.title}
                 </h3>
                 <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -133,8 +133,8 @@ export default function About() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center p-6 rounded-xl bg-[#ff5d5d]/5">
-                <div className="text-2xl sm:text-3xl font-bold mb-2 text-[#ff5d5d]">
+              <div key={index} className="text-center p-6 rounded-xl bg-[#049769]/5">
+                <div className="text-2xl sm:text-3xl font-bold mb-2 text-[#049769]">
                   {stat.value}
                 </div>
                 <div className={`text-sm sm:text-base ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -160,12 +160,12 @@ export default function About() {
                   isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:shadow-xl border border-gray-100'
                 }`}
               >
-                <CheckCircle className="w-6 h-6 text-[#ff5d5d] flex-shrink-0 mt-1" />
+                <CheckCircle className="w-6 h-6 text-[#049769] flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className={`text-lg sm:text-xl font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  <h3 className={`font-bold text-lg mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {value.title}
                   </h3>
-                  <p className={`text-base ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                     {value.description}
                   </p>
                 </div>

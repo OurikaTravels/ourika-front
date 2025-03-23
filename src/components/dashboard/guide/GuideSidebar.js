@@ -26,11 +26,12 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
       id: "dashboard",
       name: "Dashboard",
       icon: <Map className="w-5 h-5" />,
+      link: "/Dashboard/Guide"
     },
     {
       id: "posts",
       name: "Post Management",
-      icon: <FileText className="w-5 h-5" />,
+      icon: <FileText className="w-5 h-5" />, 
       subsections: ["My Posts", "Analytics"],
     },
     {
@@ -63,7 +64,13 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
         {sidebarSections.map((section) => (
           <div key={section.id}>
             <button
-              onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
+              onClick={() => {
+                if (section.link) {
+                  window.location.href = section.link;
+                } else {
+                  setActiveSection(activeSection === section.id ? null : section.id);
+                }
+              }}
               className={`w-full flex items-center px-4 py-3 hover:bg-[#fe5532]/10 hover:text-white transition-colors ${
                 activeSection === section.id ? "bg-[#fe5532]/20 text-[#fe5532]" : "text-gray-300"
               }`}

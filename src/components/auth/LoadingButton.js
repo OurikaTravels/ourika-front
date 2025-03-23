@@ -7,7 +7,7 @@ export default function LoadingButton({ isLoading, children, className = "", ...
     <button
       type="submit"
       disabled={isLoading}
-      className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#ff5c5c] hover:bg-[#ff5c5c]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff5c5c] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed ${className}`}
+      className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#049769] focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed ${className}`}
       {...props}
     >
       {isLoading ? (

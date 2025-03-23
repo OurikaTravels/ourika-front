@@ -59,7 +59,7 @@ const ProfileDropdown = () => {
         aria-haspopup="true"
       >
         <div className="w-8 h-8 rounded-full bg-[#ff5d5d]/10 flex items-center justify-center">
-          <User className="h-5 w-5 text-[#ff5d5d]" />
+          <User className="h-5 w-5 text-[#049769]" />
         </div>
         {isAuthenticated && (
           <ChevronDown
@@ -69,13 +69,13 @@ const ProfileDropdown = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 rounded-xl shadow-lg border border-gray-200 bg-white z-50 overflow-hidden transition-all duration-200 animate-in fade-in slide-in-from-top-5">
+        <div className="absolute right-0 mt-2 w-80 rounded-xl shadow-lg border  bg-white z-50 overflow-hidden transition-all duration-200 animate-in fade-in slide-in-from-top-5">
           <div className="p-5">
             {isAuthenticated ? (
               <>
                 <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
                   <div className="w-12 h-12 rounded-full bg-[#ff5d5d]/10 flex items-center justify-center flex-shrink-0">
-                    <UserCircle className="h-7 w-7 text-[#ff5d5d]" />
+                    <UserCircle className="h-7 w-7 text-[#049769]" />
                   </div>
                   <div className="overflow-hidden">
                     <h2 className="text-lg font-semibold text-gray-800 truncate">{user.firstName || user.email}</h2>
@@ -89,7 +89,7 @@ const ProfileDropdown = () => {
                     className="w-full flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 hover:bg-gray-50 text-gray-700 group"
                     onClick={() => setIsOpen(false)}
                   >
-                    <User className="h-5 w-5 mr-3 text-gray-500 group-hover:text-[#ff5d5d] transition-colors" />
+                    <User className="h-5 w-5 mr-3 text-gray-500 group-hover:text-[#049769] transition-colors" />
                     <span className="font-medium">Edit Profile</span>
                   </Link>
 
@@ -97,16 +97,16 @@ const ProfileDropdown = () => {
                     onClick={handleSupportClick}
                     className="w-full flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 hover:bg-gray-50 text-gray-700 group"
                   >
-                    <HelpCircle className="h-5 w-5 mr-3 text-gray-500 group-hover:text-[#ff5d5d] transition-colors" />
+                    <HelpCircle className="h-5 w-5 mr-3 text-gray-500 group-hover:text-[#049769] transition-colors" />
                     <span className="font-medium">Support</span>
                   </button>
 
                   <div className="pt-2 mt-2 border-t border-gray-100">
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 hover:bg-red-50 text-red-600 group"
+                      className="w-full flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 hover:bg-red-50 text-[#049769] group"
                     >
-                      <LogOut className="h-5 w-5 mr-3 group-hover:text-red-600" />
+                      <LogOut className="h-5 w-5 mr-3 group-hover:text-[#049769]" />
                       <span className="font-medium">Log out</span>
                     </button>
                   </div>
@@ -115,15 +115,15 @@ const ProfileDropdown = () => {
             ) : (
               <>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#ff5d5d]/10 flex items-center justify-center">
-                    <Shield className="h-5 w-5 text-[#ff5d5d]" />
+                  <div className="w-10 h-10 rounded-full bg-[#049769]/10 flex items-center justify-center">
+                    <Shield className="h-5 w-5 text-[#049769]" />
                   </div>
                   <h2 className="text-lg font-semibold text-gray-800">Welcome to Ourika</h2>
                 </div>
 
                 <button
                   onClick={handleLoginClick}
-                  className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-[#ff5d5d] to-[#ff7b7b] text-white hover:shadow-md transition-all duration-200 mb-4 flex items-center justify-center font-medium"
+                  className="w-full py-3 px-4 rounded-lg bg-[#049769] text-white hover:shadow-md transition-all duration-200 mb-4 flex items-center justify-center font-medium"
                 >
                   <User className="h-5 w-5 mr-2" />
                   Log in or sign up
@@ -133,7 +133,7 @@ const ProfileDropdown = () => {
                   onClick={handleSupportClick}
                   className="w-full flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 hover:bg-gray-50 text-gray-700 group"
                 >
-                  <HelpCircle className="h-5 w-5 mr-3 text-gray-500 group-hover:text-[#ff5d5d] transition-colors" />
+                  <HelpCircle className="h-5 w-5 mr-3 text-gray-500 group-hover:text-[#049769] Lo transition-colors" />
                   <span className="font-medium">Support</span>
                 </button>
               </>

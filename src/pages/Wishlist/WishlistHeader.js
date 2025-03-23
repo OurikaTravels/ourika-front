@@ -30,7 +30,7 @@ const WishlistHeader = ({ theme }) => {
         <div className="container mx-auto px-4">
           <div className={`${isScrolled ? "h-16 md:h-20" : "py-4 md:py-6"} flex flex-col md:flex-row items-start md:items-center justify-between`}>
             <div className="flex items-center gap-4 w-full md:w-auto">
-              <Link to="/" className="text-[#ff5d5d] hover:text-[#ff4040] flex items-center gap-1 transition-colors duration-200">
+              <Link to="/" className="text-[#16af2a] hover:text-[#2eb335] flex items-center gap-1 transition-colors duration-200">
                 <ChevronLeft className="w-5 h-5" />
                 <span className="font-medium">Back</span>
               </Link>

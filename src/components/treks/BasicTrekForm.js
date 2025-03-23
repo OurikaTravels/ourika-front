@@ -1,6 +1,7 @@
-"use client"
-import { Link } from "react-router-dom"
-import { Save, Loader, Clock, DollarSign, MapPin } from "lucide-react"
+"use client";
+import { Link } from "react-router-dom";
+import { Save, Loader, Clock, DollarSign, MapPin } from "lucide-react";
+import DurationPicker from "react-duration-picker";
 
 export function BasicTrekForm({
   basicInfo,
@@ -12,6 +13,20 @@ export function BasicTrekForm({
   isSubmitting,
   isEditMode = false,
 }) {
+  const parseIsoDuration = (isoDuration) => {
+    if (!isoDuration) return { hours: '', minutes: '' };
+    
+    const hoursMatch = isoDuration.match(/PT(\d+)H/);
+    const minutesMatch = isoDuration.match(/(\d+)M/);
+    
+    return {
+      hours: hoursMatch ? hoursMatch[1] : '',
+      minutes: minutesMatch ? minutesMatch[1] : ''
+    };
+  };
+
+  // Remove initializeDuration function since we're using props
+  
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
@@ -22,7 +37,10 @@ export function BasicTrekForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Title */}
           <div className="col-span-2">
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Trek Title <span className="text-red-500">*</span>
             </label>
             <input
@@ -32,16 +50,25 @@ export function BasicTrekForm({
               value={basicInfo.title}
               onChange={onBasicInfoChange}
               className={`w-full px-4 py-2 rounded-lg border ${
-                errors.title ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
+                errors.title
+                  ? "border-red-500 dark:border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
               } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
               placeholder="Enter trek title"
             />
-            {errors.title && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>}
+            {errors.title && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.title}
+              </p>
+            )}
           </div>
 
           {/* Short Description */}
           <div className="col-span-2">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Short Description <span className="text-red-500">*</span>
             </label>
             <input
@@ -51,43 +78,114 @@ export function BasicTrekForm({
               value={basicInfo.description}
               onChange={onBasicInfoChange}
               className={`w-full px-4 py-2 rounded-lg border ${
-                errors.description ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
+                errors.description
+                  ? "border-red-500 dark:border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
               } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
               placeholder="Brief description of the trek"
             />
-            {errors.description && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>}
+            {errors.description && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.description}
+              </p>
+            )}
           </div>
 
           {/* Duration */}
           <div>
-            <label htmlFor="duration" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="duration"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Duration <span className="text-red-500">*</span>
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Clock className="h-5 w-5 text-gray-400" />
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label
+                  htmlFor="hours"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Hours
+                </label>
+                <input
+                  type="number"
+                  id="hours"
+                  name="hours"
+                  value={basicInfo.hours || ''}
+                  onChange={(e) => {
+                    const hours = e.target.value;
+                    // Update both hours and duration
+                    onBasicInfoChange({
+                      target: { name: 'hours', value: hours }
+                    });
+                    onBasicInfoChange({
+                      target: {
+                        name: 'duration',
+                        value: `PT${hours}H${basicInfo.minutes || 0}M`
+                      }
+                    });
+                  }}
+                  min="0"
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.duration
+                      ? "border-red-500 dark:border-red-500"
+                      : "border-gray-300 dark:border-gray-600"
+                  } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
+                  placeholder="e.g., 1"
+                />
               </div>
-              <input
-                type="text"
-                id="duration"
-                name="duration"
-                value={basicInfo.duration}
-                onChange={onBasicInfoChange}
-                className={`w-full pl-10 px-4 py-2 rounded-lg border ${
-                  errors.duration ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
-                } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                placeholder="e.g., PT240H for 10 days"
-              />
+              <div className="flex-1">
+                <label
+                  htmlFor="minutes"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Minutes
+                </label>
+                <input
+                  type="number"
+                  id="minutes"
+                  name="minutes"
+                  value={basicInfo.minutes || ''}
+                  onChange={(e) => {
+                    const minutes = e.target.value;
+                    // Update both minutes and duration
+                    onBasicInfoChange({
+                      target: { name: 'minutes', value: minutes }
+                    });
+                    onBasicInfoChange({
+                      target: {
+                        name: 'duration',
+                        value: `PT${basicInfo.hours || 0}H${minutes}M`
+                      }
+                    });
+                  }}
+                  min="0"
+                  max="59"
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.duration
+                      ? "border-red-500 dark:border-red-500"
+                      : "border-gray-300 dark:border-gray-600"
+                  } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
+                  placeholder="e.g., 30"
+                />
+              </div>
             </div>
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Use ISO 8601 duration format (e.g., PT240H for 10 days)
+              Example: 1 hour and 30 minutes
             </p>
-            {errors.duration && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.duration}</p>}
+            {errors.duration && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.duration}
+              </p>
+            )}
           </div>
 
           {/* Price */}
           <div>
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="price"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Price <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -103,20 +201,33 @@ export function BasicTrekForm({
                 min="0"
                 step="0.01"
                 className={`w-full pl-10 px-4 py-2 rounded-lg border ${
-                  errors.price ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
+                  errors.price
+                    ? "border-red-500 dark:border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
                 } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
                 placeholder="0.00"
               />
             </div>
-            {errors.price && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.price}</p>}
+            {errors.price && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.price}
+              </p>
+            )}
           </div>
 
           {/* Location Fields */}
-          <LocationFields basicInfo={basicInfo} onBasicInfoChange={onBasicInfoChange} errors={errors} />
+          <LocationFields
+            basicInfo={basicInfo}
+            onBasicInfoChange={onBasicInfoChange}
+            errors={errors}
+          />
 
           {/* Category Selection */}
           <div className="col-span-2">
-            <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label
+              htmlFor="categoryId"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >
               Category <span className="text-red-500">*</span>
             </label>
             <select
@@ -125,7 +236,9 @@ export function BasicTrekForm({
               value={basicInfo.categoryId}
               onChange={onBasicInfoChange}
               className={`w-full px-4 py-2 rounded-lg border ${
-                errors.categoryId ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
+                errors.categoryId
+                  ? "border-red-500 dark:border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
               } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
             >
               <option value="">Select a category</option>
@@ -139,7 +252,11 @@ export function BasicTrekForm({
                 ))
               )}
             </select>
-            {errors.categoryId && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.categoryId}</p>}
+            {errors.categoryId && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.categoryId}
+              </p>
+            )}
           </div>
 
           {/* Full Description */}
@@ -157,12 +274,16 @@ export function BasicTrekForm({
               onChange={onBasicInfoChange}
               rows={6}
               className={`w-full px-4 py-2 rounded-lg border ${
-                errors.fullDescription ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
+                errors.fullDescription
+                  ? "border-red-500 dark:border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
               } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
               placeholder="Detailed description of the trek experience"
             />
             {errors.fullDescription && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.fullDescription}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                {errors.fullDescription}
+              </p>
             )}
           </div>
         </div>
@@ -195,7 +316,7 @@ export function BasicTrekForm({
         </div>
       </form>
     </div>
-  )
+  );
 }
 
 // Location Fields Component
@@ -203,7 +324,10 @@ function LocationFields({ basicInfo, onBasicInfoChange, errors }) {
   return (
     <>
       <div>
-        <label htmlFor="startLocation" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="startLocation"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           Start Location <span className="text-red-500">*</span>
         </label>
         <div className="relative">
@@ -217,16 +341,25 @@ function LocationFields({ basicInfo, onBasicInfoChange, errors }) {
             value={basicInfo.startLocation}
             onChange={onBasicInfoChange}
             className={`w-full pl-10 px-4 py-2 rounded-lg border ${
-              errors.startLocation ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
+              errors.startLocation
+                ? "border-red-500 dark:border-red-500"
+                : "border-gray-300 dark:border-gray-600"
             } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
             placeholder="Starting point of the trek"
           />
         </div>
-        {errors.startLocation && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.startLocation}</p>}
+        {errors.startLocation && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {errors.startLocation}
+          </p>
+        )}
       </div>
 
       <div>
-        <label htmlFor="endLocation" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          htmlFor="endLocation"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        >
           End Location <span className="text-red-500">*</span>
         </label>
         <div className="relative">
@@ -240,14 +373,19 @@ function LocationFields({ basicInfo, onBasicInfoChange, errors }) {
             value={basicInfo.endLocation}
             onChange={onBasicInfoChange}
             className={`w-full pl-10 px-4 py-2 rounded-lg border ${
-              errors.endLocation ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-600"
+              errors.endLocation
+                ? "border-red-500 dark:border-red-500"
+                : "border-gray-300 dark:border-gray-600"
             } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
             placeholder="Ending point of the trek"
           />
         </div>
-        {errors.endLocation && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.endLocation}</p>}
+        {errors.endLocation && (
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+            {errors.endLocation}
+          </p>
+        )}
       </div>
     </>
-  )
+  );
 }
-

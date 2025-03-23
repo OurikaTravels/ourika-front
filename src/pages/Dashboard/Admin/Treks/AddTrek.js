@@ -312,7 +312,7 @@ export default function AddTrek() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <div className="min-h-screen bg-[#191b20] text-white flex">
       <DashboardSidebar
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
@@ -327,15 +327,12 @@ export default function AddTrek() {
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center mb-4">
-              <Link
-                to="/admin/treks/all-treks"
-                className="mr-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <Link to="/admin/treks/all-treks" className="mr-4 p-2 rounded-full hover:bg-[#232630] transition-colors">
+                <ArrowLeft className="w-5 h-5 text-gray-300" />
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Add New Trek</h1>
+              <h1 className="text-2xl font-bold text-white">Add New Trek</h1>
             </div>
-            <p className="text-gray-600 dark:text-gray-400">Create a new trek experience for your customers</p>
+            <p className="text-gray-400">Create a new trek experience for your customers</p>
           </div>
 
           {/* Progress Steps */}
@@ -343,7 +340,7 @@ export default function AddTrek() {
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-400 rounded">
+            <div className="mb-6 p-4 bg-[#fe5532]/10 border-l-4 border-[#fe5532] text-[#fe5532] rounded">
               <div className="flex items-center">
                 <Info className="h-5 w-5 mr-2" />
                 <span>{error}</span>
@@ -353,71 +350,85 @@ export default function AddTrek() {
 
           {/* Step Content */}
           {currentStep === 1 && (
-            <BasicTrekForm
-              basicInfo={basicInfo}
-              onBasicInfoChange={handleBasicInfoChange}
-              onSubmit={handleSubmitBasicInfo}
-              categories={categories}
-              isLoadingCategories={isLoadingCategories}
-              errors={errors}
-              isSubmitting={isSubmitting}
-            />
+            <div className="bg-[#232630] rounded-lg shadow-md p-6 border border-gray-800">
+              <BasicTrekForm
+                basicInfo={basicInfo}
+                onBasicInfoChange={handleBasicInfoChange}
+                onSubmit={handleSubmitBasicInfo}
+                categories={categories}
+                isLoadingCategories={isLoadingCategories}
+                errors={errors}
+                isSubmitting={isSubmitting}
+              />
+            </div>
           )}
 
           {currentStep === 2 && (
-            <StepContainer title="Trek Services" isLoading={isLoadingServices} loadingText="Loading services...">
-              <ServiceSelector
-                trekId={trekId}
-                availableServices={availableServices}
-                selectedServices={selectedServices}
-                setSelectedServices={setSelectedServices}
-              />
-              <StepNavigation
-                onPrevStep={handlePrevStep}
-                onNextStep={handleCompleteServicesStep}
-                isSubmitting={isSubmitting}
-              />
-            </StepContainer>
+            <div className="bg-[#232630] rounded-lg shadow-md p-6 border border-gray-800">
+              <StepContainer title="Trek Services" isLoading={isLoadingServices} loadingText="Loading services...">
+                <ServiceSelector
+                  trekId={trekId}
+                  availableServices={availableServices}
+                  selectedServices={selectedServices}
+                  setSelectedServices={setSelectedServices}
+                />
+                <StepNavigation
+                  onPrevStep={handlePrevStep}
+                  onNextStep={handleCompleteServicesStep}
+                  isSubmitting={isSubmitting}
+                />
+              </StepContainer>
+            </div>
           )}
 
           {currentStep === 3 && (
-            <StepContainer title="Trek Highlights" isLoading={isLoadingHighlights} loadingText="Loading highlights...">
-              <HighlightSelector
-                trekId={trekId}
-                availableHighlights={availableHighlights}
-                selectedHighlights={selectedHighlights}
-                setSelectedHighlights={setSelectedHighlights}
-              />
-              <StepNavigation
-                onPrevStep={handlePrevStep}
-                onNextStep={handleCompleteHighlightsStep}
-                isSubmitting={isSubmitting}
-              />
-            </StepContainer>
+            <div className="bg-[#232630] rounded-lg shadow-md p-6 border border-gray-800">
+              <StepContainer
+                title="Trek Highlights"
+                isLoading={isLoadingHighlights}
+                loadingText="Loading highlights..."
+              >
+                <HighlightSelector
+                  trekId={trekId}
+                  availableHighlights={availableHighlights}
+                  selectedHighlights={selectedHighlights}
+                  setSelectedHighlights={setSelectedHighlights}
+                />
+                <StepNavigation
+                  onPrevStep={handlePrevStep}
+                  onNextStep={handleCompleteHighlightsStep}
+                  isSubmitting={isSubmitting}
+                />
+              </StepContainer>
+            </div>
           )}
 
           {currentStep === 4 && (
-            <StepContainer title="Trek Activities">
-              <ActivityForm trekId={trekId} onActivityAdded={handleActivityAdded} />
-              <StepNavigation
-                onPrevStep={handlePrevStep}
-                onNextStep={handleCompleteActivitiesStep}
-                isSubmitting={isSubmitting}
-              />
-            </StepContainer>
+            <div className="bg-[#232630] rounded-lg shadow-md p-6 border border-gray-800">
+              <StepContainer title="Trek Activities">
+                <ActivityForm trekId={trekId} onActivityAdded={handleActivityAdded} />
+                <StepNavigation
+                  onPrevStep={handlePrevStep}
+                  onNextStep={handleCompleteActivitiesStep}
+                  isSubmitting={isSubmitting}
+                />
+              </StepContainer>
+            </div>
           )}
 
           {/* Add the Images step */}
           {currentStep === 5 && (
-            <StepContainer title="Trek Images" isLoading={isLoadingImages} loadingText="Loading images...">
-              <ImageUploadForm trekId={trekId} onImagesUploaded={handleImagesUploaded} />
-              <StepNavigation
-                onPrevStep={handlePrevStep}
-                onNextStep={handleCompleteImagesStep}
-                isSubmitting={isSubmitting}
-                isLastStep
-              />
-            </StepContainer>
+            <div className="bg-[#232630] rounded-lg shadow-md p-6 border border-gray-800">
+              <StepContainer title="Trek Images" isLoading={isLoadingImages} loadingText="Loading images...">
+                <ImageUploadForm trekId={trekId} onImagesUploaded={handleImagesUploaded} />
+                <StepNavigation
+                  onPrevStep={handlePrevStep}
+                  onNextStep={handleCompleteImagesStep}
+                  isSubmitting={isSubmitting}
+                  isLastStep
+                />
+              </StepContainer>
+            </div>
           )}
         </main>
       </div>

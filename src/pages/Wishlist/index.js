@@ -57,57 +57,59 @@ const WishlistPage = () => {
     setIsLoading(true);
     try {
       const response = await wishlistApi.getTouristWishlist(user.id);
-      console.log("Wishlist API response:", response); // Debug log
+      console.log("Raw Wishlist API response:", response);
 
-      if (response.success) {
-        // Check if response.data exists and is an array
-        if (Array.isArray(response.data)) {
-          const wishlistData = response.data;
-          console.log("Wishlist data:", wishlistData); // Debug log
+      // Access the nested data array
+      const wishlistItems = response.data?.data;
+      
+      if (response.success && Array.isArray(wishlistItems)) {
+        console.log("Wishlist items:", wishlistItems);
 
-          // Transform the data according to the actual API response structure
-          const transformedData = wishlistData.map((item) => {
-            const trek = item.trek || {};
+        const transformedData = wishlistItems.map((item) => {
+          console.log("Processing wishlist item:", item);
 
-            // Find primary image or use the first one
-            const primaryImage =
-              trek.images?.find((img) => img.isPrimary)?.path ||
-              (trek.images?.length > 0 ? trek.images[0].path : null);
+          // Ensure trek data exists
+          if (!item || !item.trek) {
+            console.warn("Invalid wishlist item:", item);
+            return null;
+          }
 
-            return {
-              id: trek.id,
-              title: trek.title || "No Title",
-              type: trek.categoryId === 1 ? "DAY TRIP" : "MULTI-DAY",
-              duration: formatDuration(trek.duration || "PT0H"),
-              description: trek.description || "",
-              pickup: trek.services?.some((service) =>
-                service.name?.toLowerCase().includes("pickup")
-              )
-                ? "Pickup available"
-                : "No pickup",
-              rating: 4.5, // Default since it's not in the response
-              reviews: 0, // Default since it's not in the response
-              imageUrl: primaryImage
-                ? `http://localhost:8080/api/treks/${trek.id}/images/${primaryImage}`
-                : "/placeholder.svg",
-              discountedPrice: trek.price || 0,
-              originalPrice: Math.round((trek.price || 0) * 1.2),
-              currency: "MAD",
-              addedDate: new Date(item.addedDate),
-              highlights: trek.highlights || [],
-              services: trek.services || [],
-              startLocation: trek.startLocation,
-              endLocation: trek.endLocation,
-            };
-          });
+          const trek = item.trek;
 
-          console.log("Transformed data:", transformedData); // Debug log
-          setWishlist(transformedData);
-        } else {
-          // If response.data is not an array, log it and set empty wishlist
-          console.error("Unexpected response data format:", response.data);
-          setWishlist([]);
-        }
+          // Find primary image or first available image
+          const primaryImage = trek.images?.find((img) => img.isPrimary)?.path ||
+            (trek.images?.length > 0 ? trek.images[0].path : null);
+
+          return {
+            id: trek.id,
+            title: trek.title || "No Title",
+            type: trek.categoryId === 1 ? "DAY TRIP" : "MULTI-DAY",
+            duration: formatDuration(trek.duration || "PT0H"),
+            description: trek.description || "",
+            pickup: trek.services?.some((service) =>
+              service.name?.toLowerCase().includes("pickup")
+            )
+              ? "Pickup available"
+              : "No pickup",
+            rating: trek.rating || 4.5,
+            reviews: trek.reviews || 0,
+            imageUrl: primaryImage
+              ? `http://localhost:8080/api/treks/${trek.id}/images/${primaryImage}`
+              : "/placeholder.svg",
+            discountedPrice: trek.price || 0,
+            originalPrice: Math.round((trek.price || 0) * 1.2),
+            currency: "MAD",
+            addedDate: new Date(item.addedDate),
+            highlights: trek.highlights || [],
+            services: trek.services || [],
+            startLocation: trek.startLocation,
+            endLocation: trek.endLocation,
+            trek: trek // Keep the original trek data
+          };
+        }).filter(Boolean); // Remove any null entries
+
+        console.log("Final transformed data:", transformedData);
+        setWishlist(transformedData);
       } else {
         setWishlist([]);
         toast.error(response.message || "Failed to fetch wishlist");
@@ -171,9 +173,7 @@ const WishlistPage = () => {
     });
 
   return (
-    <div
-      className="min-h-screen "
-    >
+    <div className="min-h-screen">
       <WishlistHeader theme={theme} />
 
       <div className="container mx-auto px-4 py-8">
@@ -191,10 +191,10 @@ const WishlistPage = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-gradient-to-br from-[#0f172a]/5 to-[#1e293b]/10 rounded-2xl p-10 border border-gray-200 shadow-sm max-w-4xl mx-auto">
+          <div className="bg-gradient-to-br from-[#049769]/5 to-[#049769]/10 rounded-2xl p-10 border border-gray-200 shadow-sm max-w-4xl mx-auto">
             <div className="flex flex-col items-center text-center">
-              <div className="w-28 h-28 bg-gradient-to-br from-[#ff5c5c]/20 to-[#ff7b7b]/20 rounded-full flex items-center justify-center mb-8 border-2 border-[#ff5c5c]/30">
-                <MapPin className="w-14 h-14 text-[#ff5c5c]" />
+              <div className="w-28 h-28 bg-gradient-to-br from-[#049769]/20 to-[#049769]/30 rounded-full flex items-center justify-center mb-8 border-2 border-[#049769]/30">
+                <MapPin className="w-14 h-14 text-[#049769]" />
               </div>
 
               <h2 className="text-3xl font-bold text-gray-800 mb-4">
@@ -208,10 +208,9 @@ const WishlistPage = () => {
 
               <Link
                 to="/treks"
-                className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#ff5c5c] to-[#ff7b7b] text-white font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                className="group inline-flex items-center px-8 py-4 bg-[#049769] text-white font-medium rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
                 <span className="text-lg">Explore Ourika Treks</span>
-                
               </Link>
             </div>
           </div>

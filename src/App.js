@@ -21,7 +21,6 @@ import EmailVerification from "./pages/Auth/EmailVerification";
 import AdminDashboard from "./pages/Dashboard/Admin/index";
 import GuideDashboard from "./pages/Dashboard/Guide/index";
 import AllCategories from "./pages/Dashboard/Admin/Categories/AllCategories";
-import AddCategory from "./pages/Dashboard/Admin/Categories/AddCategory";
 import { useAuth } from "./context/AuthContext";
 import ServiceManagement from "./pages/Dashboard/Admin/Treks/ServiceManagement";
 import HighlightsManagement from "./pages/Dashboard/Admin/Treks/HighlightsManagement";
@@ -81,6 +80,9 @@ function AppContent() {
     location.pathname.includes("/admin/treks/add-trek") ||
     location.pathname.includes("/admin/treks/all-treks") ||
     location.pathname.includes("/guide/posts/my-posts") ||
+    location.pathname.includes("/admin/users/all-tourist") ||
+    location.pathname.includes("/admin/reservations/all-reservations") ||
+    location.pathname.includes("/admin/guides/all-guides") ||
     location.pathname.includes("/guide/profile/edit-profile") ||
     (location.pathname.includes("/admin/treks/") &&
       location.pathname.includes("/edit")) ||
@@ -168,14 +170,7 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="admin/categories/add-category"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <AddCategory />
-              </ProtectedRoute>
-            }
-          />
+
 
           {/* Service Management Route */}
           <Route

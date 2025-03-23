@@ -83,7 +83,7 @@ export default function TouristProfile() {
     <div className="max-w-3xl mx-auto p-6 md:p-8">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#ff5d5d]/10 to-[#ff7b7b]/10 px-6 py-8 border-b border-gray-100">
+        <div className="bg-gradient-to-r from-[#049769]/10 to-[#049769]/10 px-6 py-8 border-b border-gray-100">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Your Profile</h1>
@@ -140,7 +140,7 @@ export default function TouristProfile() {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#ff5d5d]/20 focus:border-[#ff5d5d] transition-colors"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#049769]/20 focus:border-[#049769] transition-colors"
                     placeholder="Your first name"
                   />
                 </div>
@@ -157,7 +157,7 @@ export default function TouristProfile() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#ff5d5d]/20 focus:border-[#ff5d5d] transition-colors"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#049769]/20 focus:border-[#049769] transition-colors"
                     placeholder="Your last name"
                   />
                 </div>
@@ -192,7 +192,7 @@ export default function TouristProfile() {
                   name="nationality"
                   value={formData.nationality || ""}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#ff5d5d]/20 focus:border-[#ff5d5d] transition-colors"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#049769]/20 focus:border-[#049769] transition-colors"
                   placeholder="Your nationality"
                 />
               </div>
@@ -204,7 +204,7 @@ export default function TouristProfile() {
                 disabled={isLoading || !isEdited}
                 className={`w-full flex items-center justify-center py-3 px-4 rounded-lg transition-all duration-200 font-medium text-white ${
                   isEdited
-                    ? "bg-gradient-to-r from-[#ff5d5d] to-[#ff7b7b] hover:shadow-md disabled:opacity-70"
+                    ? "bg-gradient-to-r from-[#049769] to-[#049769] hover:shadow-md disabled:opacity-70"
                     : "bg-gray-300 cursor-not-allowed"
                 }`}
               >
