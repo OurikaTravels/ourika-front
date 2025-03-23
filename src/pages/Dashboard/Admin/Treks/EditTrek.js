@@ -7,7 +7,6 @@ import { Link } from "react-router-dom"
 import { ArrowLeft, Info, Loader } from "lucide-react"
 import { toast } from "react-hot-toast"
 
-import DashboardHeader from "../../../../components/dashboard/DashboardHeader"
 import DashboardSidebar from "../../../../components/dashboard/DashboardSidebar"
 import { TrekProgressSteps } from "../../../../components/treks/TrekProgressSteps"
 import { BasicTrekForm } from "../../../../components/treks/BasicTrekForm"
@@ -380,7 +379,6 @@ export default function EditTrek() {
           setActiveSection={setActiveSection}
         />
         <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
-          <DashboardHeader user={user} notifications={notifications} />
           <main className="p-6 flex justify-center items-center h-[calc(100vh-64px)]">
             <div className="flex flex-col items-center">
               <Loader className="w-12 h-12 text-[#fe5532] animate-spin mb-4" />
@@ -402,7 +400,6 @@ export default function EditTrek() {
       />
 
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
-        <DashboardHeader user={user} notifications={notifications} />
 
         <main className="p-6">
           {/* Header */}

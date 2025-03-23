@@ -5,7 +5,6 @@ import { useAuth } from "../../../../context/AuthContext"
 import { Link } from "react-router-dom"
 import { Edit, Trash, Eye, Search, Plus, Loader, Info } from "lucide-react"
 import { toast } from "react-hot-toast"
-import DashboardHeader from "../../../../components/dashboard/DashboardHeader"
 import DashboardSidebar from "../../../../components/dashboard/DashboardSidebar"
 import trekApi from "../../../../services/trekApi"
 
@@ -80,7 +79,6 @@ export default function AllTreks() {
       />
 
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
-        <DashboardHeader user={user} notifications={notifications} />
 
         <main className="p-6">
           {/* Header */}

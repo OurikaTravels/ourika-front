@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { useAuth } from "../../../../context/AuthContext"
 import { Search, Loader, Info, Calendar, DollarSign, Clock, User, MapPin, CheckCircle, XCircle } from "lucide-react"
 import { toast } from "react-hot-toast"
-import DashboardHeader from "../../../../components/dashboard/DashboardHeader"
 import DashboardSidebar from "../../../../components/dashboard/DashboardSidebar"
 import reservationApi from "../../../../services/reservationApi"
 import guideApi from "../../../../services/guideApi"
@@ -234,7 +233,6 @@ export default function AllReservations() {
       />
 
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
-        <DashboardHeader user={user} notifications={notifications} />
 
         <main className="p-6">
           {/* Header */}

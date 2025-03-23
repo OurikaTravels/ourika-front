@@ -5,7 +5,6 @@ import { useAuth } from "../../../../context/AuthContext";
 import { Link } from "react-router-dom";
 import { Search, Loader, Info, CheckCircle, XCircle, Calendar, User, Globe, Award } from "lucide-react";
 import { toast } from "react-hot-toast";
-import DashboardHeader from "../../../../components/dashboard/DashboardHeader";
 import DashboardSidebar from "../../../../components/dashboard/DashboardSidebar";
 import guideApi from "../../../../services/guideApi";
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import {
   Users,
   Calendar,
@@ -12,9 +12,17 @@ import {
   User,
   Tag,
   LayoutDashboard,
+  LogOut
 } from "lucide-react"
 
 export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, activeSection, setActiveSection }) {
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    localStorage.clear() // This will remove all items from localStorage
+    navigate("/") // Redirect to home page
+  }
+
   const sidebarSections = [
     {
       id: "dashboard",
@@ -45,12 +53,6 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
       name: "Tourist Management",
       icon: <Users className="w-5 h-5" />,
       subsections: ["All Tourist"],
-    },
-    {
-      id: "categories",
-      name: "Categories",
-      icon: <Tag className="w-5 h-5" />,
-      subsections: ["All Categories"],
     },
   ]
 
@@ -169,6 +171,17 @@ export default function DashboardSidebar({ isSidebarOpen, setIsSidebarOpen, acti
           </div>
         ))}
       </nav>
+
+      {/* Add Logout button at the bottom */}
+      <div className="absolute bottom-0 w-full p-4 border-t border-gray-800">
+        <button
+          onClick={handleLogout}
+          className="flex items-center w-full px-4 py-2 text-gray-300 hover:bg-[#fe5532]/10 hover:text-[#fe5532] transition-colors rounded-lg"
+        >
+          <LogOut className="w-5 h-5 mr-3" />
+          {isSidebarOpen && <span>Logout</span>}
+        </button>
+      </div>
     </aside>
   )
 }

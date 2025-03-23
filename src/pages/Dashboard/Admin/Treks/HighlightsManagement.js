@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { useAuth } from "../../../../context/AuthContext"
 import { Edit, Trash2, Search, Plus, Filter, ChevronLeft, ChevronRight, AlertCircle, Loader, X } from "lucide-react"
-import DashboardHeader from "../../../../components/dashboard/DashboardHeader"
 import DashboardSidebar from "../../../../components/dashboard/DashboardSidebar"
 import highlightApi from "../../../../services/highlightApi"
 import { toast } from "react-hot-toast"
@@ -190,7 +189,6 @@ export default function HighlightsManagement() {
       />
 
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
-        <DashboardHeader user={user} notifications={notifications} />
 
         <main className="p-6">
           <div className="mb-8 flex justify-between items-center">

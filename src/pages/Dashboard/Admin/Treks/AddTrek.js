@@ -6,7 +6,6 @@ import { Link } from "react-router-dom"
 import { ArrowLeft, Info } from "lucide-react"
 import { toast } from "react-hot-toast"
 
-import DashboardHeader from "../../../../components/dashboard/DashboardHeader"
 import DashboardSidebar from "../../../../components/dashboard/DashboardSidebar"
 import { TrekProgressSteps } from "../../../../components/treks/TrekProgressSteps"
 import { BasicTrekForm } from "../../../../components/treks/BasicTrekForm"
@@ -323,7 +322,6 @@ export default function AddTrek() {
       />
 
       <div className={`flex-1 ${isSidebarOpen ? "ml-64" : "ml-20"} transition-all duration-300`}>
-        <DashboardHeader user={user} notifications={notifications} />
 
         <main className="p-6">
           {/* Header */}

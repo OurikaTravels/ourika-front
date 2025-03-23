@@ -1,11 +1,17 @@
 "use client"
 
-import { Link } from "react-router-dom"
-import { FileText, ChevronDown, ChevronRight, Menu, Map, User, X } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { FileText, ChevronDown, ChevronRight, Menu, Map, User, X, LogOut } from "lucide-react"
 import { useState, useEffect } from "react"
 
 export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSection, setActiveSection }) {
+  const navigate = useNavigate()
   const [isMobile, setIsMobile] = useState(false)
+
+  const handleLogout = () => {
+    localStorage.clear() // This will remove all items from localStorage
+    navigate("/") // Redirect to home page
+  }
 
   // Check if device is mobile
   useEffect(() => {
@@ -54,7 +60,7 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
         </button>
       </div>
 
-      <nav className="mt-2 overflow-y-auto h-[calc(100%-64px)]">
+      <nav className="mt-2 overflow-y-auto h-[calc(100%-124px)]">
         {sidebarSections.map((section) => (
           <div key={section.id}>
             <button
@@ -109,6 +115,17 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
           </div>
         ))}
       </nav>
+
+      {/* Add Logout button at the bottom */}
+      <div className="absolute bottom-0 w-full p-4 border-t border-gray-700">
+        <button
+          onClick={handleLogout}
+          className="flex items-center w-full px-4 py-2 text-gray-300 hover:bg-[#fe5532]/10 hover:text-[#fe5532] transition-colors rounded-lg"
+        >
+          <LogOut className="w-5 h-5 mr-3" />
+          {(isSidebarOpen || isMobile) && <span>Logout</span>}
+        </button>
+      </div>
     </aside>
   )
 }
