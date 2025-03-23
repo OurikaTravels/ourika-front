@@ -174,6 +174,26 @@ const postApi = {
       };
     }
   },
+  deletePost: async (postId) => {
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/posts/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      return {
+        success: true,
+        message: "Post deleted successfully",
+      };
+    } catch (error) {
+      console.error(`Error deleting post ${postId}:`, error);
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to delete post",
+      };
+    }
+  },
 }
 
 export default postApi

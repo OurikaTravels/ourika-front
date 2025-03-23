@@ -134,13 +134,7 @@ export function ImageUploadForm({ trekId, onImagesUploaded }) {
     setShowConfirmDialog(true)
   }
 
-  // Replace handleSetImageAsPrimary function with handleToggleImagePrimary
-  // Remove the handleRemovePrimaryStatus function entirely
 
-  // Replace this function:
-  // const handleSetImageAsPrimary = async () => { ... }
-
-  // With this new function:
   const handleToggleImagePrimary = async () => {
     if (!imageToSetAsPrimary) return
 

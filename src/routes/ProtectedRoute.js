@@ -11,14 +11,13 @@ export default function ProtectedRoute({ children, requiredRole }) {
   }
 
   if (requiredRole && user.role.toUpperCase() !== requiredRole.toUpperCase()) {
-    
     switch (user.role.toUpperCase()) {
       case "ADMIN":
         return <Navigate to="/Dashboard/Admin" replace />
       case "GUIDE":
-        return <Navigate to="/Dashboard/Guide" replace />
+        return <Navigate to="/guide/profile/edit-profile" replace />
       case "TOURIST":
-        return <Navigate to="/profile" replace />
+        return <Navigate to="/tourist/profile" replace />
       default:
         return <Navigate to="/" replace />
     }

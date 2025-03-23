@@ -35,10 +35,10 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     try {
       const response = await authApi.login(email, password);
-  
+
       if (response.success) {
         const { token, role, email, id, lastName } = response.data; 
-  
+
         const userData = {
           id, 
           email,
@@ -46,19 +46,19 @@ export function AuthProvider({ children }) {
           token,
           lastName,
         };
-  
+
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("guideId", id); 
-  
+
         setUser(userData);
-  
+
         if (role === "ADMIN") {
           navigate("/Dashboard/Admin");
         } else if (role === "GUIDE") {
-          navigate("/Dashboard/Guide");
+          navigate("/guide/profile/edit-profile");  // This path is correct
         }
-  
+
         return { success: true };
       } else {
         throw new Error(response.message || "Login failed");

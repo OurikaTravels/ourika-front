@@ -25,9 +25,9 @@ export default function Login() {
       if (user?.role === "ADMIN") {
         navigate("/Dashboard/Admin")
       } else if (user?.role === "GUIDE") {
-        navigate("/Dashboard/Guide")
+        navigate("/guide/profile/edit-profile")
       } else if (user?.role === "tourist") {
-        navigate("/profile")
+        navigate("/tourist/profile")
       }
     }
   }, [isAuthenticated, navigate, user])

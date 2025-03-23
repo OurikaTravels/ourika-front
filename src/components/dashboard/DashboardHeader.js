@@ -1,38 +1,17 @@
 "use client"
 
-import { Bell, Search, LogOut, User } from "lucide-react"
+import { LogOut, User } from "lucide-react"
 import { useState } from "react"
 
-export default function DashboardHeader({ user, notifications = 0, logout }) {
+export default function DashboardHeader({ user, logout }) {
   const [showUserMenu, setShowUserMenu] = useState(false)
 
   return (
     <header className="bg-[#232630] border-b border-gray-800 shadow-md sticky top-0 z-10">
       <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center flex-1">
-          <div className="relative w-64">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-700 bg-[#191b20] text-white focus:ring-2 focus:ring-[#fe5532] focus:border-transparent transition-all placeholder-gray-500"
-            />
-            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-500" />
-          </div>
-        </div>
+        <div className="flex-1"></div>
 
-        <div className="flex items-center space-x-6">
-          {/* Notifications */}
-          <div className="relative">
-            <button className="relative p-2 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-[#fe5532] rounded-lg transition-colors">
-              <Bell className="h-6 w-6" />
-              {notifications > 0 && (
-                <span className="absolute top-0 right-0 h-5 w-5 text-xs flex items-center justify-center bg-[#fe5532] text-white rounded-full border-2 border-[#232630]">
-                  {notifications}
-                </span>
-              )}
-            </button>
-          </div>
-
+        <div className="flex items-center">
           {/* User Menu */}
           <div className="relative">
             <button
@@ -85,7 +64,7 @@ export default function DashboardHeader({ user, notifications = 0, logout }) {
           {logout && (
             <button
               onClick={logout}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#fe5532] rounded-md hover:bg-[#fe5532]/90 transition-colors shadow-sm"
+              className="ml-6 flex items-center px-4 py-2 text-sm font-medium text-white bg-[#fe5532] rounded-md hover:bg-[#fe5532]/90 transition-colors shadow-sm"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Logout

@@ -246,7 +246,7 @@ export default function AllReservations() {
           </div>
 
           {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mr-4">
@@ -273,27 +273,6 @@ export default function AllReservations() {
                       <Loader className="h-6 w-6 animate-spin" />
                     ) : (
                       statistics?.totalPendingReservations || 0
-                    )}
-                  </h3>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-              <div className="flex items-center">
-                <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mr-4">
-                  <DollarSign className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Revenue</p>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {isLoadingStats ? (
-                      <Loader className="h-6 w-6 animate-spin" />
-                    ) : (
-                      `$${reservations
-                        .filter((r) => r.status === "APPROVED")
-                        .reduce((sum, r) => sum + (r.totalPrice || 0), 0)
-                        .toLocaleString()}`
                     )}
                   </h3>
                 </div>

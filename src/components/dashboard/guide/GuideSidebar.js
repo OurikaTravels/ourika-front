@@ -23,16 +23,10 @@ export default function GuideSidebar({ isSidebarOpen, setIsSidebarOpen, activeSe
 
   const sidebarSections = [
     {
-      id: "dashboard",
-      name: "Dashboard",
-      icon: <Map className="w-5 h-5" />,
-      link: "/Dashboard/Guide"
-    },
-    {
       id: "posts",
       name: "Post Management",
       icon: <FileText className="w-5 h-5" />, 
-      subsections: ["My Posts", "Analytics"],
+      subsections: ["My Posts"],
     },
     {
       id: "profile",

@@ -50,7 +50,13 @@ export default function RegisterGuide() {
 
       if (result.success) {
         console.log(result.data)
-        navigate("/Auth/EmailVerification", { state: { email: formData.email } })
+        // First redirect to email verification
+        navigate("/Auth/EmailVerification", { 
+          state: { 
+            email: formData.email,
+            redirectAfterVerification: "/guide/profile/edit-profile" // Add this to handle post-verification redirect
+          } 
+        })
       } else {
         setError(result.message || "Registration failed")
       }

@@ -13,20 +13,68 @@ export function BasicTrekForm({
   isSubmitting,
   isEditMode = false,
 }) {
-  const parseIsoDuration = (isoDuration) => {
-    if (!isoDuration) return { hours: '', minutes: '' };
+  // Function to parse both API duration format and formatted duration
+  const parseDuration = (duration) => {
+    if (!duration) return { hours: "", minutes: "" };
     
-    const hoursMatch = isoDuration.match(/PT(\d+)H/);
-    const minutesMatch = isoDuration.match(/(\d+)M/);
+    // Handle API format (PT240H)
+    if (duration.startsWith('PT')) {
+      const hoursMatch = duration.match(/PT(\d+)H/);
+      return {
+        hours: hoursMatch ? hoursMatch[1] : "",
+        minutes: "0"
+      };
+    }
+    
+    // Handle formatted duration (240H0M)
+    const hoursMatch = duration.match(/(\d+)H/);
+    const minutesMatch = duration.match(/(\d+)M/);
     
     return {
-      hours: hoursMatch ? hoursMatch[1] : '',
-      minutes: minutesMatch ? minutesMatch[1] : ''
+      hours: hoursMatch ? hoursMatch[1] : "",
+      minutes: minutesMatch ? minutesMatch[1] : "0"
     };
   };
 
-  // Remove initializeDuration function since we're using props
-  
+  // Get the current duration values
+  const currentDuration = isEditMode 
+    ? parseDuration(basicInfo.duration || basicInfo.formattedDuration)
+    : { hours: "", minutes: "0" };
+
+  // Function to format duration for API request (e.g., hours and minutes -> "PT240H")
+  const formatDurationForRequest = (hours, minutes) => {
+    const totalHours = parseInt(hours) + (parseInt(minutes || 0) / 60);
+    return `PT${Math.floor(totalHours)}H`;
+  };
+
+  // Modified handleDurationChange
+  const handleDurationChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Update the hours or minutes based on which input changed
+    let hours = name === 'hours' ? value : currentDuration.hours;
+    let minutes = name === 'minutes' ? value : currentDuration.minutes;
+
+    // Ensure we have valid numbers
+    hours = hours || "0";
+    minutes = minutes || "0";
+    
+    // Create both formats
+    const apiDuration = `PT${hours}H`;
+    const formattedDuration = `${hours}H${minutes}M`;
+
+    // Update the form state with both formats
+    onBasicInfoChange({
+      target: {
+        name: 'duration',
+        value: apiDuration,
+        formattedValue: formattedDuration,
+        hours: hours,
+        minutes: minutes
+      }
+    });
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
@@ -91,7 +139,7 @@ export function BasicTrekForm({
             )}
           </div>
 
-          {/* Duration */}
+          {/* Duration Fields */}
           <div>
             <label
               htmlFor="duration"
@@ -111,20 +159,8 @@ export function BasicTrekForm({
                   type="number"
                   id="hours"
                   name="hours"
-                  value={basicInfo.hours || ''}
-                  onChange={(e) => {
-                    const hours = e.target.value;
-                    // Update both hours and duration
-                    onBasicInfoChange({
-                      target: { name: 'hours', value: hours }
-                    });
-                    onBasicInfoChange({
-                      target: {
-                        name: 'duration',
-                        value: `PT${hours}H${basicInfo.minutes || 0}M`
-                      }
-                    });
-                  }}
+                  value={currentDuration.hours}
+                  onChange={handleDurationChange}
                   min="0"
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.duration
@@ -145,20 +181,8 @@ export function BasicTrekForm({
                   type="number"
                   id="minutes"
                   name="minutes"
-                  value={basicInfo.minutes || ''}
-                  onChange={(e) => {
-                    const minutes = e.target.value;
-                    // Update both minutes and duration
-                    onBasicInfoChange({
-                      target: { name: 'minutes', value: minutes }
-                    });
-                    onBasicInfoChange({
-                      target: {
-                        name: 'duration',
-                        value: `PT${basicInfo.hours || 0}H${minutes}M`
-                      }
-                    });
-                  }}
+                  value={currentDuration.minutes}
+                  onChange={handleDurationChange}
                   min="0"
                   max="59"
                   className={`w-full px-4 py-2 rounded-lg border ${
@@ -246,7 +270,7 @@ export function BasicTrekForm({
                 <option disabled>Loading categories...</option>
               ) : (
                 categories.map((category) => (
-                  <option key={category.id} value={category.id}>
+                  <option key={category.id} value={category.id.toString()}>
                     {category.name}
                   </option>
                 ))

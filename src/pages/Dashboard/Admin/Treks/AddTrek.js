@@ -287,7 +287,9 @@ export default function AddTrek() {
 
   // Add handler for when images are uploaded
   const handleImagesUploaded = (newImages) => {
-    setTrekImages((prev) => [...prev, ...newImages])
+    if (Array.isArray(newImages)) {
+      setTrekImages(prev => [...prev, ...newImages])
+    }
   }
 
   const handleCompleteServicesStep = async () => {

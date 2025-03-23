@@ -46,6 +46,7 @@ import Support from "./pages/Support";
 import PrivacyPolicy from "./pages/Legal/PrivacyPolicy";
 import TermsOfService from "./pages/Legal/TermsOfService";
 import About from "./pages/About";
+import { Toaster } from 'react-hot-toast';
 function ProtectedRoute({ children, requiredRole }) {
   const { user, isAuthenticated } = useAuth();
 
@@ -329,6 +330,7 @@ function App() {
         <WishlistProvider>
           <ReservationProvider>
             <div className="min-h-screen flex flex-col bg-white">
+              <Toaster position="top-right" />
               <AppContent />
             </div>
           </ReservationProvider>

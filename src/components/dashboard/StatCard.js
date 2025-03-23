@@ -1,28 +1,42 @@
-import { ArrowUp, ArrowDown } from "lucide-react"
+import React from "react"
+import { ArrowUpIcon, ArrowDownIcon } from "lucide-react"
+import PropTypes from "prop-types"
 
-export default function StatCard({ title, value, icon, trend }) {
+const StatCard = ({ title, value, icon, trend = 0, bgClass = "bg-[#232630]" }) => {
   return (
-    <div className="bg-[#232630] rounded-lg shadow-md p-5 border border-gray-800 hover:border-[#fe5532]/30 transition-all duration-300 group">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-gray-400 text-sm mb-1">{title}</p>
-          <h3 className="text-2xl font-bold text-white">{value}</h3>
-        </div>
-        <div className="p-3 rounded-lg bg-[#fe5532]/10 text-[#fe5532] group-hover:bg-[#fe5532]/20 transition-colors">
+    <div
+      className={`${bgClass} rounded-lg shadow-md p-6 border border-gray-800 transition-transform hover:scale-[1.02] duration-300`}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-12 w-12 rounded-lg bg-[#191b20] flex items-center justify-center text-gray-400">
           {icon}
         </div>
+        {trend !== 0 && (
+          <div className={`flex items-center ${trend > 0 ? "text-green-500" : "text-red-500"}`}>
+            {trend > 0 ? <ArrowUpIcon className="h-4 w-4 mr-1" /> : <ArrowDownIcon className="h-4 w-4 mr-1" />}
+            <span className="text-sm font-medium">{Math.abs(trend)}%</span>
+          </div>
+        )}
       </div>
-
-      {trend !== undefined && (
-        <div className="mt-4 flex items-center">
-          <span className={`flex items-center text-sm ${trend > 0 ? "text-green-400" : "text-red-400"}`}>
-            {trend > 0 ? <ArrowUp className="w-3 h-3 mr-1" /> : <ArrowDown className="w-3 h-3 mr-1" />}
-            {Math.abs(trend)}%
-          </span>
-          <span className="text-xs text-gray-400 ml-1">vs last month</span>
-        </div>
-      )}
+      <h3 className="text-gray-400 text-sm mb-1">{title}</h3>
+      <div className="text-2xl font-bold text-white">
+        {value === "..." ? (
+          <div className="animate-pulse bg-gray-700 h-8 w-24 rounded"></div>
+        ) : (
+          value
+        )}
+      </div>
     </div>
   )
 }
+
+StatCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  icon: PropTypes.element.isRequired,
+  trend: PropTypes.number,
+  bgClass: PropTypes.string,
+}
+
+export default StatCard
 

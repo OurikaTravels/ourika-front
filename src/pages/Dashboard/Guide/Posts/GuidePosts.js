@@ -2,7 +2,23 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useAuth } from "../../../../context/AuthContext"
-import { FileText, Loader, Info, Plus, X, CheckCircle, XCircle, Trash, Upload, Menu } from "lucide-react"
+import {
+  FileText,
+  Loader,
+  Info,
+  Plus,
+  X,
+  CheckCircle,
+  XCircle,
+  Trash,
+  Upload,
+  Menu,
+  Heart,
+  MessageCircle,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react"
 import { toast } from "react-hot-toast"
 import GuideSidebar from "../../../../components/dashboard/guide/GuideSidebar"
 import postApi from "../../../../services/postApi"
@@ -22,6 +38,7 @@ export default function GuidePosts() {
   const [selectedImages, setSelectedImages] = useState([])
   const [previewImages, setPreviewImages] = useState([])
   const [isMobile, setIsMobile] = useState(false)
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
   const fileInputRef = useRef(null)
 
   // Check if device is mobile
@@ -60,6 +77,7 @@ export default function GuidePosts() {
       const response = await postApi.getGuidePosts(guideId)
       if (response.success) {
         setPosts(response.data)
+        console.log(response.data)
       } else {
         setError(response.message || "Failed to fetch posts")
         toast.error(response.message || "Failed to fetch posts")
@@ -203,6 +221,24 @@ export default function GuidePosts() {
     }
   }
 
+  const openPreviewModal = (post) => {
+    setPreviewPost(post)
+    setActiveImageIndex(0)
+    setShowPreviewModal(true)
+  }
+
+  const nextImage = () => {
+    if (previewPost?.images?.length > 0) {
+      setActiveImageIndex((prev) => (prev + 1) % previewPost.images.length)
+    }
+  }
+
+  const prevImage = () => {
+    if (previewPost?.images?.length > 0) {
+      setActiveImageIndex((prev) => (prev === 0 ? previewPost.images.length - 1 : prev - 1))
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#191b20] text-white flex">
       <GuideSidebar
@@ -303,7 +339,14 @@ export default function GuidePosts() {
                   <tbody className="divide-y divide-gray-700">
                     {posts.map((post) => (
                       <tr key={post.id} className="hover:bg-[#191b20]/50">
-                        <td className="px-4 py-3 text-sm text-white">{post.title}</td>
+                        <td className="px-4 py-3 text-sm text-white">
+                          <button
+                            onClick={() => openPreviewModal(post)}
+                            className="hover:text-[#fe5532] transition-colors text-left"
+                          >
+                            {post.title}
+                          </button>
+                        </td>
                         <td className="px-4 py-3 text-sm text-gray-300 hidden md:table-cell">
                           {post.description.length > 60 ? `${post.description.substring(0, 60)}...` : post.description}
                         </td>
@@ -312,12 +355,22 @@ export default function GuidePosts() {
                           {formatDate(post.createdAt)}
                         </td>
                         <td className="px-4 py-3 text-sm">
-                          <button
-                            onClick={() => handleDeletePost(post.id)}
-                            className="text-[#fe5532] hover:text-[#fe5532]/80 p-1"
-                          >
-                            <Trash className="w-5 h-5" />
-                          </button>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => openPreviewModal(post)}
+                              className="text-gray-400 hover:text-white p-1"
+                              title="Preview Post"
+                            >
+                              <Eye className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeletePost(post.id)}
+                              className="text-[#fe5532] hover:text-[#fe5532]/80 p-1"
+                              title="Delete Post"
+                            >
+                              <Trash className="w-5 h-5" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -454,6 +507,162 @@ export default function GuidePosts() {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Post Preview Modal */}
+      {showPreviewModal && previewPost && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#232630] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex flex-col md:flex-row h-full">
+              {/* Image Gallery */}
+              <div className="md:w-1/2 relative bg-[#191b20]">
+                {previewPost.images && previewPost.images.length > 0 ? (
+                  <div className="relative aspect-square">
+                    <img
+                      src={`http://localhost:8080/api/uploads/images/${previewPost.images[activeImageIndex]}`}
+                      alt={previewPost.title}
+                      className="w-full h-full object-cover"
+                    />
+
+                    {previewPost.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevImage}
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-1 rounded-full hover:bg-black/70 transition-colors"
+                        >
+                          <ChevronLeft className="w-6 h-6" />
+                        </button>
+                        <button
+                          onClick={nextImage}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-1 rounded-full hover:bg-black/70 transition-colors"
+                        >
+                          <ChevronRight className="w-6 h-6" />
+                        </button>
+                      </>
+                    )}
+
+                    {/* Image counter */}
+                    {previewPost.images.length > 1 && (
+                      <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                        <div className="bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+                          {activeImageIndex + 1} / {previewPost.images.length}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center aspect-square bg-[#191b20]">
+                    <FileText className="w-16 h-16 text-gray-600" />
+                  </div>
+                )}
+
+                {/* Thumbnails */}
+                {previewPost.images && previewPost.images.length > 1 && (
+                  <div className="flex overflow-x-auto p-2 gap-2 bg-[#191b20]">
+                    {previewPost.images.map((image, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setActiveImageIndex(index)}
+                        className={`flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 ${
+                          activeImageIndex === index ? "border-[#fe5532]" : "border-transparent"
+                        }`}
+                      >
+                        <img
+                          src={`http://localhost:8080/api/uploads/images/${image}`}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Post Details */}
+              <div className="md:w-1/2 p-6 flex flex-col">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-white">{previewPost.title}</h2>
+                    <p className="text-sm text-gray-400">{formatDate(previewPost.createdAt)}</p>
+                  </div>
+                  <button onClick={() => setShowPreviewModal(false)} className="text-gray-400 hover:text-white">
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                {/* Status Badge */}
+                <div className="mb-4">{getStatusBadge(previewPost.status)}</div>
+
+                {/* Stats Cards */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  <div className="bg-[#191b20] p-3 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400 text-xs">Likes</span>
+                      <Heart className="w-4 h-4 text-[#fe5532]" />
+                    </div>
+                    <p className="text-xl font-bold text-white mt-1">
+                      {previewPost?.likeCount ?? 0}
+                    </p>
+                  </div>
+                  <div className="bg-[#191b20] p-3 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400 text-xs">Comments</span>
+                      <MessageCircle className="w-4 h-4 text-[#56acfe]" />
+                    </div>
+                    <p className="text-xl font-bold text-white mt-1">
+                      {previewPost?.commentCount ?? 0}
+                    </p>
+                  </div>
+                  <div className="bg-[#191b20] p-3 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400 text-xs">Status</span>
+                      {previewPost?.isActive ? (
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <XCircle className="w-4 h-4 text-red-500" />
+                      )}
+                    </div>
+                    <p className="text-xl font-bold text-white mt-1">
+                      {previewPost?.isActive ? "Active" : "Inactive"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-300 mb-2">Description</h3>
+                  <div className="bg-[#191b20] p-4 rounded-lg">
+                    <p className="text-gray-200 text-sm whitespace-pre-line">{previewPost.description}</p>
+                  </div>
+                </div>
+
+                {/* Comments */}
+                {previewPost?.comments && previewPost.comments.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-300 mb-2">
+                      Comments ({previewPost.commentCount})
+                    </h3>
+                    <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+                      {previewPost.comments.map((comment) => (
+                        <div key={comment.id} className="bg-[#191b20] p-3 rounded-lg">
+                          <div className="flex justify-between items-center mb-2">
+                            <p className="text-sm font-medium text-white">
+                              {comment.userFirstName} {comment.userLastName}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {formatDate(comment.createdAt)}
+                            </p>
+                          </div>
+                          <p className="text-sm text-gray-300">{comment.content}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

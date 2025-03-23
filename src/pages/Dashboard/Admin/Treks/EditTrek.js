@@ -83,6 +83,22 @@ export default function EditTrek() {
   // Form validation errors
   const [errors, setErrors] = useState({})
 
+  // Add these new state variables
+  const [hours, setHours] = useState("")
+  const [minutes, setMinutes] = useState("")
+
+  const parseDuration = (formattedDuration) => {
+    if (!formattedDuration) return { hours: "", minutes: "" }
+    
+    const hoursMatch = formattedDuration.match(/(\d+)H/)
+    const minutesMatch = formattedDuration.match(/(\d+)M/)
+    
+    return {
+      hours: hoursMatch ? hoursMatch[1] : "",
+      minutes: minutesMatch ? minutesMatch[1] : ""
+    }
+  }
+
   // Effects
   useEffect(() => {
     fetchCategories()
@@ -95,17 +111,22 @@ export default function EditTrek() {
       const response = await trekApi.getTrekById(id)
       if (response.success) {
         const trek = response.data
+        
+        // Parse the duration
+        const { hours, minutes } = parseDuration(trek.formattedDuration)
 
-        // Set basic info
+        // Set basic info with parsed duration
         setBasicInfo({
           title: trek.title || "",
           description: trek.description || "",
-          duration: trek.duration || "",
+          duration: trek.formattedDuration || "",
+          hours: hours,
+          minutes: minutes,
           startLocation: trek.startLocation || "",
           endLocation: trek.endLocation || "",
           fullDescription: trek.fullDescription || "",
           price: trek.price || "",
-          categoryId: trek.category?.id || "",
+          categoryId: trek.categoryId?.toString() || "", // Convert to string for select element
         })
 
         // Set selected services if they exist
@@ -225,19 +246,29 @@ export default function EditTrek() {
 
   // Event Handlers
   const handleBasicInfoChange = (e) => {
-    const { name, value } = e.target
-    const newValue = name === "price" ? (value === "" ? "" : Number.parseFloat(value)) : value
-
-    setBasicInfo((prev) => ({
-      ...prev,
-      [name]: newValue,
-    }))
+    const { name, value, formattedValue, hours, minutes } = e.target;
+    
+    if (name === 'duration') {
+      setBasicInfo(prev => ({
+        ...prev,
+        duration: value, // This will be "PT240H" format
+        formattedDuration: formattedValue, // This will be "240H0M" format
+        hours: hours,
+        minutes: minutes
+      }));
+    } else {
+      const newValue = name === "price" ? (value === "" ? "" : Number.parseFloat(value)) : value;
+      setBasicInfo(prev => ({
+        ...prev,
+        [name]: newValue,
+      }));
+    }
 
     if (errors[name]) {
-      setErrors((prev) => ({
+      setErrors(prev => ({
         ...prev,
         [name]: "",
-      }))
+      }));
     }
   }
 
