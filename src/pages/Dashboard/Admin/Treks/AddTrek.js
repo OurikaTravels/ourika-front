@@ -23,7 +23,6 @@ import highlightApi from "../../../../services/highlightApi"
 import serviceApi from "../../../../services/serviceApi"
 import activityApi from "../../../../services/activityApi"
 
-// Steps configuration
 const STEPS = [
   { id: 1, name: "Basic Information", description: "Trek details and category" },
   { id: 2, name: "Services", description: "Included services" },
@@ -42,7 +41,7 @@ export default function AddTrek() {
   const [error, setError] = useState(null)
   const [redirectToList, setRedirectToList] = useState(false)
 
-  // Trek Data States
+
   const [trekId, setTrekId] = useState(null)
   const [basicInfo, setBasicInfo] = useState({
     title: "",
@@ -55,31 +54,30 @@ export default function AddTrek() {
     categoryId: "",
   })
 
-  // Categories State
+ 
   const [categories, setCategories] = useState([])
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
 
-  // Services State
+
   const [availableServices, setAvailableServices] = useState([])
   const [selectedServices, setSelectedServices] = useState([])
   const [isLoadingServices, setIsLoadingServices] = useState(false)
 
-  // Highlights State
+
   const [availableHighlights, setAvailableHighlights] = useState([])
   const [selectedHighlights, setSelectedHighlights] = useState([])
   const [isLoadingHighlights, setIsLoadingHighlights] = useState(false)
 
-  // Activities State
+
   const [activities, setActivities] = useState([])
 
-  // Add state for images
+
   const [trekImages, setTrekImages] = useState([])
   const [isLoadingImages, setIsLoadingImages] = useState(false)
 
-  // Form validation errors
   const [errors, setErrors] = useState({})
 
-  // Effects
+
   useEffect(() => {
     fetchCategories()
   }, [])
@@ -96,7 +94,7 @@ export default function AddTrek() {
     }
   }, [trekId])
 
-  // API Calls
+
   const fetchCategories = async () => {
     setIsLoadingCategories(true)
     try {
@@ -168,7 +166,7 @@ export default function AddTrek() {
     }
   }
 
-  // Add function to fetch images
+
   const fetchTrekImages = async () => {
     if (!trekId) return
 
@@ -189,7 +187,6 @@ export default function AddTrek() {
     }
   }
 
-  // Event Handlers
   const handleBasicInfoChange = (e) => {
     const { name, value } = e.target
     const newValue = name === "price" ? (value === "" ? "" : Number.parseFloat(value)) : value
@@ -270,21 +267,20 @@ export default function AddTrek() {
     }
   }
 
-  // Update handleCompleteActivitiesStep
   const handleCompleteActivitiesStep = () => {
     setCurrentStep(5)
     fetchTrekImages()
     toast.success("Activities saved successfully!")
   }
 
-  // Add handler for completing images step
+
   const handleCompleteImagesStep = () => {
     toast.success("Trek created successfully!")
-    // Redirect to preview page instead of list
-    window.location.href = `/admin/treks/${trekId}/preview`
+
+    window.location.href = `/treks/${trekId}`
   }
 
-  // Add handler for when images are uploaded
+
   const handleImagesUploaded = (newImages) => {
     if (Array.isArray(newImages)) {
       setTrekImages(prev => [...prev, ...newImages])
