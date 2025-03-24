@@ -38,7 +38,7 @@ export default function AdminDashboard() {
   })
   const [isLoading, setIsLoading] = useState(true)
 
-  // Sample data for charts
+
   const revenueData = [
     { month: "Jan", revenue: 1200 },
     { month: "Feb", revenue: 1900 },
@@ -78,7 +78,6 @@ export default function AdminDashboard() {
     }
   }
 
-  // Format currency
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -87,7 +86,7 @@ export default function AdminDashboard() {
     }).format(value)
   }
 
-  // Custom tooltip for charts
+  
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -118,7 +117,7 @@ export default function AdminDashboard() {
         <main className="p-6">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
-            <p className="mt-1 text-gray-400">Welcome back! Here's what's happening with your platform today.</p>
+            <p className="mt-1 text-gray-400">Welcome back!</p>
           </div>
 
 

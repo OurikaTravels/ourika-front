@@ -105,6 +105,10 @@ export default function Post({ post }) {
     setCurrentImageIndex((prev) => (prev === post.images.length - 1 ? 0 : prev + 1))
   }
 
+  const handleButtonClick =()=>{
+  console.log('clicked')
+  }
+
   const handleAddComment = (newComment) => {
     setComments([...comments, newComment])
   }
@@ -290,6 +294,13 @@ export default function Post({ post }) {
           <MessageCircle size={18} className="transition-transform hover:scale-110" />
           <span className="text-sm font-medium">{comments.length}</span>
         </button>
+
+        <button
+        onClick={handleButtonClick} 
+        >
+            <span>Test button</span>
+        
+        </button>
       </div>
 
 
@@ -298,6 +309,7 @@ export default function Post({ post }) {
           <PostComments postId={post.id} initialComments={comments} onCommentAdded={handleAddComment} />
         </div>
       )}
+
     </div>
   )
 }

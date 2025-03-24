@@ -20,6 +20,9 @@ const trekApi = {
     }
   },
 
+
+
+
   getAllTreks: async () => {
     try {
       const response = await api.get("/treks");

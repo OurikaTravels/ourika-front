@@ -73,7 +73,11 @@ function AppContent() {
     "/Auth/RegisterGuide",
     "/Auth/EmailVerification",
   ].includes(location.pathname);
-  const isDashboardPage = location.pathname.includes("/Dashboard");
+  const isDashboardPage = location.pathname.includes("/Dashboard") || 
+                         location.pathname.includes("/admin") || 
+                         location.pathname.includes("/guide/posts") || 
+                         location.pathname.includes("/guide/profile") || 
+                         location.pathname.includes("/tourist/profile");
 
   const [treks, setTreks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -109,7 +113,7 @@ function AppContent() {
   return (
     <>
       {!isLoginPage && !isDashboardPage && <Navbar />}
-      <div className="flex-grow">
+      <div className={`flex-grow ${!isDashboardPage ? 'bg-white' : ''}`}>
         <Routes>
           <Route
             path="/"

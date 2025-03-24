@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { Save, Loader, Clock, DollarSign, MapPin } from "lucide-react";
 import DurationPicker from "react-duration-picker";
+import { useState } from "react";
 
 export function BasicTrekForm({
   basicInfo,
@@ -16,44 +17,61 @@ export function BasicTrekForm({
   const parseDuration = (duration) => {
     if (!duration) return { hours: "", minutes: "" };
     
-    if (duration.startsWith('PT')) {
+    if (typeof duration === 'string' && duration.startsWith('PT')) {
       const hoursMatch = duration.match(/PT(\d+)H/);
+      const minutesMatch = duration.match(/(\d+)M/);
       return {
         hours: hoursMatch ? hoursMatch[1] : "",
-        minutes: "0"
+        minutes: minutesMatch ? minutesMatch[1] : "0"
       };
     }
     
-    const hoursMatch = duration.match(/(\d+)H/);
-    const minutesMatch = duration.match(/(\d+)M/);
+    // Pour gérer le format alternatif
+    if (typeof duration === 'string') {
+      const hoursMatch = duration.match(/(\d+)H/);
+      const minutesMatch = duration.match(/(\d+)M/);
+      
+      return {
+        hours: hoursMatch ? hoursMatch[1] : "",
+        minutes: minutesMatch ? minutesMatch[1] : "0"
+      };
+    }
     
-    return {
-      hours: hoursMatch ? hoursMatch[1] : "",
-      minutes: minutesMatch ? minutesMatch[1] : "0"
-    };
+    return { hours: "", minutes: "0" };
   };
-
-  const currentDuration = isEditMode 
-    ? parseDuration(basicInfo.duration || basicInfo.formattedDuration)
-    : { hours: "", minutes: "0" };
-
+  
+  // État local (assurez-vous qu'il est géré correctement)
+  const [currentDuration, setCurrentDuration] = useState(
+    isEditMode 
+      ? parseDuration(basicInfo.duration || basicInfo.formattedDuration)
+      : { hours: "", minutes: "0" }
+  );
+  
   const formatDurationForRequest = (hours, minutes) => {
-    const totalHours = parseInt(hours) + (parseInt(minutes || 0) / 60);
-    return `PT${Math.floor(totalHours)}H`;
+    const hoursNum = parseInt(hours) || 0;
+    const minutesNum = parseInt(minutes) || 0;
+    const totalHours = hoursNum + (minutesNum / 60);
+    return `PT${Math.floor(totalHours)}H${minutesNum % 60 ? `${minutesNum % 60}M` : ''}`;
   };
-
+  
   const handleDurationChange = (e) => {
     const { name, value } = e.target;
     
-    let hours = name === 'hours' ? value : currentDuration.hours;
-    let minutes = name === 'minutes' ? value : currentDuration.minutes;
-
-    hours = hours || "0";
-    minutes = minutes || "0";
+    // Mise à jour locale de l'état
+    const updatedDuration = {
+      ...currentDuration,
+      [name]: value
+    };
     
-    const apiDuration = `PT${hours}H`;
-    const formattedDuration = `${hours}H${minutes}M`;
-
+    // Important: mettre à jour l'état local
+    setCurrentDuration(updatedDuration);
+    
+    const hours = updatedDuration.hours || "0";
+    const minutes = updatedDuration.minutes || "0";
+    
+    const apiDuration = formatDurationForRequest(hours, minutes);
+    const formattedDuration = `${hours}H${minutes > 0 ? `${minutes}M` : ''}`;
+  
     onBasicInfoChange({
       target: {
         name: 'duration',
@@ -135,27 +153,29 @@ export function BasicTrekForm({
               Duration <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-4">
-              <div className="flex-1">
-                <label
-                  htmlFor="hours"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                >
-                  Hours
-                </label>
-                <input
-                  type="number"
-                  id="hours"
-                  name="hours"
-                  value={currentDuration.hours}
-                  onChange={handleDurationChange}
-                  min="0"
-                  className={`w-full px-4 py-2 rounded-lg border ${
-                    errors.duration
-                      ? "border-red-500 dark:border-red-500"
-                      : "border-gray-300 dark:border-gray-600"
-                  } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
-                  placeholder="e.g., 1"
-                />
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label
+                    htmlFor="hours"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
+                    Hours
+                  </label>
+                  <input
+                    type="number"
+                    id="hours"
+                    name="hours"
+                    value={currentDuration.hours}
+                    onChange={handleDurationChange}
+                    min="0"
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      errors.duration
+                        ? "border-red-500 dark:border-red-500"
+                        : "border-gray-300 dark:border-gray-600"
+                    } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#ff5c5c] focus:border-transparent`}
+                    placeholder="e.g., 1"
+                  />
+                </div>
               </div>
               <div className="flex-1">
                 <label
