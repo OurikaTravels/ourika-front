@@ -1,71 +1,218 @@
-# Getting Started with Create React App
+# Ourika Travels
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<p align="center">
+  <img src="src/assets/images/logo.png" alt="Ourika Travels Logo" width="200">
+</p>
 
-## Available Scripts
+## Project Overview
+Ourika Travels is a comprehensive tourism platform connecting travelers with expert local guides, focusing on adventure tourism experiences in destinations like Morocco. The platform allows guides to create profiles, share their expertise, and offer guided tours, while travelers can discover, book, and review these experiences.
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+<p align="center">
+  <img src="src/assets/images/hero.jpg" alt="Ourika Travels Features" width="700">
+</p>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### For Travelers
+- **Tour Discovery**: Browse and search for tours and activities
+- **Booking System**: Reserve activities with flexible payment options
+- **Community Engagement**: View guide profiles, ratings, and reviews
+- **User Profiles**: Create and manage personal accounts
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### For Guides
+- **Profile Management**: Create and maintain professional guide profiles
+- **Tour Management**: Create, edit, and manage tour listings
+- **Booking Management**: Handle reservations and customer communications
+- **Community Interaction**: Post updates and respond to user inquiries
 
-### `npm test`
+<p align="center">
+  <img src="src/assets/images/Screenshot from 2025-04-03 11-41-55.png" alt="Guide Registration" width="700">
+</p>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Admin Features
+- **Guide Verification**: Process and approve guide applications
+- **Content Moderation**: Monitor and moderate community posts and reviews
+- **Analytics Dashboard**: Track platform performance and user engagement
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Technical Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+### Frontend
+- **Framework**: React.js (v19.0.0)
+- **State Management**: React Context API
+- **Routing**: React Router DOM (v7.3.0)
+- **Styling**: Tailwind CSS with responsive design
+- **UI Components**: Custom components with responsive design for both desktop and mobile
+- **Icons**: Lucide React and React Icons
+- **Notifications**: React Hot Toast and React Toastify
+- **Charts**: Recharts for analytics visualization
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Integration Points
+- **Maps**: Google Maps API for tour locations and itineraries
+- **Payment Processing**: Secure payment gateway integration
+- **Email Notifications**: Automated booking confirmations and updates
+- **Date Handling**: Date-fns for date manipulation
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Getting Started
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+<p align="center">
+  <img src="src/assets/images/Screenshot from 2025-04-03 11-40-33.png" alt="Ourika Travels App" width="700">
+</p>
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Prerequisites
+- Node.js (v16.x or later)
+- npm (v8.x or later)
 
-## Learn More
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ouchin55edcx/ourika-front.git
+   cd ourika-front
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. Create a `.env` file in the root directory with the following variables:
+   ```
+   REACT_APP_API_URL=http://localhost:8080/api
+   REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+   ```
 
-### Code Splitting
+4. Start the development server:
+   ```bash
+   npm start
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+5. The application will be available at `http://localhost:3000`
 
-### Analyzing the Bundle Size
+## Project Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+<p align="center">
+  <img src="src/assets/images/about.jpg" alt="Ourika Travels Structure" width="700">
+</p>
 
-### Making a Progressive Web App
+```
+ourika-travels/
+├── public/
+│   ├── index.html
+│   ├── logo192.png
+│   └── logo512.png
+├── src/
+│   ├── assets/
+│   │   └── images/
+│   ├── components/
+│   │   ├── auth/
+│   │   ├── common/
+│   │   ├── community/
+│   │   ├── dashboard/
+│   │   │   └── guide/
+│   │   ├── layout/
+│   │   └── treks/
+│   ├── context/
+│   │   ├── AuthContext.js
+│   │   ├── ReservationContext.js
+│   │   └── WishlistContext.js
+│   ├── pages/
+│   │   ├── About/
+│   │   ├── Auth/
+│   │   ├── Bookings/
+│   │   ├── Community/
+│   │   ├── Dashboard/
+│   │   │   ├── Admin/
+│   │   │   ├── Guide/
+│   │   │   └── Tourist/
+│   │   ├── GuideProfile/
+│   │   ├── Legal/
+│   │   ├── Support/
+│   │   └── TrekDetails/
+│   ├── services/
+│   │   ├── adminApi.js
+│   │   ├── api.js
+│   │   ├── axiosConfig.js
+│   │   ├── categoryApi.js
+│   │   ├── guideApi.js
+│   │   ├── highlightApi.js
+│   │   ├── imageApi.js
+│   │   ├── postApi.js
+│   │   ├── reservationApi.js
+│   │   ├── serviceApi.js
+│   │   ├── touristApi.js
+│   │   ├── trekApi.js
+│   │   └── wishlistApi.js
+│   ├── App.js
+│   └── index.js
+├── tailwind.config.js
+├── package.json
+└── README.md
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Key Interfaces
 
-### Advanced Configuration
+### Community Page
+The community section allows guides and travelers to share experiences and connect with each other. Features include:
+- Feed of updates from guides
+- Top guides showcase
+- Photo sharing
+- Post and comment functionality
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+<p align="center">
+  <img src="src/assets/images/Screenshot from 2025-04-03 11-39-48.png" alt="Community Page" width="700">
+</p>
 
-### Deployment
+### Guide Profiles
+Comprehensive guide profiles that showcase:
+- Verified status and credentials
+- Experience statistics
+- Tour offerings
+- Languages spoken
+- Availability calendar
+- Reviews and ratings
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+<p align="center">
+  <img src="src/assets/images/Screenshot from 2025-04-03 11-40-16.png" alt="Guide Profile" width="700">
+</p>
 
-### `npm run build` fails to minify
+### Tour Booking
+Intuitive booking interface with:
+- Tour details and itinerary
+- Pricing information
+- Date selection
+- Participant count
+- Booking policies
+- Payment processing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# ourika-front-v2
+<p align="center">
+  <img src="src/assets/images/Screenshot from 2025-04-03 11-40-33.png" alt="Tour Booking" width="700">
+</p>
+
+## Deployment
+The application is designed to be deployed on standard web hosting platforms:
+- Vercel
+- Netlify
+- AWS Amplify
+
+## Contributing
+Guidelines for contributing to the project:
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+<p align="center">
+  <img src="src/assets/images/logo.png" alt="Ourika Travels Logo" width="100">
+</p>
+<p align="center">
+  © 2025 Ourika Travels. All rights reserved.
+</p>
